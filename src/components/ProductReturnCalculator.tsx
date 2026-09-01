@@ -85,50 +85,50 @@ export const STRATEGY_DEFINITIONS: Record<StrategyKey, StrategyDetail> = {
     themeColor: '#3D633C',
     assetAllocation: [
       {
-        name: 'ASNB Fixed-Price Unit Trusts',
-        category: 'Fixed Yield',
+        name: 'Fixed Deposits & Fixed-Income',
+        category: 'Capital Preservation',
         percentage: 45,
-        expectedYield: '4.75% - 5.25%',
-        description: 'ASM 1, ASM 2, ASM 3, ASB with guaranteed RM1.00 unit price and tax-free distributions.',
+        expectedYield: '3.80% - 4.50%',
+        description: 'Term deposits and high-grade fixed income instruments for principal safety.',
         color: '#3D633C'
       },
       {
-        name: 'Digital Banks & Money Market',
-        category: 'Cash / MMF',
+        name: 'Cash / Money Market',
+        category: 'High Liquidity',
         percentage: 35,
-        expectedYield: '3.50% - 4.28%',
-        description: 'Versa Cash, Boost Bank, GXBank, and KDI Save with daily interest and instant liquidity.',
+        expectedYield: '3.50% - 4.20%',
+        description: 'Daily interest liquidity reserves and capital preservation funds.',
         color: '#B86B30'
       },
       {
-        name: 'Fixed Deposit & High-Grade Sukuk',
-        category: 'Fixed Income',
+        name: 'Retirement / EPF',
+        category: 'Statutory Savings',
         percentage: 20,
-        expectedYield: '3.80% - 4.00%',
-        description: 'Promotional term deposits and government/sovereign bond funds for fixed yield lock.',
+        expectedYield: '5.40% - 6.00%',
+        description: 'Stable long-term statutory retirement compounding.',
         color: '#8F4E1D'
       }
     ],
     products: [
       {
         id: 'c_1',
-        name: 'ASNB (ASM 1 / ASM 2 / ASM 3)',
+        name: 'Fixed Deposits & Fixed-Income',
         category: 'Fixed Yield',
         capitalAmount: 45000,
         weightPercent: 45,
-        returnRatePercent: 5.0,
+        returnRatePercent: 4.2,
         payoutFrequency: 'annual',
         monthlyContribution: 450,
         color: '#3D633C',
-        notes: 'Capital-protected fixed price RM1.00 unit trust.'
+        notes: 'Capital-protected fixed income instruments.'
       },
       {
         id: 'c_2',
-        name: 'Money Market (Versa / GXBank / Boost)',
+        name: 'Cash / Money Market',
         category: 'Cash / MMF',
         capitalAmount: 35000,
         weightPercent: 35,
-        returnRatePercent: 4.0,
+        returnRatePercent: 3.8,
         payoutFrequency: 'monthly',
         monthlyContribution: 350,
         color: '#B86B30',
@@ -136,15 +136,15 @@ export const STRATEGY_DEFINITIONS: Record<StrategyKey, StrategyDetail> = {
       },
       {
         id: 'c_3',
-        name: 'Fixed Deposit / Sukuk Bond Fund',
-        category: 'Fixed Yield',
+        name: 'Retirement / EPF',
+        category: 'Retirement',
         capitalAmount: 20000,
         weightPercent: 20,
-        returnRatePercent: 3.8,
+        returnRatePercent: 5.5,
         payoutFrequency: 'annual',
         monthlyContribution: 200,
         color: '#8F4E1D',
-        notes: 'Safe fixed return lock-in.'
+        notes: 'Long-term compounding retirement savings.'
       }
     ]
   },
@@ -160,42 +160,42 @@ export const STRATEGY_DEFINITIONS: Record<StrategyKey, StrategyDetail> = {
     themeColor: '#B86B30',
     assetAllocation: [
       {
-        name: 'EPF (Account 1, 2, 3 / i-Saraan)',
-        category: 'Retirement Fund',
+        name: 'Retirement / EPF',
+        category: 'Statutory Savings',
         percentage: 35,
         expectedYield: '5.50% - 6.00%',
-        description: 'Statutory retirement fund with guaranteed minimum 2.5% dividend, historical 5.4% - 6.2% p.a.',
+        description: 'Statutory retirement fund compounding with consistent dividend distributions.',
         color: '#3D633C'
       },
       {
-        name: 'Malaysian Dividend REITs & Bluechips',
-        category: 'High-Yield Equities',
+        name: 'Dividend Stocks',
+        category: 'Income Equities',
         percentage: 30,
         expectedYield: '6.00% - 7.00%',
-        description: 'Sunway REIT, IGB REIT, Maybank, and high cash-flow Bursa dividend payers.',
+        description: 'High-dividend yielding equities and real estate investment trusts.',
         color: '#B86B30'
       },
       {
-        name: 'Global Equity Index ETF (S&P 500 / VWRA)',
+        name: 'Growth Funds / ETFs',
         category: 'Global Equities',
         percentage: 25,
         expectedYield: '8.50% - 10.00%',
-        description: 'Low-cost broad market world index tracking global corporate earnings expansion.',
+        description: 'Broad market index funds and global equity expansion.',
         color: '#7E22CE'
       },
       {
-        name: 'Cash Reserves & Digital Bank',
-        category: 'Cash / MMF',
+        name: 'Cash / Money Market',
+        category: 'Liquidity Buffer',
         percentage: 10,
-        expectedYield: '3.80%',
-        description: 'Daily compounding liquidity buffer for dynamic rebalancing.',
+        expectedYield: '3.50% - 4.00%',
+        description: 'Cash reserves and money market funds for liquidity.',
         color: '#8F4E1D'
       }
     ],
     products: [
       {
         id: 'b_1',
-        name: 'EPF / KWSP (Account 1 & 2 / i-Saraan)',
+        name: 'Retirement / EPF',
         category: 'Retirement',
         capitalAmount: 35000,
         weightPercent: 35,
@@ -207,7 +207,7 @@ export const STRATEGY_DEFINITIONS: Record<StrategyKey, StrategyDetail> = {
       },
       {
         id: 'b_2',
-        name: 'Dividend REITs (Sunway / IGB / Pavilion)',
+        name: 'Dividend Stocks',
         category: 'Equities / Stocks',
         capitalAmount: 30000,
         weightPercent: 30,
@@ -215,11 +215,11 @@ export const STRATEGY_DEFINITIONS: Record<StrategyKey, StrategyDetail> = {
         payoutFrequency: 'quarterly',
         monthlyContribution: 300,
         color: '#B86B30',
-        notes: 'Steady rental yield distributions.'
+        notes: 'Steady dividend and rental yield distributions.'
       },
       {
         id: 'b_3',
-        name: 'S&P 500 / Global Index ETF (CSPX / VWRA)',
+        name: 'Growth Funds / ETFs',
         category: 'Equities / Stocks',
         capitalAmount: 25000,
         weightPercent: 25,
@@ -227,11 +227,11 @@ export const STRATEGY_DEFINITIONS: Record<StrategyKey, StrategyDetail> = {
         payoutFrequency: 'annual',
         monthlyContribution: 300,
         color: '#7E22CE',
-        notes: 'Broad market capitalization expansion.'
+        notes: 'Broad market index capitalization growth.'
       },
       {
         id: 'b_4',
-        name: 'Versa Cash / GXBank Reserve',
+        name: 'Cash / Money Market',
         category: 'Cash / MMF',
         capitalAmount: 10000,
         weightPercent: 10,
@@ -255,54 +255,46 @@ export const STRATEGY_DEFINITIONS: Record<StrategyKey, StrategyDetail> = {
     themeColor: '#8F4E1D',
     assetAllocation: [
       {
-        name: 'US Tech & S&P 500 Core Leaders',
+        name: 'Growth Funds / ETFs',
         category: 'Global Equities',
-        percentage: 55,
+        percentage: 65,
         expectedYield: '10.00% - 12.50%',
-        description: 'Large-cap technological innovators, cloud computing, semiconductor leaders, and broad S&P 500.',
+        description: 'High-growth global equity funds and technology sector indices.',
         color: '#8F4E1D'
       },
       {
-        name: 'High-Dividend Equities & Infrastructure REITs',
-        category: 'Equities / Stocks',
+        name: 'Dividend Stocks',
+        category: 'Income Equities',
         percentage: 25,
         expectedYield: '6.50% - 7.50%',
-        description: 'Defensive cash-generating assets with steady capital appreciation.',
+        description: 'Defensive cash-generating equities and yield-producing assets.',
         color: '#B86B30'
       },
       {
-        name: 'Asian Growth & Emerging Markets',
-        category: 'Emerging Equities',
+        name: 'Cash / Money Market',
+        category: 'Liquidity Buffer',
         percentage: 10,
-        expectedYield: '8.00% - 9.50%',
-        description: 'High-growth Asian economies, semiconductor foundry leaders, and regional market indices.',
-        color: '#3D633C'
-      },
-      {
-        name: 'Strategic Cash & Fixed Yield',
-        category: 'Cash / MMF',
-        percentage: 10,
-        expectedYield: '4.20%',
-        description: 'Dry powder reserve ready to capitalize on market dips and correction opportunities.',
+        expectedYield: '3.80% - 4.20%',
+        description: 'Strategic cash reserve ready to capitalize on market dips.',
         color: '#5C544C'
       }
     ],
     products: [
       {
         id: 'g_1',
-        name: 'US Tech Leaders & S&P 500 (QQQ / VOO)',
+        name: 'Growth Funds / ETFs',
         category: 'Equities / Stocks',
-        capitalAmount: 55000,
-        weightPercent: 55,
+        capitalAmount: 65000,
+        weightPercent: 65,
         returnRatePercent: 11.5,
         payoutFrequency: 'annual',
         monthlyContribution: 600,
         color: '#8F4E1D',
-        notes: 'High beta global innovators with compounding tailwinds.'
+        notes: 'High growth global innovators with long-term compounding.'
       },
       {
         id: 'g_2',
-        name: 'Dividend Equities & Real Estate REITs',
+        name: 'Dividend Stocks',
         category: 'Equities / Stocks',
         capitalAmount: 25000,
         weightPercent: 25,
@@ -314,19 +306,7 @@ export const STRATEGY_DEFINITIONS: Record<StrategyKey, StrategyDetail> = {
       },
       {
         id: 'g_3',
-        name: 'Asian Growth & Emerging Markets',
-        category: 'Equities / Stocks',
-        capitalAmount: 10000,
-        weightPercent: 10,
-        returnRatePercent: 8.5,
-        payoutFrequency: 'annual',
-        monthlyContribution: 100,
-        color: '#3D633C',
-        notes: 'Regional GDP growth exposure.'
-      },
-      {
-        id: 'g_4',
-        name: 'Strategic Cash / Money Market Dry Powder',
+        name: 'Cash / Money Market',
         category: 'Cash / MMF',
         capitalAmount: 10000,
         weightPercent: 10,
@@ -334,7 +314,7 @@ export const STRATEGY_DEFINITIONS: Record<StrategyKey, StrategyDetail> = {
         payoutFrequency: 'monthly',
         monthlyContribution: 50,
         color: '#5C544C',
-        notes: 'Opportunity reserve.'
+        notes: 'Opportunity reserve and liquidity.'
       }
     ]
   },
@@ -526,11 +506,11 @@ export const ProductReturnCalculator: React.FC = () => {
         {/* 5-STEP PROGRESSIVE NAVIGATION FLOW */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
           {[
-            { id: 'goal', step: '1', title: 'Goal Setting', icon: Target },
-            { id: 'position', step: '2', title: 'Current Position', icon: Wallet },
-            { id: 'gap', step: '3', title: 'Gap Analysis', icon: Scale },
-            { id: 'recommendation', step: '4', title: 'Recommendation Plan', icon: Sparkles },
-            { id: 'projection', step: '5', title: 'Show Projection', icon: LineChart }
+            { id: 'goal', step: '1', title: 'What’s Your Plan?', icon: Target },
+            { id: 'position', step: '2', title: 'Where Are You Now?', icon: Wallet },
+            { id: 'gap', step: '3', title: 'What’s the Gap?', icon: Scale },
+            { id: 'recommendation', step: '4', title: 'Where to Invest', icon: Sparkles },
+            { id: 'projection', step: '5', title: 'How Will You Get There?', icon: LineChart }
           ].map(tab => {
             const isActive = activeTab === tab.id;
             const Icon = tab.icon;
@@ -576,10 +556,10 @@ export const ProductReturnCalculator: React.FC = () => {
                   </div>
                   <div>
                     <h2 className="text-base sm:text-lg font-extrabold text-[#2D2823]">
-                      Step 1: Define Your Financial Milestone
+                      Step 1: What’s Your Plan?
                     </h2>
                     <p className="text-xs text-[#7A7268]">
-                      Set the financial target and timeline for your FIRE journey or retirement goal.
+                      Set the financial target and timeline for your milestone journey.
                     </p>
                   </div>
                 </div>
@@ -591,7 +571,6 @@ export const ProductReturnCalculator: React.FC = () => {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-[#5C544C] flex items-center justify-between">
                     <span>Target Goal (RM)</span>
-                    <span className="text-[10px] text-[#8C8379]">e.g. Retirement / FIRE</span>
                   </label>
                   <div className="relative">
                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#8C8379]">RM</span>
@@ -637,42 +616,13 @@ export const ProductReturnCalculator: React.FC = () => {
                 </div>
               </div>
 
-              {/* Goal Quick Presets */}
-              <div className="space-y-2 pt-2 border-t border-[#EAE3D6]">
-                <label className="text-xs font-bold text-[#5C544C]">Popular Milestone Targets</label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {[
-                    { label: 'Starter Fund', amount: 100000, years: 5 },
-                    { label: 'Coast FIRE', amount: 300000, years: 8 },
-                    { label: 'Lean FIRE', amount: 500000, years: 10 },
-                    { label: 'Fat FIRE', amount: 1000000, years: 15 }
-                  ].map((preset, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setTargetGoalAmount(preset.amount);
-                        setTimeHorizonYears(preset.years);
-                      }}
-                      className={`p-2.5 rounded-xl border text-left transition text-xs ${
-                        targetGoalAmount === preset.amount && timeHorizonYears === preset.years
-                          ? 'bg-[#F5F0E6] border-[#B86B30] text-[#8F4E1D] font-bold ring-1 ring-[#B86B30]/30'
-                          : 'bg-white border-[#EAE3D6] text-[#5C544C] hover:bg-[#FAF8F5]'
-                      }`}
-                    >
-                      <div className="font-bold truncate">{preset.label}</div>
-                      <div className="font-mono text-[11px] text-[#8C8379]">RM {(preset.amount / 1000).toFixed(0)}k · {preset.years}Y</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Navigation Action */}
               <div className="pt-4 flex justify-end">
                 <button
                   onClick={() => setActiveTab('position')}
-                  className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2"
+                  className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Next: Assess Current Position</span>
+                  <span>Next: Where Are You Now?</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -683,7 +633,7 @@ export const ProductReturnCalculator: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-[#FAF8F5] rounded-3xl p-6 border border-[#EAE3D6] shadow-xs space-y-5">
               <h3 className="text-xs font-extrabold text-[#2D2823] uppercase tracking-wider">
-                Goal Setting Summary
+                Plan Summary
               </h3>
 
               <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] space-y-3">
@@ -728,7 +678,7 @@ export const ProductReturnCalculator: React.FC = () => {
                   </div>
                   <div>
                     <h2 className="text-base sm:text-lg font-extrabold text-[#2D2823]">
-                      Step 2: Understand Your Current Position
+                      Step 2: Where Are You Now?
                     </h2>
                     <p className="text-xs text-[#7A7268]">
                       Input your starting capital and planned regular contributions, or sync with your live portfolio data.
@@ -866,13 +816,13 @@ export const ProductReturnCalculator: React.FC = () => {
                   onClick={() => setActiveTab('goal')}
                   className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6] cursor-pointer"
                 >
-                  ← Back: Goal Setting
+                  ← Back: What’s Your Plan?
                 </button>
                 <button
                   onClick={() => setActiveTab('gap')}
                   className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Next: Analyze Goal Gap</span>
+                  <span>Next: What’s the Gap?</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -940,7 +890,7 @@ export const ProductReturnCalculator: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-extrabold text-[#2D2823]">
-                    Step 3: Gap Analysis
+                    Step 3: What’s the Gap?
                   </h2>
                   <p className="text-xs text-[#7A7268]">
                     Detailed breakdown between your target goal and projected wealth outcome over {timeHorizonYears} years.
@@ -1036,13 +986,13 @@ export const ProductReturnCalculator: React.FC = () => {
                 onClick={() => setActiveTab('position')}
                 className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6] cursor-pointer"
               >
-                ← Back: Current Position
+                ← Back: Where Are You Now?
               </button>
               <button
                 onClick={() => setActiveTab('recommendation')}
                 className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
               >
-                <span>Next: View Recommendation Plan</span>
+                <span>Next: Where to Invest</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -1060,8 +1010,8 @@ export const ProductReturnCalculator: React.FC = () => {
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-extrabold text-[#2D2823]">
-                    Step 4: Recommendation Plan
+                  <h2 className="text-base sm:text-lg font-extrabold text-[#2D2823]">
+                    Step 4: Institutional Asset Allocation Blueprint (Where to Invest)
                   </h2>
                 </div>
               </div>
@@ -1111,51 +1061,36 @@ export const ProductReturnCalculator: React.FC = () => {
                     }`}
                   >
                     <div className="space-y-5 sm:space-y-6">
-                      {/* Header Row: Icon, Titles & Expected Return Rate */}
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2.5 rounded-xl bg-[#F5F0E6] text-[#B86B30] shrink-0">
+                      {/* Header: Line 1 (Icon & Top-Right Percentage) | Line 2 (Strategy Name) */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="p-2.5 rounded-xl bg-[#F5F0E6] text-[#B86B30]">
                             <Icon className="w-5 h-5" />
                           </div>
-                          <div>
-                            <h3 className="text-base sm:text-lg font-extrabold text-[#2D2823] tracking-tight leading-tight">
-                              {strat.name}
-                            </h3>
-                            <span className="inline-block text-[11px] font-bold text-[#8F4E1D] mt-0.5">
-                              {strat.riskProfile}
-                            </span>
+                          <div className="font-mono text-sm sm:text-base font-black text-[#2D2823] bg-[#FAF8F5] px-3 py-1 rounded-xl border border-[#EAE3D6] shadow-2xs">
+                            {strat.expectedReturnRate.toFixed(2)}%
                           </div>
                         </div>
-                        <div className="font-mono text-base sm:text-lg font-black text-[#2D2823] bg-[#FAF8F5] px-2.5 py-1 rounded-xl border border-[#EAE3D6] shrink-0">
-                          {strat.expectedReturnRate.toFixed(2)}%
-                        </div>
+                        <h3 className="text-base sm:text-lg font-black text-[#2D2823] tracking-tight">
+                          {strat.name}
+                        </h3>
                       </div>
 
                       {/* Strategy Description */}
-                      <p className="text-xs sm:text-[13px] text-[#665E55] leading-relaxed min-h-[44px]">
+                      <p className="text-xs sm:text-[13px] text-[#665E55] leading-relaxed min-h-[40px]">
                         {strat.riskDescription}
                       </p>
 
                       {/* Required Monthly DCA Box */}
-                      <div className="bg-[#FAF7F2] border border-[#E8DFD1] rounded-2xl p-4 sm:p-4.5 space-y-3 shadow-2xs">
-                        <div>
-                          <div className="text-[11px] font-extrabold uppercase text-[#7A7268] tracking-wider mb-1.5">
-                            Required Monthly DCA
-                          </div>
-                          <div className="flex items-baseline gap-1.5 whitespace-nowrap">
-                            <span className="font-mono font-black text-xl sm:text-2xl text-[#8F4E1D] tracking-tight whitespace-nowrap">
-                              RM {reqMonthlyForStrat.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </span>
-                            <span className="text-xs font-bold text-[#8F4E1D]/80">/mo</span>
-                          </div>
+                      <div className="bg-[#FAF7F2] border border-[#E8DFD1] rounded-2xl p-4 sm:p-4.5 shadow-2xs">
+                        <div className="text-[11px] font-extrabold uppercase text-[#7A7268] tracking-wider mb-1.5">
+                          Required Monthly DCA
                         </div>
-                        <div className="flex items-center justify-between text-[11px] text-[#7A7268] pt-2.5 border-t border-[#EAE3D6]">
-                          <span className="truncate pr-2">
-                            Target RM {targetGoalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} by {new Date().getFullYear() + timeHorizonYears}
+                        <div className="flex items-baseline gap-1.5 whitespace-nowrap">
+                          <span className="font-mono font-black text-xl sm:text-2xl text-[#8F4E1D] tracking-tight whitespace-nowrap">
+                            RM {reqMonthlyForStrat.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
-                          <span className="font-bold text-[#473E35] bg-[#EFE8DC] px-2 py-0.5 rounded-md shrink-0 whitespace-nowrap">
-                            {timeHorizonYears} Yrs
-                          </span>
+                          <span className="text-xs font-bold text-[#8F4E1D]/80">/mo</span>
                         </div>
                       </div>
 
@@ -1166,7 +1101,7 @@ export const ProductReturnCalculator: React.FC = () => {
                         </span>
                         <div className="space-y-3">
                           {strat.assetAllocation.map((item, i) => (
-                            <div key={i} className="space-y-1.5 bg-[#FAF8F5]/80 rounded-xl p-3 border border-[#F0EAE1]">
+                            <div key={i} className="space-y-2 bg-[#FAF8F5]/80 rounded-xl p-3 border border-[#F0EAE1]">
                               <div className="flex justify-between items-center text-xs sm:text-[13px] font-bold text-[#2D2823]">
                                 <span className="truncate pr-2">{item.name}</span>
                                 <span className="font-mono font-extrabold text-[#8F4E1D] shrink-0">{item.percentage}%</span>
@@ -1176,10 +1111,6 @@ export const ProductReturnCalculator: React.FC = () => {
                                   className="h-full rounded-full transition-all duration-300"
                                   style={{ width: `${item.percentage}%`, backgroundColor: item.color }}
                                 />
-                              </div>
-                              <div className="flex justify-between items-center text-[11px] text-[#7A7268] pt-0.5">
-                                <span>{item.category}</span>
-                                <span className="font-mono font-medium text-[#5C544C]">{item.expectedYield}</span>
                               </div>
                             </div>
                           ))}
@@ -1209,15 +1140,15 @@ export const ProductReturnCalculator: React.FC = () => {
             <div className="flex items-center justify-between pt-4">
               <button
                 onClick={() => setActiveTab('gap')}
-                className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6]"
+                className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6] cursor-pointer"
               >
-                ← Back: Calculate Gap
+                ← Back: What’s the Gap?
               </button>
               <button
                 onClick={() => setActiveTab('projection')}
-                className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2"
+                className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
               >
-                <span>Next: View Projection Plan</span>
+                <span>Next: How Will You Get There?</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -1236,7 +1167,7 @@ export const ProductReturnCalculator: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-extrabold text-[#2D2823]">
-                    Step 5: Show Projection
+                    Step 5: How Will You Get There?
                   </h2>
                 </div>
               </div>
@@ -1362,15 +1293,15 @@ export const ProductReturnCalculator: React.FC = () => {
             <div className="flex items-center justify-between pt-4">
               <button
                 onClick={() => setActiveTab('recommendation')}
-                className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6]"
+                className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6] cursor-pointer"
               >
-                ← Back: Recommendation Plan
+                ← Back: Where to Invest
               </button>
               <button
                 onClick={() => setActiveTab('goal')}
-                className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2"
+                className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
               >
-                <span>Edit Goal Parameters</span>
+                <span>Edit Plan Parameters</span>
                 <Target className="w-4 h-4" />
               </button>
             </div>
