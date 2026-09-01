@@ -506,11 +506,11 @@ export const ProductReturnCalculator: React.FC = () => {
         {/* 5-STEP PROGRESSIVE NAVIGATION FLOW */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
           {[
-            { id: 'goal', step: '1', title: 'What’s Your Plan?', icon: Target },
-            { id: 'position', step: '2', title: 'Where Are You Now?', icon: Wallet },
-            { id: 'gap', step: '3', title: 'What’s the Gap?', icon: Scale },
-            { id: 'recommendation', step: '4', title: 'Where to Invest', icon: Sparkles },
-            { id: 'projection', step: '5', title: 'How Will You Get There?', icon: LineChart }
+            { id: 'goal', step: '1', title: 'Goal Setting', icon: Target },
+            { id: 'position', step: '2', title: 'Current Position', icon: Wallet },
+            { id: 'gap', step: '3', title: 'Gap Analysis', icon: Scale },
+            { id: 'recommendation', step: '4', title: 'Recommendation Plan', icon: Sparkles },
+            { id: 'projection', step: '5', title: 'Show Projection', icon: LineChart }
           ].map(tab => {
             const isActive = activeTab === tab.id;
             const Icon = tab.icon;
@@ -556,7 +556,7 @@ export const ProductReturnCalculator: React.FC = () => {
                   </div>
                   <div>
                     <h2 className="text-base sm:text-lg font-extrabold text-[#2D2823]">
-                      Step 1: What’s Your Plan?
+                      Step 1: Define Your Financial Milestone
                     </h2>
                     <p className="text-xs text-[#7A7268]">
                       Set the financial target and timeline for your milestone journey.
@@ -622,7 +622,7 @@ export const ProductReturnCalculator: React.FC = () => {
                   onClick={() => setActiveTab('position')}
                   className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Next: Where Are You Now?</span>
+                  <span>Next: Assess Current Position</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -633,7 +633,7 @@ export const ProductReturnCalculator: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-[#FAF8F5] rounded-3xl p-6 border border-[#EAE3D6] shadow-xs space-y-5">
               <h3 className="text-xs font-extrabold text-[#2D2823] uppercase tracking-wider">
-                Plan Summary
+                Goal Setting Summary
               </h3>
 
               <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] space-y-3">
@@ -678,7 +678,7 @@ export const ProductReturnCalculator: React.FC = () => {
                   </div>
                   <div>
                     <h2 className="text-base sm:text-lg font-extrabold text-[#2D2823]">
-                      Step 2: Where Are You Now?
+                      Step 2: Understand Your Current Position
                     </h2>
                     <p className="text-xs text-[#7A7268]">
                       Input your starting capital and planned regular contributions, or sync with your live portfolio data.
@@ -816,13 +816,13 @@ export const ProductReturnCalculator: React.FC = () => {
                   onClick={() => setActiveTab('goal')}
                   className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6] cursor-pointer"
                 >
-                  ← Back: What’s Your Plan?
+                  ← Back: Goal Setting
                 </button>
                 <button
                   onClick={() => setActiveTab('gap')}
                   className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Next: What’s the Gap?</span>
+                  <span>Next: Analyze Goal Gap</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -890,7 +890,7 @@ export const ProductReturnCalculator: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-extrabold text-[#2D2823]">
-                    Step 3: What’s the Gap?
+                    Step 3: Gap Analysis
                   </h2>
                   <p className="text-xs text-[#7A7268]">
                     Detailed breakdown between your target goal and projected wealth outcome over {timeHorizonYears} years.
@@ -986,13 +986,13 @@ export const ProductReturnCalculator: React.FC = () => {
                 onClick={() => setActiveTab('position')}
                 className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6] cursor-pointer"
               >
-                ← Back: Where Are You Now?
+                ← Back: Current Position
               </button>
               <button
                 onClick={() => setActiveTab('recommendation')}
                 className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
               >
-                <span>Next: Where to Invest</span>
+                <span>Next: View Recommendation Plan</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -1010,8 +1010,8 @@ export const ProductReturnCalculator: React.FC = () => {
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-base sm:text-lg font-extrabold text-[#2D2823]">
-                    Step 4: Institutional Asset Allocation Blueprint (Where to Invest)
+                  <h2 className="text-lg font-extrabold text-[#2D2823]">
+                    Step 4: Recommendation Plan
                   </h2>
                 </div>
               </div>
@@ -1142,13 +1142,13 @@ export const ProductReturnCalculator: React.FC = () => {
                 onClick={() => setActiveTab('gap')}
                 className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6] cursor-pointer"
               >
-                ← Back: What’s the Gap?
+                ← Back: Calculate Gap
               </button>
               <button
                 onClick={() => setActiveTab('projection')}
                 className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
               >
-                <span>Next: How Will You Get There?</span>
+                <span>Next: View Projection Plan</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -1167,7 +1167,7 @@ export const ProductReturnCalculator: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-extrabold text-[#2D2823]">
-                    Step 5: How Will You Get There?
+                    Step 5: Show Projection
                   </h2>
                 </div>
               </div>
@@ -1295,13 +1295,13 @@ export const ProductReturnCalculator: React.FC = () => {
                 onClick={() => setActiveTab('recommendation')}
                 className="px-4 py-2 text-xs font-bold text-[#5C544C] bg-white border border-[#D8CFC0] rounded-xl hover:bg-[#F5F0E6] cursor-pointer"
               >
-                ← Back: Where to Invest
+                ← Back: Recommendation Plan
               </button>
               <button
                 onClick={() => setActiveTab('goal')}
                 className="px-5 py-2.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-2 cursor-pointer"
               >
-                <span>Edit Plan Parameters</span>
+                <span>Edit Goal Parameters</span>
                 <Target className="w-4 h-4" />
               </button>
             </div>
