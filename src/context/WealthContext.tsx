@@ -244,6 +244,25 @@ const sanitizeStockValuations = (vals: AnnualStockValuation[]): AnnualStockValua
   return updated;
 };
 
+const sanitizeAnnualReports = (reports: AnnualReportEntry[]): AnnualReportEntry[] => {
+  if (!reports || reports.length === 0) return initialAnnualReports;
+  return reports.map(r => {
+    const init = initialAnnualReports.find(i => i.year === r.year);
+    if (init) {
+      const isCorrupted = r.year < 2026 && (r.principal > 200000 || (r.growthPPercent === 0 && r.year !== 2022));
+      if (isCorrupted) {
+        return { ...init };
+      }
+      return {
+        ...r,
+        growthPPercent: r.growthPPercent !== undefined && r.growthPPercent !== null ? r.growthPPercent : init.growthPPercent,
+        growthPIPercent: r.growthPIPercent !== undefined && r.growthPIPercent !== null ? r.growthPIPercent : init.growthPIPercent,
+      };
+    }
+    return r;
+  });
+};
+
 export const WealthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [balanceSheet, setBalanceSheet] = useState<BalanceSheetData>(() => {
     const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_balancesheet`);
@@ -328,7 +347,7 @@ export const WealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const [annualReports, setAnnualReports] = useState<AnnualReportEntry[]>(() => {
     const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_annual`);
-    return saved ? JSON.parse(saved) : initialAnnualReports;
+    return saved ? sanitizeAnnualReports(JSON.parse(saved)) : initialAnnualReports;
   });
 
   const [stockValuations, setStockValuations] = useState<AnnualStockValuation[]>(() => {
@@ -361,7 +380,7 @@ export const WealthProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           if (json.success && json.data && isMounted) {
             if (json.data.balanceSheet) setBalanceSheet(json.data.balanceSheet);
             if (json.data.investmentReports) setInvestmentReports(json.data.investmentReports);
-            if (json.data.annualReports) setAnnualReports(json.data.annualReports);
+            if (json.data.annualReports) setAnnualReports(sanitizeAnnualReports(json.data.annualReports));
             if (json.data.stockValuations) setStockValuations(sanitizeStockValuations(json.data.stockValuations));
             if (json.data.holdings) setHoldings(sanitizeHoldings(json.data.holdings));
             if (json.data.realizedTrades) setRealizedTrades(json.data.realizedTrades);

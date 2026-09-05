@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mobile Preview — Dividend Tab Corrected Layout</title>
+  <title>Mobile Preview — Dividend Tab (Add Dividend Payout Form & Automatic Sum)</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js for smooth interactive charts -->
+  <!-- Chart.js for smooth interactive fintech charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -44,31 +44,38 @@
 </head>
 <body class="p-3 sm:p-6 flex flex-col items-center min-h-screen bg-slate-100">
 
-  <!-- Interactive Control Bar / Instructions -->
-  <div class="w-full max-w-md mb-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
+  <!-- Interactive Control Bar & Review Header -->
+  <div class="w-full max-w-md mb-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
-        <span class="text-xs font-bold text-slate-800">Mobile Dividend Tab Design Review</span>
+        <span class="text-xs font-bold text-slate-800">Add Dividend Payout — Interactive Test</span>
       </div>
       <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-md">
         Review Mode
       </span>
     </div>
-    <p class="text-[11px] text-slate-500 leading-relaxed">
-      <strong>Corrections applied in preview:</strong>
-      <br>1. <strong>Button Renamed:</strong> <span class="font-bold text-blue-600">+ Dividend Payout</span> (same position, size, theme colour, and functionality).
-      <br>2. <strong>Font & Font Size (mimicking reference table):</strong>
-        <br>&nbsp;&nbsp;• <strong>Headers:</strong> Primary (<span class="font-extrabold text-slate-700">STOCK NAME</span>, <span class="font-extrabold text-slate-700">TOTAL PAYOUT</span>) at <strong>10px</strong> Extra Bold uppercase tracking-wider; Sub-header (<span class="text-slate-400 font-medium">YIELD</span>) at <strong>9px</strong> Medium uppercase; Icon at <strong>12px</strong>.
-        <br>&nbsp;&nbsp;• <strong>Data Rows:</strong> Primary top line (Stock Name, Total Payout) at <strong>12px</strong> Extra Bold (<span class="font-extrabold text-slate-900">12px Extra Bold</span>); Secondary bottom line (Yield) at <strong>10px</strong> Regular (<span class="text-slate-500 font-normal">10px Regular</span>).
-      <br>3. Year dropdown inside header: <span class="font-bold text-slate-400 uppercase text-[10px]">DIVIDEND PORTFOLIO SUMMARY - 2026 ▼</span>.
-      <br>4. Dividend Yield Chart positioned directly after summary and before Active Holdings.
-      <br>5. Sort control is an <strong>icon only</strong> beside <span class="font-semibold text-slate-700">TOTAL PAYOUT / YIELD</span>.
-    </p>
+
+    <!-- Quick Test Instructions -->
+    <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80 text-[11px] text-slate-600 space-y-1.5 leading-relaxed">
+      <div class="font-bold text-slate-800 flex items-center gap-1.5">
+        <span>🧪 Test the 4-Step Flow:</span>
+      </div>
+      <ol class="list-decimal pl-4 space-y-0.5 text-slate-600">
+        <li>Tap <span class="font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-200">+ Dividend Payout</span> below.</li>
+        <li><strong>Step 1 (Select Stock)</strong>: Choose e.g. <span class="font-bold font-mono">BAUTO</span>.</li>
+        <li><strong>Step 2 (Select Month)</strong>: Choose e.g. <span class="font-bold">March</span> (Year: <span class="font-bold font-mono yearText">2026</span>).</li>
+        <li><strong>Step 3 (Enter Dividend)</strong>: Type e.g. <span class="font-bold font-mono">60.00</span>.</li>
+        <li><strong>Step 4 (Save & Auto-Sum)</strong>: Tap <strong>Save Entry</strong>.</li>
+      </ol>
+      <div class="pt-1 text-[10px] text-emerald-700 font-semibold border-t border-slate-200/60 flex items-center gap-1">
+        <span>✓</span> <span>Try adding another RM 30.00 for BAUTO in March to verify cumulative sum (RM 60 + RM 30 = RM 90)!</span>
+      </div>
+    </div>
   </div>
 
   <!-- Mobile Frame Container (Simulating 390px Mobile Device) -->
-  <div class="w-full max-w-md bg-white border border-slate-200 rounded-[36px] shadow-xl overflow-hidden flex flex-col min-h-[820px]">
+  <div class="w-full max-w-md bg-white border border-slate-200 rounded-[36px] shadow-xl overflow-hidden flex flex-col min-h-[820px] relative">
     
     <!-- Mobile App Top Bar -->
     <div class="bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
@@ -91,8 +98,6 @@
 
       <!-- ========================================================================= -->
       <!-- SECTION 1: DIVIDEND PORTFOLIO SUMMARY                                     -->
-      <!-- Header: DIVIDEND PORTFOLIO SUMMARY - 2026 ▼ (With Year Dropdown Selector) -->
-      <!-- Maintains exact existing grey styling and overall summary card design      -->
       <!-- ========================================================================= -->
       <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
         <!-- Header with integrated grey Year Dropdown Selector -->
@@ -164,9 +169,7 @@
       </div>
 
       <!-- ========================================================================= -->
-      <!-- SECTION 2: EXISTING DIVIDEND YIELD CHART                                  -->
-      <!-- Positioned directly AFTER DIVIDEND PORTFOLIO SUMMARY and BEFORE Active    -->
-      <!-- Holdings (2026)                                                           -->
+      <!-- SECTION 2: REDESIGNED CHART                                               -->
       <!-- ========================================================================= -->
       <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3">
         <div class="flex items-center justify-between">
@@ -174,20 +177,19 @@
             Dividend Yield
           </h3>
           <div class="flex items-center gap-2.5 text-[10px] font-mono text-slate-400 font-bold">
-            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-xs bg-blue-600 inline-block"></span> RM (Left)</span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-xs bg-blue-500 inline-block"></span> RM (Left)</span>
             <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> % (Right)</span>
           </div>
         </div>
 
-        <!-- Rendered Chart (Dual-axis Bar + Line using exact app historical data) -->
-        <div class="h-56 w-full relative">
+        <!-- Rendered Chart Area -->
+        <div class="h-52 w-full relative">
           <canvas id="dividendChart"></canvas>
         </div>
       </div>
 
       <!-- ========================================================================= -->
-      <!-- SECTION 3: ACTIVE HOLDINGS (2026) - TABLE LAYOUT (MIMICKING IMAGE 2)      -->
-      <!-- Positioned AFTER the Dividend Chart                                       -->
+      <!-- SECTION 3: ACTIVE HOLDINGS - TABLE & EXPANDABLE MONTHLY BREAKDOWN         -->
       <!-- ========================================================================= -->
       <div class="space-y-2.5">
         <div class="flex items-center justify-between px-1">
@@ -199,9 +201,10 @@
               4
             </span>
           </div>
-          <!-- Dividend Payout Button replacing former Sort placement (compact size: 2 sizes smaller) -->
+          <!-- Trigger Button to Open "Dividend Payout" Form -->
           <button
-            onclick="alert('Action: Open Add Dividend Payout modal')"
+            id="btnOpenPayoutModal"
+            onclick="openAddPayoutModal()"
             class="flex items-center gap-1 px-2.5 py-0.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-full text-[10px] font-bold shadow-2xs transition-all cursor-pointer leading-none"
             title="Dividend Payout"
           >
@@ -210,9 +213,9 @@
           </button>
         </div>
 
-        <!-- Table Container (Image 2 Unified Card Structure with Image 1 Stacked Payout/Yield) -->
+        <!-- Table Container -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-          <!-- Table Header with Sort Icon Beside Total Payout / Yield -->
+          <!-- Table Header with Sort Icon -->
           <div class="flex items-center justify-between bg-slate-50 border-b border-slate-200 px-4 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider select-none">
             <div class="flex flex-col justify-center">
               <span class="leading-tight text-slate-700 font-extrabold text-[10px] uppercase tracking-wider">STOCK NAME</span>
@@ -238,132 +241,496 @@
             <!-- Rendered dynamically by script -->
           </div>
         </div>
+
+        <p class="text-[10px] text-slate-400 text-center font-medium">
+          💡 Tap any stock row above to inspect its 12-month dividend breakdown
+        </p>
       </div>
 
     </div>
 
-    <!-- Bottom Navigation Bar (Simulated) -->
-    <div class="bg-white border-t border-slate-200 px-6 py-2.5 flex items-center justify-around text-slate-400">
-      <div class="flex flex-col items-center gap-0.5 text-slate-400">
-        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-        <span class="text-[9px] font-medium">Overview</span>
-      </div>
-      <div class="flex flex-col items-center gap-0.5 text-slate-400">
-        <i data-lucide="trending-up" class="w-4 h-4"></i>
-        <span class="text-[9px] font-medium">Stocks</span>
-      </div>
-      <div class="flex flex-col items-center gap-0.5 text-blue-600 font-bold">
-        <i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
-        <span class="text-[9px]">Dividends</span>
-      </div>
-      <div class="flex flex-col items-center gap-0.5 text-slate-400">
-        <i data-lucide="wallet" class="w-4 h-4"></i>
-        <span class="text-[9px] font-medium">Cashflow</span>
+    <!-- ========================================================================= -->
+    <!-- ADD DIVIDEND PAYOUT MODAL (FORM)                                          -->
+    <!-- 4 Main Steps requested by User:                                           -->
+    <!-- 1. Select Stock                                                           -->
+    <!-- 2. Select Month                                                           -->
+    <!-- 3. Enter Dividend Amount                                                  -->
+    <!-- 4. Automatically Sum Up on Save                                           -->
+    <!-- ========================================================================= -->
+    <div
+      id="dividendPayoutModal"
+      class="hidden absolute inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all duration-200"
+    >
+      <div class="bg-white w-full sm:rounded-3xl rounded-t-3xl border border-slate-200 shadow-2xl p-5 space-y-4 max-h-[92%] overflow-y-auto animate-in slide-in-from-bottom duration-200">
+        
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+              <h3 class="text-sm font-extrabold text-slate-900 tracking-tight">Add Dividend Payout</h3>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-0.5">
+              Target Year: <span class="font-bold text-slate-700 font-mono yearText">2026</span>
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="closeAddPayoutModal()"
+            class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors cursor-pointer"
+          >
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- The 4-Step Form -->
+        <form id="dividendPayoutForm" onsubmit="handleSavePayout(event)" class="space-y-4 text-xs">
+          
+          <!-- STEP 1: Select Stock -->
+          <div class="space-y-1.5">
+            <label class="block font-bold text-slate-700 text-xs">
+              1. Select Stock
+            </label>
+            <div class="relative">
+              <select
+                id="formStockSelect"
+                onchange="updateMonthExistingInfo()"
+                required
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs font-bold text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-hidden transition-all cursor-pointer"
+              >
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <!-- STEP 2: Select Month -->
+          <div class="space-y-1.5">
+            <label class="block font-bold text-slate-700 text-xs">
+              2. Select Month
+            </label>
+            <div class="relative">
+              <select
+                id="formMonthSelect"
+                onchange="updateMonthExistingInfo()"
+                required
+                class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-hidden transition-all cursor-pointer"
+              >
+                <option value="jan">January (Jan)</option>
+                <option value="feb">February (Feb)</option>
+                <option value="mar" selected>March (Mar)</option>
+                <option value="apr">April (Apr)</option>
+                <option value="may">May (May)</option>
+                <option value="jun">June (Jun)</option>
+                <option value="jul">July (Jul)</option>
+                <option value="aug">August (Aug)</option>
+                <option value="sep">September (Sep)</option>
+                <option value="oct">October (Oct)</option>
+                <option value="nov">November (Nov)</option>
+                <option value="dec">December (Dec)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Live Status info for selected Stock & Month -->
+          <div id="existingMonthBanner" class="px-3 py-2 bg-blue-50/70 border border-blue-100 rounded-xl text-[11px] text-blue-800 flex items-center justify-between">
+            <span class="text-blue-600 font-medium">Existing payout in <span id="infoMonthName" class="font-bold">March</span>:</span>
+            <span id="infoExistingAmount" class="font-mono font-bold text-blue-900">RM 0.00</span>
+          </div>
+
+          <!-- STEP 3: Enter Dividend Amount -->
+          <div class="space-y-1.5">
+            <label class="block font-bold text-slate-700 text-xs">
+              3. Enter Dividend (RM)
+            </label>
+            <div class="relative flex items-center">
+              <span class="absolute left-3.5 font-mono font-bold text-xs text-slate-400 select-none">RM</span>
+              <input
+                type="number"
+                id="formDividendAmount"
+                step="0.01"
+                min="0.01"
+                placeholder="60.00"
+                required
+                class="w-full pl-11 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-sm font-extrabold text-slate-900 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-hidden transition-all"
+              />
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2 pt-2">
+            <button
+              type="button"
+              onclick="closeAddPayoutModal()"
+              class="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs active:scale-98 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <i data-lucide="check" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+              <span>Save Payout</span>
+            </button>
+          </div>
+
+        </form>
+
       </div>
     </div>
 
-  </div>
-
-  <!-- Interactive Notes & Scope Checklist -->
-  <div class="w-full max-w-md mt-4 p-4 bg-white rounded-2xl border border-slate-200 shadow-xs text-xs text-slate-600 space-y-2.5">
-    <div class="font-bold text-slate-800 flex items-center gap-1.5">
-      <span>📌 Verification Checklist:</span>
+    <!-- Toast Notification for Successful Sum -->
+    <div
+      id="saveToast"
+      class="hidden absolute top-16 left-4 right-4 bg-slate-900 text-white p-3 rounded-2xl shadow-xl z-50 flex items-start gap-2.5 animate-in fade-in slide-in-from-top-2 duration-150"
+    >
+      <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+        <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p id="toastTitle" class="text-xs font-bold leading-tight">Dividend Payout Saved</p>
+        <p id="toastMessage" class="text-[11px] text-slate-300 font-mono mt-0.5 leading-tight"></p>
+      </div>
     </div>
-    <ul class="list-disc pl-4 space-y-1 text-slate-500 text-[11px]">
-      <li><strong>1. Rename Button:</strong> Renamed to <span class="font-bold text-blue-600">+ Dividend Payout</span> (same position, same size, same theme colour, same functionality).</li>
-      <li><strong>2. Font & Font Size Applied:</strong> Mimicked the reference table exactly:
-        <br>&nbsp;&nbsp;• <em>Primary Headers (STOCK NAME, TOTAL PAYOUT)</em>: <strong>10px</strong>, <strong>Extra Bold (800)</strong>, Uppercase tracking-wider.
-        <br>&nbsp;&nbsp;• <em>Sub-Header (YIELD)</em>: <strong>9px</strong>, <strong>Medium (500)</strong>, Uppercase.
-        <br>&nbsp;&nbsp;• <em>Sort Icon</em>: <strong>12px</strong>.
-        <br>&nbsp;&nbsp;• <em>Primary Values (Stock Name, Total Payout)</em>: <strong>12px</strong>, <strong>Extra Bold (800)</strong>.
-        <br>&nbsp;&nbsp;• <em>Secondary Value (Yield)</em>: <strong>10px</strong>, <strong>Regular (400)</strong>.
-      </li>
-      <li><strong>3. Integrated Year Dropdown:</strong> Header reads <span class="font-bold text-slate-700">DIVIDEND PORTFOLIO SUMMARY - 2026 ▼</span> maintaining the exact same grey uppercase styling. Clicking <span class="font-mono font-bold text-slate-700">2026 ▼</span> opens the year selection dropdown.</li>
-      <li><strong>4. Dividend Yield Chart:</strong> Sits directly after Dividend Portfolio Summary and before Active Holdings (2026).</li>
-      <li><strong>5. Active Holdings & Sort Control:</strong> Sort control is placed strictly as an <strong>icon only</strong> beside the <span class="font-bold text-slate-800">TOTAL PAYOUT</span> / <span class="font-bold text-slate-800">YIELD</span> headers with <em>no word "Sort"</em>. It is visually small and aligned with the headers.</li>
-      <li><strong>App Status:</strong> <span class="text-amber-600 font-semibold">Untouched</span> — strictly awaiting your review and approval.</li>
-    </ul>
+
   </div>
 
   <script>
     lucide.createIcons();
 
-    // Data store for preview simulation
+    // Months Definition
+    const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    const monthLabels = {
+      jan: 'JAN', feb: 'FEB', mar: 'MAR', apr: 'APR', may: 'MAY', jun: 'JUN',
+      jul: 'JUL', aug: 'AUG', sep: 'SEP', oct: 'OCT', nov: 'NOV', dec: 'DEC'
+    };
+
+    // Available Portfolio Stocks List (from existing portfolio)
+    const portfolioStocks = ['BAUTO', 'DXN', 'FPI', 'PENERGY', 'MAYBANK', 'TENAGA', 'SUNWAY PA'];
+
+    // Complete Historical Dividend Data Structure (with individual monthly breakdowns matching image.png)
     const yearData = {
       2026: {
-        totalPayout: 'RM 3,869.78',
-        portfolio: 'RM 9,068.00',
-        divYield: '42.68%',
-        yieldOnCost: '21.63%',
+        portfolioValuation: 9068.00,
+        costBasis: 17890.00,
         holdings: [
-          { name: 'FPI', total: 3600.00, totalStr: 'RM 3,600.00', yieldStr: '156.52%' },
-          { name: 'DXN', total: 149.78, totalStr: 'RM 149.78', yieldStr: '5.17%' },
-          { name: 'BAUTO', total: 60.00, totalStr: 'RM 60.00', yieldStr: '3.28%' },
-          { name: 'PENERGY', total: 60.00, totalStr: 'RM 60.00', yieldStr: '2.94%' }
+          {
+            name: 'FPI',
+            valuation: 2300.00,
+            months: { jan: 3200.00, feb: 0, mar: 0, apr: 400.00, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 }
+          },
+          {
+            name: 'DXN',
+            valuation: 2897.10,
+            months: { jan: 0, feb: 50.40, mar: 0, apr: 0, may: 44.10, jun: 0, jul: 0, aug: 51.30, sep: 0, oct: 1.58, nov: 2.40, dec: 0 }
+          },
+          {
+            name: 'BAUTO',
+            valuation: 1829.27,
+            months: { jan: 0, feb: 25.00, mar: 0, apr: 0, may: 35.00, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 }
+          },
+          {
+            name: 'PENERGY',
+            valuation: 2041.63,
+            months: { jan: 60.00, feb: 0, mar: 0, apr: 0, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 }
+          }
         ]
       },
       2025: {
-        totalPayout: 'RM 1,023.99',
-        portfolio: 'RM 27,020.00',
-        divYield: '3.79%',
-        yieldOnCost: '4.85%',
+        portfolioValuation: 27020.00,
+        costBasis: 21100.00,
         holdings: [
-          { name: 'FPI', total: 720.00, totalStr: 'RM 720.00', yieldStr: '6.29%' },
-          { name: 'PENERGY', total: 165.00, totalStr: 'RM 165.00', yieldStr: '2.22%' },
-          { name: 'DXN', total: 117.15, totalStr: 'RM 117.15', yieldStr: '3.67%' },
-          { name: 'BAUTO', total: 60.00, totalStr: 'RM 60.00', yieldStr: '1.24%' },
-          { name: 'SUNWAY PA', total: 3.99, totalStr: 'RM 3.99', yieldStr: '3.33%' }
+          { name: 'FPI', valuation: 11440.00, months: { jan: 0, feb: 0, mar: 0, apr: 0, may: 720.00, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } },
+          { name: 'PENERGY', valuation: 7420.00, months: { jan: 0, feb: 165.00, mar: 0, apr: 0, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } },
+          { name: 'DXN', valuation: 3190.00, months: { jan: 0, feb: 0, mar: 0, apr: 0, may: 0, jun: 0, jul: 0, aug: 117.15, sep: 0, oct: 0, nov: 0, dec: 0 } },
+          { name: 'BAUTO', valuation: 4850.00, months: { jan: 0, feb: 0, mar: 60.00, apr: 0, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } },
+          { name: 'SUNWAY PA', valuation: 120.00, months: { jan: 0, feb: 0, mar: 0, apr: 3.99, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } }
         ]
       },
       2024: {
-        totalPayout: 'RM 946.30',
-        portfolio: 'RM 16,399.00',
-        divYield: '5.77%',
-        yieldOnCost: '5.12%',
+        portfolioValuation: 16400.00,
+        costBasis: 15450.00,
         holdings: [
-          { name: 'BAUTO', total: 480.00, totalStr: 'RM 480.00', yieldStr: '9.94%' },
-          { name: 'FPI', total: 460.00, totalStr: 'RM 460.00', yieldStr: '4.02%' },
-          { name: 'SUNWAY PA', total: 6.30, totalStr: 'RM 6.30', yieldStr: '5.25%' }
+          { name: 'FPI', valuation: 10000.00, months: { jan: 0, feb: 0, mar: 0, apr: 0, may: 680.00, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } },
+          { name: 'DXN', valuation: 3265.00, months: { jan: 0, feb: 0, mar: 0, apr: 0, may: 160.00, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } },
+          { name: 'BAUTO', valuation: 3135.00, months: { jan: 0, feb: 0, mar: 106.30, apr: 0, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } }
         ]
       },
       2023: {
-        totalPayout: 'RM 683.15',
-        portfolio: 'RM 15,695.00',
-        divYield: '4.35%',
-        yieldOnCost: '4.10%',
+        portfolioValuation: 15700.00,
+        costBasis: 14500.00,
         holdings: [
-          { name: 'FPI', total: 420.00, totalStr: 'RM 420.00', yieldStr: '7.03%' },
-          { name: 'TENAGA', total: 260.00, totalStr: 'RM 260.00', yieldStr: '2.71%' },
-          { name: 'SUNWAY PA', total: 3.15, totalStr: 'RM 3.15', yieldStr: '2.63%' }
+          { name: 'FPI', valuation: 10000.00, months: { jan: 0, feb: 0, mar: 0, apr: 0, may: 520.00, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } },
+          { name: 'BAUTO', valuation: 5700.00, months: { jan: 0, feb: 0, mar: 163.15, apr: 0, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } }
         ]
       },
       2022: {
-        totalPayout: 'RM 585.90',
-        portfolio: 'RM 18,220.00',
-        divYield: '3.22%',
-        yieldOnCost: '3.50%',
+        portfolioValuation: 18200.00,
+        costBasis: 16700.00,
         holdings: [
-          { name: 'TENAGA', total: 419.52, totalStr: 'RM 419.52', yieldStr: '4.37%' },
-          { name: 'GENTING', total: 154.00, totalStr: 'RM 154.00', yieldStr: '2.20%' },
-          { name: 'SUN RIET', total: 25.38, totalStr: 'RM 25.38', yieldStr: '1.69%' },
-          { name: 'SUNWAY PA', total: 6.30, totalStr: 'RM 6.30', yieldStr: '5.25%' }
+          { name: 'FPI', valuation: 10000.00, months: { jan: 0, feb: 0, mar: 0, apr: 0, may: 400.00, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } },
+          { name: 'BAUTO', valuation: 8200.00, months: { jan: 0, feb: 0, mar: 185.90, apr: 0, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } }
         ]
       },
       2021: {
-        totalPayout: 'RM 76.79',
-        portfolio: 'RM 5,000.00',
-        divYield: '1.54%',
-        yieldOnCost: '1.80%',
+        portfolioValuation: 5000.00,
+        costBasis: 4800.00,
         holdings: [
-          { name: 'SUN RIET', total: 42.29, totalStr: 'RM 42.29', yieldStr: '2.11%' },
-          { name: 'GENTING', total: 34.00, totalStr: 'RM 34.00', yieldStr: '1.36%' },
-          { name: 'SUNWAY PA', total: 0.50, totalStr: 'RM 0.50', yieldStr: '0.10%' }
+          { name: 'BAUTO', valuation: 5000.00, months: { jan: 0, feb: 0, mar: 76.79, apr: 0, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 } }
         ]
       }
     };
 
-    let activeYear = 2026;
-    let currentSort = 'desc';
+    // Historical Chart Data structure
+    const chartHistoricalData = {
+      labels: ['2021', '2022', '2023', '2024', '2025', '2026'],
+      payouts: [76.79, 585.90, 683.15, 946.30, 1023.99, 3869.78],
+      yields: [1.54, 3.22, 4.35, 5.77, 3.79, 42.68]
+    };
+
+    let currentYear = 2026;
+    let sortAsc = false;
+    let expandedStockName = 'BAUTO'; // Default expanded to show BAUTO breakdown immediately
+    let chartInstance = null;
+
+    // Helper: Compute annual sum for a stock's 12 months
+    function computeStockSum(monthsObj) {
+      return Object.values(monthsObj).reduce((acc, val) => acc + (Number(val) || 0), 0);
+    }
+
+    // Helper: Compute totals for current year and refresh summary cards
+    function updateCalculations() {
+      const yearObj = yearData[currentYear];
+      if (!yearObj) return;
+
+      const totalYearPayout = yearObj.holdings.reduce((sum, h) => sum + computeStockSum(h.months), 0);
+      const portfolioVal = yearObj.portfolioValuation;
+      const costBasis = yearObj.costBasis;
+
+      const divYield = portfolioVal > 0 ? (totalYearPayout / portfolioVal) * 100 : 0;
+      const yieldOnCost = costBasis > 0 ? (totalYearPayout / costBasis) * 100 : 0;
+
+      // Update UI cards
+      document.getElementById('valTotalPayout').textContent = `RM ${totalYearPayout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      document.getElementById('valPortfolio').textContent = `RM ${portfolioVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      document.getElementById('valDivYield').textContent = `${divYield.toFixed(2)}%`;
+      document.getElementById('valYieldOnCost').textContent = `${yieldOnCost.toFixed(2)}%`;
+
+      // Update Chart Historical Data for current year
+      const yrIdx = chartHistoricalData.labels.indexOf(currentYear.toString());
+      if (yrIdx !== -1) {
+        chartHistoricalData.payouts[yrIdx] = Number(totalYearPayout.toFixed(2));
+        chartHistoricalData.yields[yrIdx] = Number(divYield.toFixed(2));
+        renderChart();
+      }
+    }
+
+    // Render Table Rows with Expandable 12-Month Breakdown (matching image.png)
+    function renderHoldingsTable() {
+      const yearObj = yearData[currentYear];
+      if (!yearObj) return;
+
+      // Calculate totals for each holding
+      const holdingsWithTotals = yearObj.holdings.map(h => {
+        const total = computeStockSum(h.months);
+        const yld = h.valuation > 0 ? (total / h.valuation) * 100 : 0;
+        return {
+          ...h,
+          total,
+          totalStr: `RM ${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          yieldStr: `${yld.toFixed(2)}%`
+        };
+      });
+
+      // Sort
+      const sorted = [...holdingsWithTotals].sort((a, b) => sortAsc ? a.total - b.total : b.total - a.total);
+      document.getElementById('holdingsCount').textContent = sorted.length;
+
+      const container = document.getElementById('holdingsTableBody');
+      container.innerHTML = sorted.map(h => {
+        const isExpanded = expandedStockName === h.name;
+        
+        // Build monthly pills / cells for 12 months (matching image.png)
+        const monthlyCells = monthKeys.map(m => {
+          const val = h.months[m] || 0;
+          const hasVal = val > 0;
+          return `
+            <div class="flex flex-col items-center py-1.5 px-1 rounded-lg ${hasVal ? 'bg-blue-50/80 border border-blue-200' : 'bg-slate-50 border border-slate-100'}">
+              <span class="text-[8px] font-bold uppercase tracking-wider ${hasVal ? 'text-blue-700 font-extrabold' : 'text-slate-400'}">${monthLabels[m]}</span>
+              <span class="text-[9px] font-mono mt-0.5 ${hasVal ? 'text-slate-900 font-extrabold' : 'text-slate-300 font-medium'}">
+                ${hasVal ? (val >= 1000 ? val.toLocaleString() : val) : '-'}
+              </span>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="transition-colors">
+            <!-- Row Header (Stock + Payout + Yield) -->
+            <div
+              onclick="toggleStockExpand('${h.name}')"
+              class="flex items-center justify-between px-4 py-3 hover:bg-slate-50/70 active:bg-slate-100 transition-colors cursor-pointer"
+            >
+              <!-- Column 1: Stock Name with expand indicator -->
+              <div class="flex items-center gap-2 min-w-0 pr-2">
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 transition-transform ${isExpanded ? 'rotate-90 text-blue-600' : ''}"></i>
+                <span class="font-extrabold text-xs text-slate-900 truncate block leading-tight">
+                  ${h.name}
+                </span>
+              </div>
+
+              <!-- Column 2: Total Payout and Yield -->
+              <div class="text-right font-mono shrink-0">
+                <div class="text-xs font-extrabold text-slate-900 leading-tight">
+                  ${h.totalStr}
+                </div>
+                <div class="text-[10px] text-slate-500 font-normal leading-tight mt-0.5">
+                  Yield: <span class="font-normal text-slate-500">${h.yieldStr}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Expanded 12-Month Breakdown Box (Matching Image.png exactly) -->
+            ${isExpanded ? `
+              <div class="px-4 pb-3.5 pt-1 bg-slate-50/80 border-t border-slate-100 space-y-2">
+                <div class="flex items-center justify-between text-[10px] font-bold text-slate-500">
+                  <span class="uppercase tracking-wider">12-Month Payout Breakdown (${currentYear})</span>
+                  <span class="font-mono text-blue-600 font-extrabold">Sum: ${h.totalStr}</span>
+                </div>
+                
+                <!-- 6-columns grid for 12 months -->
+                <div class="grid grid-cols-6 gap-1.5">
+                  ${monthlyCells}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function toggleStockExpand(stockName) {
+      expandedStockName = expandedStockName === stockName ? null : stockName;
+      renderHoldingsTable();
+    }
+
+    function toggleSort() {
+      sortAsc = !sortAsc;
+      renderHoldingsTable();
+    }
+
+    // Modal Form Controls
+    function openAddPayoutModal() {
+      const modal = document.getElementById('dividendPayoutModal');
+      const select = document.getElementById('formStockSelect');
+
+      // Populate Stock Dropdown from existing portfolio
+      select.innerHTML = portfolioStocks.map(s => `
+        <option value="${s}" ${s === 'BAUTO' ? 'selected' : ''}>${s}</option>
+      `).join('');
+
+      // Set default month to March as in user example
+      document.getElementById('formMonthSelect').value = 'mar';
+      document.getElementById('formDividendAmount').value = '60.00';
+
+      updateMonthExistingInfo();
+      modal.classList.remove('hidden');
+      document.getElementById('formDividendAmount').focus();
+    }
+
+    function closeAddPayoutModal() {
+      document.getElementById('dividendPayoutModal').classList.add('hidden');
+    }
+
+    function setQuickAmount(amt) {
+      document.getElementById('formDividendAmount').value = amt.toFixed(2);
+    }
+
+    // Update the live info banner showing existing payout for selected Stock & Month
+    function updateMonthExistingInfo() {
+      const stock = document.getElementById('formStockSelect').value;
+      const month = document.getElementById('formMonthSelect').value;
+      const monthName = document.getElementById('formMonthSelect').options[document.getElementById('formMonthSelect').selectedIndex].text.split(' ')[0];
+      
+      document.getElementById('infoMonthName').textContent = monthName;
+
+      const yearObj = yearData[currentYear];
+      let existingVal = 0;
+      if (yearObj) {
+        const holding = yearObj.holdings.find(h => h.name === stock);
+        if (holding && holding.months && holding.months[month]) {
+          existingVal = holding.months[month];
+        }
+      }
+
+      document.getElementById('infoExistingAmount').textContent = `RM ${existingVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // =========================================================================
+    // STEP 4: AUTOMATIC SUM UP LOGIC ON SAVE
+    // =========================================================================
+    function handleSavePayout(event) {
+      event.preventDefault();
+
+      const stockName = document.getElementById('formStockSelect').value;
+      const month = document.getElementById('formMonthSelect').value;
+      const monthName = document.getElementById('formMonthSelect').options[document.getElementById('formMonthSelect').selectedIndex].text.split(' ')[0];
+      const newAmount = parseFloat(document.getElementById('formDividendAmount').value) || 0;
+
+      if (newAmount <= 0) return;
+
+      const yearObj = yearData[currentYear];
+      if (!yearObj) return;
+
+      let holding = yearObj.holdings.find(h => h.name === stockName);
+      
+      // If stock does not exist in this year yet, add it
+      if (!holding) {
+        holding = {
+          name: stockName,
+          valuation: 2000.00, // default valuation if new
+          months: { jan: 0, feb: 0, mar: 0, apr: 0, may: 0, jun: 0, jul: 0, aug: 0, sep: 0, oct: 0, nov: 0, dec: 0 }
+        };
+        yearObj.holdings.push(holding);
+      }
+
+      const prevMonthVal = holding.months[month] || 0;
+      // Cumulative Addition: add to existing amount rather than replacing
+      const updatedMonthVal = prevMonthVal + newAmount;
+      holding.months[month] = updatedMonthVal;
+
+      // Calculate new annual stock total
+      const newStockTotal = computeStockSum(holding.months);
+
+      // Automatically recalculate all year totals, yields, and update chart
+      updateCalculations();
+
+      // Automatically expand this stock so user sees the updated breakdown immediately
+      expandedStockName = stockName;
+      renderHoldingsTable();
+
+      // Close modal
+      closeAddPayoutModal();
+
+      // Show toast notification
+      showToast(
+        `✓ ${stockName} — ${monthName} ${currentYear}`,
+        `Added RM ${newAmount.toFixed(2)}. ${monthName} Total: RM ${updatedMonthVal.toFixed(2)} (Previous: RM ${prevMonthVal.toFixed(2)}). Annual Sum: RM ${newStockTotal.toFixed(2)}.`
+      );
+    }
+
+    function showToast(title, msg) {
+      const toast = document.getElementById('saveToast');
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMessage').textContent = msg;
+
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4500);
+    }
 
     function toggleSummaryYearDropdown() {
       const menu = document.getElementById('summaryYearDropdownMenu');
@@ -379,109 +746,64 @@
     }
 
     function changeYear(yr) {
-      activeYear = yr;
+      currentYear = yr;
       document.getElementById('headerSelectedYear').textContent = yr;
       document.querySelectorAll('.yearText').forEach(el => el.textContent = yr);
 
-      const data = yearData[yr] || yearData[2026];
-      document.getElementById('valTotalPayout').textContent = data.totalPayout;
-      document.getElementById('valPortfolio').textContent = data.portfolio;
-      document.getElementById('valDivYield').textContent = data.divYield;
-      document.getElementById('valYieldOnCost').textContent = data.yieldOnCost;
-      document.getElementById('holdingsCount').textContent = data.holdings.length;
-
-      renderCards(data.holdings);
-
-      // Close dropdown
-      document.getElementById('summaryYearDropdownMenu').classList.add('hidden');
-      document.getElementById('headerYearChevron').style.transform = 'rotate(0deg)';
+      updateCalculations();
+      renderHoldingsTable();
+      toggleSummaryYearDropdown();
     }
 
-    function toggleSort() {
-      const data = yearData[activeYear] || yearData[2026];
-      if (currentSort === 'desc') {
-        currentSort = 'asc';
-        data.holdings.sort((a, b) => a.total - b.total);
-      } else {
-        currentSort = 'desc';
-        data.holdings.sort((a, b) => b.total - a.total);
-      }
-      renderCards(data.holdings);
-    }
+    // Chart Renderer Matching Exactly the Approved Image
+    function renderChart() {
+      const canvas = document.getElementById('dividendChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
 
-    function renderCards(holdings) {
-      const container = document.getElementById('holdingsTableBody');
-      if (!container) return;
-
-      if (!holdings || holdings.length === 0) {
-        container.innerHTML = `
-          <div class="py-8 px-4 text-center text-xs text-slate-400 font-medium">
-            No dividend payout records for this year.
-          </div>
-        `;
-        return;
+      if (chartInstance) {
+        chartInstance.destroy();
       }
 
-      container.innerHTML = holdings.map(h => `
-        <div class="flex items-center justify-between px-4 py-3 hover:bg-slate-50/70 transition-colors">
-          <!-- Column 1: Stock Name -->
-          <div class="min-w-0 pr-2">
-            <span class="font-extrabold text-xs text-slate-900 truncate block leading-tight" title="${h.name}">
-              ${h.name}
-            </span>
-          </div>
+      // Subtle Gradient for Bars
+      const barGradient = ctx.createLinearGradient(0, 0, 0, 200);
+      barGradient.addColorStop(0, 'rgba(67, 126, 247, 0.95)'); // #437EF7
+      barGradient.addColorStop(1, 'rgba(147, 197, 253, 0.5)');  // #93C5FD translucent
 
-          <!-- Column 2: Total Payout and Yield (Stacked mimicking Image 1 with exact font & sizes) -->
-          <div class="text-right font-mono shrink-0">
-            <div class="text-xs font-extrabold text-slate-900 leading-tight">
-              ${h.totalStr}
-            </div>
-            <div class="text-[10px] text-slate-500 font-normal leading-tight mt-0.5">
-              Yield: <span class="font-normal text-slate-500">${h.yieldStr}</span>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // Close dropdown on outside click
-    document.addEventListener('click', function(e) {
-      const btn = document.getElementById('summaryYearDropdownBtn');
-      const menu = document.getElementById('summaryYearDropdownMenu');
-      if (!btn.contains(e.target) && !menu.contains(e.target)) {
-        menu.classList.add('hidden');
-        document.getElementById('headerYearChevron').style.transform = 'rotate(0deg)';
-      }
-    });
-
-    // Initialize Chart.js with exact existing dual-axis app data
-    window.addEventListener('DOMContentLoaded', () => {
-      renderCards(yearData[2026].holdings);
-
-      const ctx = document.getElementById('dividendChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'bar',
+      chartInstance = new Chart(ctx, {
         data: {
-          labels: ['2021', '2022', '2023', '2024', '2025', '2026'],
+          labels: chartHistoricalData.labels,
           datasets: [
             {
               type: 'bar',
               label: 'Dividend Payout (RM)',
-              data: [76.79, 585.90, 683.15, 946.30, 1023.99, 3869.78],
-              backgroundColor: '#2563EB',
-              borderRadius: 6,
-              yAxisID: 'y'
+              data: chartHistoricalData.payouts,
+              backgroundColor: barGradient,
+              borderRadius: { topLeft: 7, topRight: 7, bottomLeft: 0, bottomRight: 0 },
+              borderSkipped: false,
+              maxBarThickness: 28,
+              categoryPercentage: 0.65,
+              barPercentage: 0.82,
+              yAxisID: 'y',
+              order: 2
             },
             {
               type: 'line',
               label: 'Dividend Yield (%)',
-              data: [1.54, 3.22, 4.35, 5.77, 3.79, 42.68],
-              borderColor: '#10B981',
-              backgroundColor: '#10B981',
+              data: chartHistoricalData.yields,
+              borderColor: '#10B981', // Clean Emerald
               borderWidth: 2.5,
-              pointBackgroundColor: '#10B981',
-              pointRadius: 3.5,
-              yAxisID: 'y1'
+              tension: 0.38, // Smooth spline curve
+              pointBackgroundColor: '#FFFFFF',
+              pointBorderColor: '#10B981',
+              pointBorderWidth: 2.5,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointHoverBackgroundColor: '#10B981',
+              pointHoverBorderColor: '#FFFFFF',
+              pointHoverBorderWidth: 2,
+              yAxisID: 'y1',
+              order: 1
             }
           ]
         },
@@ -493,30 +815,22 @@
             intersect: false,
           },
           plugins: {
-            legend: {
-              position: 'top',
-              labels: {
-                boxWidth: 10,
-                font: { size: 10, family: 'Plus Jakarta Sans', weight: '600' }
-              }
-            },
+            legend: { display: false },
             tooltip: {
-              backgroundColor: '#FFFFFF',
-              titleColor: '#0F172A',
-              bodyColor: '#334155',
-              borderColor: '#E2E8F0',
-              borderWidth: 1,
-              padding: 8,
-              cornerRadius: 10,
-              titleFont: { weight: 'bold', size: 11 },
-              bodyFont: { family: 'JetBrains Mono', size: 11 },
+              backgroundColor: '#0F172A',
+              titleColor: '#F8FAFC',
+              bodyColor: '#E2E8F0',
+              padding: 10,
+              cornerRadius: 12,
+              titleFont: { weight: 'bold', size: 11, family: 'Google Sans' },
+              bodyFont: { family: 'Open Sans', size: 11 },
               callbacks: {
                 label: function(context) {
-                  let label = context.dataset.label || '';
-                  if (label.includes('RM') || label.includes('Payout')) {
-                    return `Payout: RM ${context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                  const val = context.parsed.y;
+                  if (context.dataset.type === 'bar' || context.dataset.label.includes('RM')) {
+                    return ` Dividend: RM ${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                   } else {
-                    return `Yield: ${context.parsed.y.toFixed(2)}%`;
+                    return ` Yield: ${val.toFixed(2)}%`;
                   }
                 }
               }
@@ -525,31 +839,62 @@
           scales: {
             x: {
               grid: { display: false },
-              ticks: { font: { size: 10, family: 'JetBrains Mono' }, color: '#64748B' }
+              border: { display: false },
+              ticks: {
+                font: { size: 10, family: 'Open Sans', weight: '600' },
+                color: '#94A3B8',
+                padding: 6
+              }
             },
             y: {
               type: 'linear',
               position: 'left',
-              grid: { color: '#F1F5F9' },
+              min: 0,
+              border: { display: false },
+              grid: {
+                color: '#F1F5F9',
+                drawTicks: false
+              },
               ticks: {
-                font: { size: 9, family: 'JetBrains Mono' },
-                color: '#64748B',
+                font: { size: 10, family: 'Open Sans', weight: '600' },
+                color: '#94A3B8',
+                padding: 8,
                 callback: (v) => (v >= 1000 ? `${(v/1000).toFixed(0)}k` : v)
               }
             },
             y1: {
               type: 'linear',
               position: 'right',
-              grid: { drawOnChartArea: false },
+              min: 0,
+              border: { display: false },
+              grid: { display: false },
               ticks: {
-                font: { size: 9, family: 'JetBrains Mono' },
+                font: { size: 10, family: 'Open Sans', weight: '600' },
                 color: '#10B981',
+                padding: 8,
                 callback: (v) => `${v}%`
               }
             }
           }
         }
       });
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function(e) {
+      const btn = document.getElementById('summaryYearDropdownBtn');
+      const menu = document.getElementById('summaryYearDropdownMenu');
+      if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+        document.getElementById('headerYearChevron').style.transform = 'rotate(0deg)';
+      }
+    });
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      updateCalculations();
+      renderHoldingsTable();
+      renderChart();
     });
   </script>
 </body>

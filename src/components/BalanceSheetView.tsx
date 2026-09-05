@@ -601,50 +601,35 @@ export const BalanceSheetView: React.FC = () => {
     return { total, hasAnyData: total > 0 };
   };
 
-  // Annual Yield Table Data (Sorted chronologically, auto-flowing from Passive Income Ledger Dec Principal & Total Passive Income)
+  // Annual Yield Table Data (Sorted chronologically)
   const sortedAnnualReports = useMemo(() => {
     const rawSorted = [...annualReports].sort((a, b) => a.year - b.year);
     return rawSorted.map((row, idx, arr) => {
-      const { total: decPrincipal, hasAnyData: hasPrincipalData } = getPassiveDecPrincipalForYear(row.year);
-      const effectivePrincipal = hasPrincipalData && decPrincipal > 0 ? decPrincipal : row.principal;
-
-      const { total: totalPassive, hasAnyData: hasPassiveData } = getPassiveTotalIncomeForYear(row.year);
-      const effectivePassive = hasPassiveData && totalPassive > 0 ? totalPassive : row.passiveIncome;
-
       const prevRow = idx > 0 ? arr[idx - 1] : null;
-      let prevEffectivePrincipal = prevRow?.principal || 0;
-      if (prevRow) {
-        const prevDec = getPassiveDecPrincipalForYear(prevRow.year);
-        if (prevDec.hasAnyData && prevDec.total > 0) {
-          prevEffectivePrincipal = prevDec.total;
-        }
-      }
 
-      const growthP = prevEffectivePrincipal > 0
-        ? ((effectivePrincipal - prevEffectivePrincipal) / prevEffectivePrincipal) * 100
-        : (row.growthPPercent || 0);
+      const growthP = row.growthPPercent !== undefined && row.growthPPercent !== null && (row.growthPPercent !== 0 || idx === 0)
+        ? row.growthPPercent
+        : (idx === 0
+            ? 0
+            : (prevRow && prevRow.principal > 0
+                ? Number((((row.principal - prevRow.principal) / prevRow.principal) * 100).toFixed(2))
+                : row.growthPPercent || 0));
 
-      let prevEffectivePassive = prevRow ? prevRow.passiveIncome : 0;
-      if (prevRow) {
-        const prevPassive = getPassiveTotalIncomeForYear(prevRow.year);
-        if (prevPassive.hasAnyData && prevPassive.total > 0) {
-          prevEffectivePassive = prevPassive.total;
-        }
-      }
-
-      const growthPI = prevEffectivePassive > 0
-        ? ((effectivePassive - prevEffectivePassive) / prevEffectivePassive) * 100
-        : (row.growthPIPercent || 0);
+      const growthPI = row.growthPIPercent !== undefined && row.growthPIPercent !== null && (row.growthPIPercent !== 0 || idx === 0)
+        ? row.growthPIPercent
+        : (idx === 0
+            ? 0
+            : (prevRow && prevRow.passiveIncome > 0
+                ? Number((((row.passiveIncome - prevRow.passiveIncome) / prevRow.passiveIncome) * 100).toFixed(2))
+                : row.growthPIPercent || 0));
 
       return {
         ...row,
-        principal: effectivePrincipal,
-        passiveIncome: effectivePassive,
         growthPPercent: growthP,
         growthPIPercent: growthPI,
       };
     });
-  }, [annualReports, passiveAccounts, holdings, stockValuations, dividends, includedPrincipalAccountIds]);
+  }, [annualReports]);
 
   // Investment Yearly Reports (Sorted chronologically)
   const sortedInvestmentReports = useMemo(() => {
@@ -1168,110 +1153,214 @@ export const BalanceSheetView: React.FC = () => {
       {/* Visual Charts: ALWAYS visible on mobile (<md). On desktop (md+), visible when activeTab === 'charts' */}
       <div className={`${activeTab === 'charts' ? 'block' : 'block md:hidden'} space-y-6`}>
         {/* Chart 1: Balance Sheet Assets Distribution */}
-          <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
-                Balance Sheet: Assets Distribution
-              </h3>
-              <div className="text-[10px] font-mono text-gray-500 font-bold">
-                <span>(RM)</span>
-              </div>
-            </div>
-            <div className="h-72 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={assetsDistributionData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                  <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    width={42}
-                    tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
-                    tick={{ fontSize: 11, fill: '#64748B' }}
-                  />
-                  <Tooltip
-                    formatter={(val: any) => [`RM ${Number(val).toLocaleString()}`, '']}
-                    contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  />
-                  <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                  {assetItems.map((item, idx) => (
-                    <Area
-                      key={item.id}
-                      type="monotone"
-                      dataKey={item.name}
-                      stackId="1"
-                      stroke={assetColors[idx % assetColors.length]}
-                      fill={assetColors[idx % assetColors.length]}
-                      fillOpacity={0.65}
-                    />
-                  ))}
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs sm:text-sm font-extrabold text-gray-900 tracking-tight">
+              Balance Sheet: Assets Distribution
+            </h3>
           </div>
 
-          {/* Row 2: Debt Ratio & Annual Yield */}
+          {/* Fintech Category Pills Legend at Top */}
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {assetItems.map((item, idx) => (
+              <span
+                key={item.id}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 border border-slate-200 shadow-2xs"
+              >
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: assetColors[idx % assetColors.length] }}
+                />
+                <span className="text-[11px] font-bold text-slate-700 whitespace-nowrap">
+                  {item.name}
+                </span>
+              </span>
+            ))}
+          </div>
+
+          <div className="h-72 w-full pt-1">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={assetsDistributionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  {assetItems.map((item, idx) => {
+                    const color = assetColors[idx % assetColors.length];
+                    return (
+                      <linearGradient key={`grad-${item.id}`} id={`assetGrad-${item.id}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={color} stopOpacity={0.75} />
+                        <stop offset="100%" stopColor={color} stopOpacity={0.15} />
+                      </linearGradient>
+                    );
+                  })}
+                </defs>
+                <CartesianGrid vertical={false} stroke="#F1F5F9" />
+                <XAxis
+                  dataKey="year"
+                  axisLine={false}
+                  tickLine={false}
+                  fontSize={10}
+                  tick={{ fill: '#94A3B8' }}
+                  dy={4}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  width={42}
+                  fontSize={10}
+                  tick={{ fill: '#94A3B8' }}
+                  tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`)}
+                />
+                <Tooltip
+                  formatter={(val: any) => [`RM ${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, '']}
+                  contentStyle={{
+                    backgroundColor: '#FFFFFF',
+                    borderColor: '#E2E8F0',
+                    borderRadius: '12px',
+                    color: '#0F172A',
+                    fontSize: '11px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+                {assetItems.map((item, idx) => (
+                  <Area
+                    key={item.id}
+                    type="monotone"
+                    dataKey={item.name}
+                    stackId="1"
+                    stroke={assetColors[idx % assetColors.length]}
+                    strokeWidth={2}
+                    fill={`url(#assetGrad-${item.id})`}
+                  />
+                ))}
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+          {/* Row 2: Debt Ratio & Return on Investment */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Chart 2: Debt Ratio */}
-            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
+                <h3 className="text-xs sm:text-sm font-extrabold text-gray-900 tracking-tight">
                   Debt Ratio
                 </h3>
-                <div className="flex items-center gap-3 text-[10px] font-mono text-gray-500 font-bold">
-                  <span>Left: (RM)</span>
-                  <span>Right: (Ratio)</span>
-                </div>
               </div>
-              <div className="h-64 w-full">
+              <div className="h-64 w-full pt-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={debtRatioRows} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
+                    <defs>
+                      <linearGradient id="debtAssetGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#437EF7" stopOpacity={0.95} />
+                        <stop offset="100%" stopColor="#93C5FD" stopOpacity={0.65} />
+                      </linearGradient>
+                      <linearGradient id="debtLiabGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#EF4444" stopOpacity={0.95} />
+                        <stop offset="100%" stopColor="#FCA5A5" stopOpacity={0.65} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} stroke="#F1F5F9" />
+                    <XAxis
+                      dataKey="year"
+                      axisLine={false}
+                      tickLine={false}
+                      fontSize={10}
+                      tick={{ fill: '#94A3B8' }}
+                      dy={4}
+                    />
                     <YAxis
                       yAxisId="left"
-                      tickLine={false}
                       axisLine={false}
+                      tickLine={false}
                       width={42}
-                      tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
-                      tick={{ fontSize: 11, fill: '#64748B' }}
+                      fontSize={10}
+                      tick={{ fill: '#94A3B8' }}
+                      tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`)}
                     />
                     <YAxis
                       yAxisId="right"
                       orientation="right"
                       domain={[0, 1.5]}
+                      ticks={[0, 0.3, 0.6, 0.9, 1.2, 1.5]}
                       width={32}
-                      tickLine={false}
                       axisLine={false}
-                      tick={{ fontSize: 11, fill: '#64748B' }}
+                      tickLine={false}
+                      fontSize={10}
+                      tick={{ fill: '#10B981', fontWeight: 600 }}
+                      tickFormatter={v => v.toFixed(1)}
                     />
                     <Tooltip
                       formatter={(val: any, name: string) => [
-                        name === 'Debt Ratio' ? Number(val).toFixed(2) : `RM ${Number(val).toLocaleString()}`,
+                        name === 'Debt Ratio' ? Number(val).toFixed(2) : `RM ${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                         name
                       ]}
-                      contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#E2E8F0',
+                        borderRadius: '12px',
+                        color: '#0F172A',
+                        fontSize: '11px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
                     />
-                    <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                    <Bar yAxisId="left" dataKey="totalAsset" name="Total Asset" fill="#2563EB" radius={[4, 4, 0, 0]} />
-                    <Bar yAxisId="left" dataKey="totalLiabilities" name="Total Liabilities" fill="#EF4444" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="right" type="monotone" dataKey="debtRatio" name="Debt Ratio" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4 }} />
+                    <Legend
+                      content={() => (
+                        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-3 text-[11px] font-bold text-slate-600">
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className="w-3.5 h-3.5 rounded-full border-[2.5px] border-[#10B981] bg-white shrink-0" />
+                            <span>Debt Ratio</span>
+                          </div>
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className="w-3 h-3 rounded-full bg-[#60A5FA] shrink-0" />
+                            <span>Total Asset</span>
+                          </div>
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className="w-3 h-3 rounded-full bg-[#F87171] shrink-0" />
+                            <span>Total Liabilities</span>
+                          </div>
+                        </div>
+                      )}
+                    />
+                    {/* Bars render behind */}
+                    <Bar
+                      yAxisId="left"
+                      dataKey="totalAsset"
+                      name="Total Asset"
+                      fill="url(#debtAssetGrad)"
+                      radius={[6, 6, 0, 0]}
+                      barSize={24}
+                    />
+                    <Bar
+                      yAxisId="left"
+                      dataKey="totalLiabilities"
+                      name="Total Liabilities"
+                      fill="url(#debtLiabGrad)"
+                      radius={[6, 6, 0, 0]}
+                      barSize={24}
+                    />
+                    {/* Line rendered on top */}
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="debtRatio"
+                      name="Debt Ratio"
+                      stroke="#10B981"
+                      strokeWidth={2.5}
+                      dot={{ r: 4, fill: '#FFFFFF', stroke: '#10B981', strokeWidth: 2.5 }}
+                      activeDot={{ r: 6, fill: '#10B981', stroke: '#FFFFFF', strokeWidth: 2 }}
+                    />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* Chart 3: Return on Investment */}
-            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
+                <h3 className="text-xs sm:text-sm font-extrabold text-gray-900 tracking-tight">
                   Return on Investment
                 </h3>
-                <div className="text-[10px] font-mono text-gray-500 font-bold">
-                  <span>(RM)</span>
-                </div>
               </div>
-              <div className="h-64 w-full">
+              <div className="h-64 w-full pt-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart
                     data={sortedAnnualReports.map(r => ({
@@ -1281,25 +1370,63 @@ export const BalanceSheetView: React.FC = () => {
                     }))}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
-                    <YAxis
-                      tickLine={false}
+                    <defs>
+                      <linearGradient id="roiPrincGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#334155" stopOpacity={0.95} />
+                        <stop offset="100%" stopColor="#64748B" stopOpacity={0.7} />
+                      </linearGradient>
+                      <linearGradient id="roiPassiveGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10B981" stopOpacity={0.95} />
+                        <stop offset="100%" stopColor="#6EE7B7" stopOpacity={0.7} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} stroke="#F1F5F9" />
+                    <XAxis
+                      dataKey="year"
                       axisLine={false}
+                      tickLine={false}
+                      fontSize={10}
+                      tick={{ fill: '#94A3B8' }}
+                      dy={4}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
                       width={42}
-                      tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
-                      tick={{ fontSize: 11, fill: '#64748B' }}
+                      fontSize={10}
+                      tick={{ fill: '#94A3B8' }}
+                      tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`)}
                     />
                     <Tooltip
                       formatter={(val: any, name: string) => [
                         `RM ${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                         name
                       ]}
-                      contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#E2E8F0',
+                        borderRadius: '12px',
+                        color: '#0F172A',
+                        fontSize: '11px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
                     />
-                    <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                    <Bar dataKey="Principal" name="Principal (RM)" fill="#334155" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Passive Amount" name="Passive Amount (RM)" fill="#10B981" radius={[4, 4, 0, 0]} />
+                    <Legend
+                      content={() => (
+                        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-3 text-[11px] font-bold text-slate-600">
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className="w-3 h-3 rounded-full bg-[#475569] shrink-0" />
+                            <span>Principal (RM)</span>
+                          </div>
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className="w-3 h-3 rounded-full bg-[#10B981] shrink-0" />
+                            <span>Passive Amount (RM)</span>
+                          </div>
+                        </div>
+                      )}
+                    />
+                    <Bar dataKey="Principal" name="Principal (RM)" fill="url(#roiPrincGrad)" radius={[6, 6, 0, 0]} barSize={24} />
+                    <Bar dataKey="Passive Amount" name="Passive Amount (RM)" fill="url(#roiPassiveGrad)" radius={[6, 6, 0, 0]} barSize={24} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -1308,64 +1435,117 @@ export const BalanceSheetView: React.FC = () => {
 
           {/* Row 3: Portfolio Growth Metrics & Investment Performance */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Chart 4: Portfolio Growth Metrics (Line Chart for Passive Growth, Principal Growth, and Dividend Yield) */}
-            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
+            {/* Chart 4: Portfolio Growth Metrics */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
+                <h3 className="text-xs sm:text-sm font-extrabold text-gray-900 tracking-tight">
                   Portfolio Growth Metrics
                 </h3>
-                <div className="text-[10px] font-mono text-gray-500 font-bold">
-                  <span>(%)</span>
-                </div>
               </div>
-              <div className="h-64 w-full">
+              <div className="h-64 w-full pt-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart
                     data={sortedAnnualReports.map(r => ({
                       year: r.year.toString(),
-                      'GROWTH (P) %': r.growthPPercent,
-                      'GROWTH (PI) %': r.growthPIPercent,
-                      'Dividend Yield %': r.principal > 0 ? (r.passiveIncome / r.principal) * 100 : 0
+                      'Principal Growth %': Number((r.growthPPercent ?? 0).toFixed(2)),
+                      'Passive Growth %': Number((r.growthPIPercent ?? 0).toFixed(2)),
+                      'Dividend Yield %': Number((r.principal > 0 ? (r.passiveIncome / r.principal) * 100 : 0).toFixed(2))
                     }))}
-                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                    margin={{ top: 10, right: 15, left: -10, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
-                    <YAxis
-                      tickLine={false}
+                    <CartesianGrid vertical={false} stroke="#F1F5F9" />
+                    <XAxis
+                      dataKey="year"
                       axisLine={false}
-                      width={38}
-                      tickFormatter={v => `${v}`}
-                      tick={{ fontSize: 11, fill: '#64748B' }}
+                      tickLine={false}
+                      fontSize={11}
+                      fontWeight={600}
+                      tick={{ fill: '#94A3B8' }}
+                      dy={4}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      width={44}
+                      domain={[-20, 60]}
+                      ticks={[-20, -10, 0, 10, 20, 30, 40, 50, 60]}
+                      fontSize={11}
+                      fontWeight={600}
+                      tick={{ fill: '#94A3B8' }}
+                      tickFormatter={v => `${v}%`}
                     />
                     <Tooltip
                       formatter={(val: any, name: string) => [
                         `${Number(val).toFixed(2)}%`,
                         name
                       ]}
-                      contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#E2E8F0',
+                        borderRadius: '12px',
+                        color: '#0F172A',
+                        fontSize: '11px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
                     />
-                    <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                    <Line type="monotone" dataKey="GROWTH (P) %" name="Principal Growth %" stroke="#6366F1" strokeWidth={2.5} dot={{ r: 4 }} />
-                    <Line type="monotone" dataKey="GROWTH (PI) %" name="Passive Growth %" stroke="#EF4444" strokeWidth={2.5} dot={{ r: 4 }} />
-                    <Line type="monotone" dataKey="Dividend Yield %" name="Dividend Yield %" stroke="#F59E0B" strokeWidth={2.5} dot={{ r: 4 }} />
+                    <Legend
+                      content={() => (
+                        <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-7 pt-4 text-[11px] font-bold text-slate-600">
+                          <div className="inline-flex items-center gap-2">
+                            <span className="w-3.5 h-3.5 rounded-full border-[2.5px] border-[#6366F1] bg-white shrink-0" />
+                            <span>Principal Growth %</span>
+                          </div>
+                          <div className="inline-flex items-center gap-2">
+                            <span className="w-3.5 h-3.5 rounded-full border-[2.5px] border-[#EF4444] bg-white shrink-0" />
+                            <span>Passive Growth %</span>
+                          </div>
+                          <div className="inline-flex items-center gap-2">
+                            <span className="w-3.5 h-3.5 rounded-full border-[2.5px] border-[#F59E0B] bg-white shrink-0" />
+                            <span>Dividend Yield %</span>
+                          </div>
+                        </div>
+                      )}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Principal Growth %"
+                      name="Principal Growth %"
+                      stroke="#6366F1"
+                      strokeWidth={2.5}
+                      dot={{ r: 4.5, fill: '#FFFFFF', stroke: '#6366F1', strokeWidth: 2.5 }}
+                      activeDot={{ r: 6.5, fill: '#6366F1', stroke: '#FFFFFF', strokeWidth: 2 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Passive Growth %"
+                      name="Passive Growth %"
+                      stroke="#EF4444"
+                      strokeWidth={2.5}
+                      dot={{ r: 4.5, fill: '#FFFFFF', stroke: '#EF4444', strokeWidth: 2.5 }}
+                      activeDot={{ r: 6.5, fill: '#EF4444', stroke: '#FFFFFF', strokeWidth: 2 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Dividend Yield %"
+                      name="Dividend Yield %"
+                      stroke="#F59E0B"
+                      strokeWidth={2.5}
+                      dot={{ r: 4.5, fill: '#FFFFFF', stroke: '#F59E0B', strokeWidth: 2.5 }}
+                      activeDot={{ r: 6.5, fill: '#F59E0B', stroke: '#FFFFFF', strokeWidth: 2 }}
+                    />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* Chart 5: Investment Performance */}
-            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
+                <h3 className="text-xs sm:text-sm font-extrabold text-gray-900 tracking-tight">
                   Investment Performance
                 </h3>
-                <div className="flex items-center gap-3 text-[10px] font-mono text-gray-500 font-bold">
-                  <span>Left: (RM)</span>
-                  <span>Right: (%)</span>
-                </div>
               </div>
-              <div className="h-64 w-full">
+              <div className="h-64 w-full pt-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart
                     data={sortedInvestmentReports.map(r => ({
@@ -1375,35 +1555,88 @@ export const BalanceSheetView: React.FC = () => {
                     }))}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
+                    <defs>
+                      <linearGradient id="invPerfGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#2563EB" stopOpacity={0.95} />
+                        <stop offset="100%" stopColor="#93C5FD" stopOpacity={0.65} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} stroke="#F1F5F9" />
+                    <XAxis
+                      dataKey="year"
+                      axisLine={false}
+                      tickLine={false}
+                      fontSize={10}
+                      tick={{ fill: '#94A3B8' }}
+                      dy={4}
+                    />
                     <YAxis
                       yAxisId="left"
-                      tickLine={false}
                       axisLine={false}
+                      tickLine={false}
                       width={42}
-                      tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
-                      tick={{ fontSize: 11, fill: '#64748B' }}
+                      fontSize={10}
+                      tick={{ fill: '#94A3B8' }}
+                      tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`)}
                     />
                     <YAxis
                       yAxisId="right"
                       orientation="right"
-                      tickLine={false}
                       axisLine={false}
+                      tickLine={false}
                       width={38}
-                      tickFormatter={v => `${v}`}
-                      tick={{ fontSize: 11, fill: '#64748B' }}
+                      fontSize={10}
+                      tick={{ fill: '#10B981', fontWeight: 600 }}
+                      tickFormatter={v => `${v}%`}
                     />
                     <Tooltip
                       formatter={(val: any, name: string) => [
-                        name.includes('%') ? `${Number(val).toFixed(2)}%` : `RM ${Number(val).toLocaleString()}`,
+                        name.includes('%') ? `${Number(val).toFixed(2)}%` : `RM ${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                         name
                       ]}
-                      contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#E2E8F0',
+                        borderRadius: '12px',
+                        color: '#0F172A',
+                        fontSize: '11px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
                     />
-                    <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                    <Bar yAxisId="left" dataKey="Investment" fill="#2563EB" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="right" type="monotone" dataKey="P/L %" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4 }} />
+                    <Legend
+                      content={() => (
+                        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-3 text-[11px] font-bold text-slate-600">
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className="w-3.5 h-3.5 rounded-full border-[2.5px] border-[#10B981] bg-white shrink-0" />
+                            <span>P/L %</span>
+                          </div>
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className="w-3 h-3 rounded-full bg-[#60A5FA] shrink-0" />
+                            <span>Investment</span>
+                          </div>
+                        </div>
+                      )}
+                    />
+                    {/* Bar rendered behind */}
+                    <Bar
+                      yAxisId="left"
+                      dataKey="Investment"
+                      name="Investment"
+                      fill="url(#invPerfGrad)"
+                      radius={[6, 6, 0, 0]}
+                      barSize={28}
+                    />
+                    {/* Line rendered on top */}
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="P/L %"
+                      name="P/L %"
+                      stroke="#10B981"
+                      strokeWidth={2.5}
+                      dot={{ r: 4, fill: '#FFFFFF', stroke: '#10B981', strokeWidth: 2.5 }}
+                      activeDot={{ r: 6, fill: '#10B981', stroke: '#FFFFFF', strokeWidth: 2 }}
+                    />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>

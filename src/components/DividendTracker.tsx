@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useWealth } from '../context/WealthContext';
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid
 } from 'recharts';
-import { Plus, Trash2, Building2 } from 'lucide-react';
+import { Plus, Trash2, Building2, ChevronDown, ArrowUpDown, X, Check } from 'lucide-react';
 import { YearSelector } from './YearSelector';
 import { FormattedNumberInput } from './FormattedNumberInput';
 
@@ -13,8 +13,33 @@ export const DividendTracker: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number | 'ALL'>(2026);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedStockKey, setSelectedStockKey] = useState('');
+  const [isMobileYearDropdownOpen, setIsMobileYearDropdownOpen] = useState(false);
+  const [mobileSortOrder, setMobileSortOrder] = useState<'desc' | 'asc'>('desc');
+  const [selectedMobileStockId, setSelectedMobileStockId] = useState<string | null>(null);
+
+  // Mobile Dividend Payout Modal State
+  const [showMobilePayoutModal, setShowMobilePayoutModal] = useState(false);
+  const [mobilePayoutStockKey, setMobilePayoutStockKey] = useState('');
+  const [mobilePayoutMonth, setMobilePayoutMonth] = useState('Mar');
+  const [mobilePayoutAmount, setMobilePayoutAmount] = useState('');
+  const [mobileToastMessage, setMobileToastMessage] = useState<string | null>(null);
 
   const monthKeys = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  const monthOptions = [
+    { key: 'Jan', label: 'January (Jan)' },
+    { key: 'Feb', label: 'February (Feb)' },
+    { key: 'Mar', label: 'March (Mar)' },
+    { key: 'Apr', label: 'April (Apr)' },
+    { key: 'May', label: 'May (May)' },
+    { key: 'Jun', label: 'June (Jun)' },
+    { key: 'Jul', label: 'July (Jul)' },
+    { key: 'Aug', label: 'August (Aug)' },
+    { key: 'Sep', label: 'September (Sep)' },
+    { key: 'Oct', label: 'October (Oct)' },
+    { key: 'Nov', label: 'November (Nov)' },
+    { key: 'Dec', label: 'December (Dec)' },
+  ];
 
   // All years
   const allYears = Array.from(new Set<number>([2021, 2022, 2023, 2024, 2025, 2026, ...dividends.map(d => d.year)])).sort((a, b) => a - b);
@@ -168,8 +193,78 @@ export const DividendTracker: React.FC = () => {
       }
     });
 
-    return Array.from(map.values());
-  }, [currentYearNum, stockValuations, holdings, realizedTrades]);
+    // 4. Also include any stocks already in yearDividends
+    yearDividends.forEach(d => {
+      const key = (d.code || d.stockName).trim().toUpperCase();
+      if (!map.has(key)) map.set(key, { code: d.code || '', name: d.stockName });
+    });
+
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [currentYearNum, stockValuations, holdings, realizedTrades, yearDividends]);
+
+  const handleOpenMobilePayoutModal = () => {
+    const defaultStock = availablePortfolioStocks[0]?.code || availablePortfolioStocks[0]?.name || '';
+    setMobilePayoutStockKey(defaultStock);
+    setMobilePayoutMonth('Mar');
+    setMobilePayoutAmount('');
+    setShowMobilePayoutModal(true);
+  };
+
+  const handleSaveMobilePayout = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amount = parseFloat(mobilePayoutAmount);
+    if (!mobilePayoutStockKey || isNaN(amount) || amount <= 0) return;
+
+    const selectedStock = availablePortfolioStocks.find(
+      s => (s.code && s.code.toUpperCase() === mobilePayoutStockKey.toUpperCase()) ||
+           s.name.toUpperCase() === mobilePayoutStockKey.toUpperCase()
+    );
+    if (!selectedStock) return;
+
+    // Check if record already exists in yearDividends
+    const existingRecord = yearDividends.find(
+      d => (selectedStock.code && d.code && d.code.toUpperCase() === selectedStock.code.toUpperCase()) ||
+           d.stockName.toUpperCase() === selectedStock.name.toUpperCase()
+    );
+
+    if (existingRecord) {
+      const currentVal = existingRecord.monthlyPayouts[mobilePayoutMonth] || 0;
+      const newVal = currentVal + amount;
+      updateDividendPayout(existingRecord.id, mobilePayoutMonth, newVal);
+    } else {
+      // Find valuation from stock portfolio
+      const matchedVal = stockValuations.find(
+        v => v.year === currentYearNum && ((selectedStock.code && v.code === selectedStock.code) || v.stockName.toLowerCase() === selectedStock.name.toLowerCase())
+      );
+      const matchedHolding = holdings.filter(
+        h => (selectedStock.code && h.code.toUpperCase() === selectedStock.code.toUpperCase()) || h.name.toLowerCase() === selectedStock.name.toLowerCase()
+      );
+      const holdingCost = matchedHolding.reduce((s, h) => s + h.units * h.buyUnitPrice, 0);
+      const derivedMktVal = matchedVal?.endOfYearValue || matchedVal?.startOfYearValue || holdingCost || 0;
+
+      addDividendRecord({
+        year: currentYearNum,
+        stockName: selectedStock.name,
+        code: selectedStock.code || undefined,
+        monthlyPayouts: {
+          Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0,
+          [mobilePayoutMonth]: amount,
+        },
+        totalMarketValue: derivedMktVal,
+      });
+    }
+
+    setMobileToastMessage(`Payout of ${formatRM(amount)} added for ${selectedStock.name} (${mobilePayoutMonth})`);
+    setShowMobilePayoutModal(false);
+    setMobilePayoutAmount('');
+  };
+
+  useEffect(() => {
+    if (mobileToastMessage) {
+      const timer = setTimeout(() => setMobileToastMessage(null), 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [mobileToastMessage]);
 
   const handleOpenAddModal = () => {
     const unadded = availablePortfolioStocks.find(
@@ -218,28 +313,466 @@ export const DividendTracker: React.FC = () => {
     setShowAddModal(false);
   };
 
+  // Sorted mobile holdings for active holdings table
+  const sortedMobileHoldings = useMemo(() => {
+    const list = yearDividends.map(row => {
+      const stockSum = (Object.values(row.monthlyPayouts) as number[]).reduce((a, b) => a + b, 0);
+      const { endVal, cost } = getRecordValuation(row, currentYearNum);
+      const yieldEnd = endVal > 0 ? (stockSum / endVal) * 100 : 0;
+      const yoc = cost > 0 ? (stockSum / cost) * 100 : 0;
+      return {
+        ...row,
+        stockSum,
+        endVal,
+        cost,
+        yieldEnd,
+        yoc,
+      };
+    });
+
+    return list.sort((a, b) => {
+      if (mobileSortOrder === 'desc') {
+        return b.stockSum - a.stockSum;
+      }
+      return a.stockSum - b.stockSum;
+    });
+  }, [yearDividends, currentYearNum, stockValuations, holdings, realizedTrades, mobileSortOrder]);
+
   return (
     <div id="dividend-tracker-section" className="space-y-6">
-      {/* Year Selection Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 sm:p-4 rounded-3xl border border-gray-200 shadow-xs">
-        <div className="flex flex-wrap items-center gap-2">
-          <YearSelector
-            years={allYears}
-            selectedYear={currentYearNum}
-            onSelectYear={(yr) => typeof yr === 'number' && setSelectedYear(yr)}
-            showAllOption={false}
-            label="Year"
-            onAddYear={(yr) => {
-              setSelectedYear(yr);
-            }}
-            onDeleteYear={(yr) => {
-              const toDelete = dividends.filter(d => d.year === yr);
-              toDelete.forEach(d => deleteDividendRecord(d.id));
-              setSelectedYear(2026);
-            }}
-          />
+      {/* ========================================================= */}
+      {/* MOBILE VIEW (block md:hidden) - Approved Layout          */}
+      {/* ========================================================= */}
+      <div className="block md:hidden space-y-3.5">
+        {/* SECTION 1: DIVIDEND PORTFOLIO SUMMARY with Header Year Dropdown */}
+        <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div className="flex items-center gap-1.5 relative">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                DIVIDEND PORTFOLIO SUMMARY -
+              </span>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsMobileYearDropdownOpen(!isMobileYearDropdownOpen)}
+                  className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors cursor-pointer"
+                >
+                  <span className="font-mono">{currentYearNum}</span>
+                  <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isMobileYearDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isMobileYearDropdownOpen && (
+                  <div className="absolute left-0 top-full mt-1 w-32 bg-white rounded-xl border border-slate-200 shadow-lg py-1 z-30 text-xs font-medium">
+                    {allYears.map(yr => (
+                      <button
+                        key={yr}
+                        type="button"
+                        onClick={() => {
+                          setSelectedYear(yr);
+                          setIsMobileYearDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-1.5 hover:bg-slate-50 font-mono text-xs flex items-center justify-between cursor-pointer ${
+                          yr === currentYearNum ? 'text-blue-600 font-bold bg-blue-50/50' : 'text-slate-700'
+                        }`}
+                      >
+                        <span>{yr}</span>
+                        {yr === currentYearNum && <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 2-Column Grid Layout with Vertical Accent Bars & Bold Dark Text */}
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <div className="space-y-0.5 border-l-2 border-slate-300 pl-2.5">
+              <span className="text-[10px] text-slate-400 font-medium block">Total Dividend Payout ({currentYearNum})</span>
+              <span className="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                {formatRM(yearTotalDividend)}
+              </span>
+            </div>
+            <div className="space-y-0.5 border-l-2 border-slate-300 pl-2.5">
+              <span className="text-[10px] text-slate-400 font-medium block">Stock Portfolio Valuation ({currentYearNum})</span>
+              <span className="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                {formatRM(effectivePortfolioVal)}
+              </span>
+            </div>
+            <div className="space-y-0.5 border-l-2 border-slate-300 pl-2.5">
+              <span className="text-[10px] text-slate-400 font-medium block">Dividend Yield ({currentYearNum})</span>
+              <span className="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                {yearDividendYieldPercent.toFixed(2)}%
+              </span>
+            </div>
+            <div className="space-y-0.5 border-l-2 border-slate-300 pl-2.5">
+              <span className="text-[10px] text-slate-400 font-medium block">Yield on Cost ({currentYearNum})</span>
+              <span className="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                {yearYieldOnCostPercent.toFixed(2)}%
+              </span>
+            </div>
+          </div>
         </div>
+
+        {/* SECTION 2: DIVIDEND YIELD CHART (Positioned directly after summary and before Active Holdings) */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold text-slate-900 tracking-tight">
+              Dividend Yield
+            </h3>
+          </div>
+
+          <div className="h-52 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={historicalChartData} margin={{ top: 10, right: -5, bottom: 0, left: -20 }}>
+                <defs>
+                  <linearGradient id="mobileDividendBarGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#437EF7" stopOpacity={0.95} />
+                    <stop offset="100%" stopColor="#93C5FD" stopOpacity={0.5} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke="#F1F5F9" />
+                <XAxis
+                  dataKey="year"
+                  axisLine={false}
+                  tickLine={false}
+                  fontSize={10}
+                  tick={{ fill: '#94A3B8' }}
+                  dy={4}
+                />
+                <YAxis
+                  yAxisId="left"
+                  axisLine={false}
+                  tickLine={false}
+                  fontSize={10}
+                  tick={{ fill: '#94A3B8' }}
+                  domain={[0, 4000]}
+                  ticks={[0, 1000, 2000, 3000, 4000]}
+                  tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : Number(v).toLocaleString())}
+                />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  axisLine={false}
+                  tickLine={false}
+                  fontSize={10}
+                  tick={{ fill: '#10B981' }}
+                  domain={[0, 60]}
+                  ticks={[0, 20, 40, 60]}
+                  tickFormatter={v => `${v}%`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#FFFFFF',
+                    borderColor: '#E2E8F0',
+                    borderRadius: '12px',
+                    color: '#0F172A',
+                    fontSize: '11px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }}
+                  formatter={(value: any, name: any) => [
+                    name.includes('%') || name.includes('Yield') ? `${Number(value).toFixed(2)}%` : formatRM(Number(value)),
+                    name
+                  ]}
+                />
+                <Bar
+                  yAxisId="left"
+                  dataKey="DIVIDEND"
+                  fill="url(#mobileDividendBarGradient)"
+                  radius={[7, 7, 0, 0]}
+                  barSize={28}
+                  name="Dividend Payout (RM)"
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="D/Y %"
+                  stroke="#10B981"
+                  strokeWidth={2.5}
+                  dot={{ r: 4, fill: '#FFFFFF', stroke: '#10B981', strokeWidth: 2.5 }}
+                  activeDot={{ r: 6, fill: '#10B981', stroke: '#FFFFFF', strokeWidth: 2 }}
+                  name="Dividend Yield (%)"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* SECTION 3: ACTIVE HOLDINGS TABLE */}
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-xs font-bold text-slate-800 tracking-tight">
+                Active Holdings ({currentYearNum})
+              </h3>
+              <span className="px-2 py-0.5 text-[10px] font-extrabold font-mono rounded-full bg-slate-200/80 text-slate-700">
+                {yearDividends.length}
+              </span>
+            </div>
+            {/* Dividend Payout Button replacing former Sort placement (compact size: 2 sizes smaller) */}
+            <button
+              type="button"
+              onClick={handleOpenMobilePayoutModal}
+              className="flex items-center gap-1 px-2.5 py-0.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-full text-[10px] font-bold shadow-2xs transition-all cursor-pointer leading-none"
+              title="Dividend Payout"
+            >
+              <Plus className="w-2.5 h-2.5 stroke-[2.5]" />
+              <span>Dividend Payout</span>
+            </button>
+          </div>
+
+          {/* Table Container */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            {/* Table Header with Sort Icon Beside Total Payout / Yield */}
+            <div className="flex items-center justify-between bg-slate-50 border-b border-slate-200 px-4 py-2 select-none">
+              <div className="flex flex-col justify-center">
+                <span className="leading-tight text-slate-700 font-extrabold text-[10px] uppercase tracking-wider">STOCK NAME</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="text-right flex flex-col items-end justify-center font-mono">
+                  <span className="leading-tight text-slate-700 font-extrabold text-[10px] uppercase tracking-wider">TOTAL PAYOUT</span>
+                  <span className="text-[9px] text-slate-400 font-medium leading-tight mt-0.5 uppercase">YIELD</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMobileSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
+                  className="p-1 rounded-md bg-white border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 active:scale-95 transition-all shadow-2xs shrink-0 cursor-pointer"
+                  title={`Sort by total payout (${mobileSortOrder === 'desc' ? 'highest first' : 'lowest first'})`}
+                >
+                  <ArrowUpDown className="w-3 h-3 text-slate-500 stroke-[2.2]" />
+                </button>
+              </div>
+            </div>
+
+            {/* Table Rows */}
+            <div className="divide-y divide-slate-100">
+              {sortedMobileHoldings.length === 0 ? (
+                <div className="py-8 px-4 text-center">
+                  <p className="text-xs text-slate-400 font-medium">
+                    No dividend records for {currentYearNum}. Click "+ Dividend Payout" to add a stock.
+                  </p>
+                </div>
+              ) : (
+                sortedMobileHoldings.map(row => {
+                  const isSelected = selectedMobileStockId === row.id;
+                  return (
+                    <div key={row.id} className="transition-colors">
+                      <div
+                        onClick={() => setSelectedMobileStockId(isSelected ? null : row.id)}
+                        className="flex items-center justify-between px-4 py-3 hover:bg-slate-50/70 active:bg-slate-100 transition-colors cursor-pointer"
+                      >
+                        {/* Column 1: Stock Name */}
+                        <div className="min-w-0 pr-2">
+                          <span className="font-extrabold text-xs text-slate-900 truncate block leading-tight" title={row.stockName}>
+                            {row.stockName}
+                          </span>
+                        </div>
+
+                        {/* Column 2: Total Payout and Yield */}
+                        <div className="text-right font-mono shrink-0">
+                          <div className="text-xs font-extrabold text-slate-900 leading-tight">
+                            {formatRM(row.stockSum)}
+                          </div>
+                          <div className="text-[10px] text-slate-500 font-normal leading-tight mt-0.5">
+                            Yield: <span className="font-normal text-slate-500">{row.yieldEnd > 0 ? `${row.yieldEnd.toFixed(2)}%` : '-'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Expandable Monthly Breakdown */}
+                      {isSelected && (
+                        <div className="bg-slate-50/90 p-3.5 border-t border-slate-100 space-y-3">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold text-slate-700">Monthly Payouts (RM)</span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteDividendRecord(row.id);
+                              }}
+                              className="flex items-center gap-1 text-[11px] text-rose-600 hover:text-rose-700 font-medium cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-4 gap-2">
+                            {monthKeys.map(m => {
+                              const val = row.monthlyPayouts[m] || 0;
+                              return (
+                                <div key={m} className="bg-white p-1.5 rounded-lg border border-slate-200 text-center">
+                                  <span className="text-[9px] text-slate-400 font-bold block">{m}</span>
+                                  <FormattedNumberInput
+                                    value={val === 0 ? '' : val}
+                                    placeholder="-"
+                                    showZeroAsBlank={true}
+                                    onChange={v => updateDividendPayout(row.id, m, v)}
+                                    className="w-full text-center bg-transparent py-0.5 text-[11px] font-bold text-slate-800 font-mono focus:outline-none"
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Add Dividend Payout Modal (Mobile Only) */}
+        {showMobilePayoutModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+            <div className="bg-white rounded-3xl border border-slate-200 max-w-sm w-full p-5 shadow-2xl space-y-4">
+              {/* Header */}
+              <div className="flex items-center justify-between pb-1 border-b border-slate-100">
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">Add Dividend Payout</h3>
+                  <span className="text-[11px] text-slate-500">Target Year: <span className="font-mono font-semibold">{currentYearNum}</span></span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowMobilePayoutModal(false)}
+                  className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveMobilePayout} className="space-y-4 text-xs">
+                {/* STEP 1: Select Stock */}
+                <div className="space-y-1.5">
+                  <label className="block font-bold text-slate-700 text-xs">
+                    1. Select Stock
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={mobilePayoutStockKey}
+                      onChange={e => setMobilePayoutStockKey(e.target.value)}
+                      required
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs font-bold text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-hidden transition-all cursor-pointer"
+                    >
+                      {availablePortfolioStocks.map(s => {
+                        const keyVal = s.code || s.name;
+                        return (
+                          <option key={keyVal} value={keyVal}>
+                            {s.name} {s.code ? `(${s.code})` : ''}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                </div>
+
+                {/* STEP 2: Select Month */}
+                <div className="space-y-1.5">
+                  <label className="block font-bold text-slate-700 text-xs">
+                    2. Select Month
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={mobilePayoutMonth}
+                      onChange={e => setMobilePayoutMonth(e.target.value)}
+                      required
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-hidden transition-all cursor-pointer"
+                    >
+                      {monthOptions.map(m => (
+                        <option key={m.key} value={m.key}>{m.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* STEP 3: Enter Dividend Amount */}
+                <div className="space-y-1.5">
+                  <label className="block font-bold text-slate-700 text-xs">
+                    3. Enter Dividend (RM)
+                  </label>
+                  <div className="relative flex items-center">
+                    <span className="absolute left-3.5 font-mono font-bold text-xs text-slate-400 select-none">RM</span>
+                    <input
+                      type="number"
+                      value={mobilePayoutAmount}
+                      onChange={e => setMobilePayoutAmount(e.target.value)}
+                      step="0.01"
+                      min="0.01"
+                      placeholder="60.00"
+                      required
+                      autoFocus
+                      className="w-full pl-11 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-sm font-extrabold text-slate-900 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-hidden transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowMobilePayoutModal(false)}
+                    className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!mobilePayoutStockKey || !mobilePayoutAmount || parseFloat(mobilePayoutAmount) <= 0}
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs shadow-xs active:scale-98 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>Save Payout</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Toast Notification (Mobile Only) */}
+        {mobileToastMessage && (
+          <div className="fixed top-4 inset-x-4 z-50 flex items-center justify-between p-3.5 bg-slate-900/95 text-white rounded-2xl shadow-xl backdrop-blur-xs text-xs font-semibold animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                <Check className="w-3.5 h-3.5 stroke-[3]" />
+              </div>
+              <span>{mobileToastMessage}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setMobileToastMessage(null)}
+              className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer ml-2"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* ========================================================= */}
+      {/* DESKTOP & TABLET VIEW (hidden md:block) - Unchanged      */}
+      {/* ========================================================= */}
+      <div className="hidden md:block space-y-6">
+        {/* Year Selection Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 sm:p-4 rounded-3xl border border-gray-200 shadow-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <YearSelector
+              years={allYears}
+              selectedYear={currentYearNum}
+              onSelectYear={(yr) => typeof yr === 'number' && setSelectedYear(yr)}
+              showAllOption={false}
+              label="Year"
+              onAddYear={(yr) => {
+                setSelectedYear(yr);
+              }}
+              onDeleteYear={(yr) => {
+                const toDelete = dividends.filter(d => d.year === yr);
+                toDelete.forEach(d => deleteDividendRecord(d.id));
+                setSelectedYear(2026);
+              }}
+            />
+          </div>
+        </div>
 
       {/* Year Metric Summary Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -305,31 +838,46 @@ export const DividendTracker: React.FC = () => {
           <h3 className="text-sm font-bold text-gray-900 tracking-tight">
             Dividend Yield
           </h3>
-          <div className="flex items-center gap-3 text-[10px] font-mono text-gray-500 font-bold">
-            <span>Left: (RM)</span>
-            <span>Right: (%)</span>
-          </div>
         </div>
 
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={historicalChartData} margin={{ top: 10, right: 10, bottom: 20, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-              <XAxis dataKey="year" stroke="#94A3B8" fontSize={11} tick={{ fill: '#64748B' }} />
+            <ComposedChart data={historicalChartData} margin={{ top: 10, right: 10, bottom: 0, left: -10 }}>
+              <defs>
+                <linearGradient id="desktopDividendBarGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#437EF7" stopOpacity={0.95} />
+                  <stop offset="100%" stopColor="#93C5FD" stopOpacity={0.5} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} stroke="#F1F5F9" />
+              <XAxis
+                dataKey="year"
+                axisLine={false}
+                tickLine={false}
+                fontSize={11}
+                tick={{ fill: '#94A3B8' }}
+                dy={4}
+              />
               <YAxis
                 yAxisId="left"
-                stroke="#64748B"
+                axisLine={false}
+                tickLine={false}
                 fontSize={11}
-                tick={{ fill: '#64748B' }}
+                tick={{ fill: '#94A3B8' }}
+                domain={[0, 4000]}
+                ticks={[0, 1000, 2000, 3000, 4000]}
                 tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : Number(v).toLocaleString())}
               />
               <YAxis
                 yAxisId="right"
                 orientation="right"
-                stroke="#10B981"
+                axisLine={false}
+                tickLine={false}
                 fontSize={11}
                 tick={{ fill: '#10B981' }}
-                tickFormatter={v => `${v}`}
+                domain={[0, 60]}
+                ticks={[0, 20, 40, 60]}
+                tickFormatter={v => `${v}%`}
               />
               <Tooltip
                 contentStyle={{
@@ -345,9 +893,24 @@ export const DividendTracker: React.FC = () => {
                   name
                 ]}
               />
-              <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '10px', fontSize: '11px' }} />
-              <Bar yAxisId="left" dataKey="DIVIDEND" fill="#2563EB" radius={[4, 4, 0, 0]} name="Dividend Payout (RM)" />
-              <Line yAxisId="right" type="monotone" dataKey="D/Y %" stroke="#10B981" strokeWidth={2.5} name="Dividend Yield (%)" />
+              <Bar
+                yAxisId="left"
+                dataKey="DIVIDEND"
+                fill="url(#desktopDividendBarGradient)"
+                radius={[7, 7, 0, 0]}
+                barSize={32}
+                name="Dividend Payout (RM)"
+              />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="D/Y %"
+                stroke="#10B981"
+                strokeWidth={2.5}
+                dot={{ r: 4, fill: '#FFFFFF', stroke: '#10B981', strokeWidth: 2.5 }}
+                activeDot={{ r: 6, fill: '#10B981', stroke: '#FFFFFF', strokeWidth: 2 }}
+                name="Dividend Yield (%)"
+              />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -473,6 +1036,7 @@ export const DividendTracker: React.FC = () => {
           </table>
         </div>
       </div>
+    </div>
 
       {/* Add Stock Dividend Modal */}
       {showAddModal && (

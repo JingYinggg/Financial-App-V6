@@ -25,7 +25,9 @@ import {
   Settings2,
   Trash2,
   Ban,
-  ListPlus
+  ListPlus,
+  ExternalLink,
+  ChevronDown
 } from 'lucide-react';
 import { YearSelector } from './YearSelector';
 import { FormattedNumberInput } from './FormattedNumberInput';
@@ -487,6 +489,16 @@ export const CreditCardCashback: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <a
+            href="/mobile-card-ui-preview.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl border border-blue-200 transition-all cursor-pointer"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Preview Mobile Card UI</span>
+          </a>
+
           <button
             onClick={() => setShowAddCardModal(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
@@ -497,8 +509,81 @@ export const CreditCardCashback: React.FC = () => {
         </div>
       </div>
 
+      {/* Mobile-Friendly Dropdowns for Year, Month & Active Card (Visible on small screens) */}
+      <div className="md:hidden bg-white border border-gray-200 rounded-2xl p-3 shadow-xs space-y-2.5">
+        <div className="grid grid-cols-2 gap-2">
+          {/* Year Dropdown */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wider block">
+              Year
+            </label>
+            <div className="relative flex items-center">
+              <select
+                value={selectedYear}
+                onChange={e => setSelectedYear(parseInt(e.target.value, 10))}
+                className="w-full appearance-none bg-gray-50 hover:bg-gray-100 text-gray-900 text-xs font-bold font-mono pl-2.5 pr-7 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+              >
+                {allYears.map(yr => (
+                  <option key={yr} value={yr}>
+                    {yr}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Month Dropdown */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wider block">
+              Month
+            </label>
+            <div className="relative flex items-center">
+              <select
+                value={selectedMonth}
+                onChange={e => setSelectedMonth(e.target.value)}
+                className="w-full appearance-none bg-gray-50 hover:bg-gray-100 text-gray-900 text-xs font-bold pl-2.5 pr-7 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+              >
+                {months.map(m => {
+                  const hasSpend = monthlyCardSpends.some(
+                    s => s.year === selectedYear && s.month === m && s.cardId === selectedCardId
+                  );
+                  return (
+                    <option key={m} value={m}>
+                      {m} {selectedYear} {hasSpend ? '•' : ''}
+                    </option>
+                  );
+                })}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2 pointer-events-none" />
+            </div>
+          </div>
+        </div>
+
+        {/* Select Active Card Dropdown */}
+        <div className="space-y-1">
+          <label className="text-[10px] font-extrabold uppercase text-gray-400 tracking-wider block">
+            Select Active Card
+          </label>
+          <div className="relative flex items-center">
+            <select
+              value={selectedCardId}
+              onChange={e => setSelectedCardId(e.target.value)}
+              className="w-full appearance-none bg-gray-50 hover:bg-gray-100 text-gray-900 text-xs font-bold pl-2.5 pr-8 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer truncate"
+            >
+              {creditCards.map(card => (
+                <option key={card.id} value={card.id}>
+                  {card.bank} ({card.accountNo})
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="w-4 h-4 text-gray-400 absolute right-2.5 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
       {/* Credit Card Selector Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
         {creditCards.map(card => {
           const isSelected = card.id === selectedCardId;
 
@@ -527,8 +612,8 @@ export const CreditCardCashback: React.FC = () => {
         })}
       </div>
 
-      {/* Month Selector Bar */}
-      <div className="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-xs flex items-center justify-between gap-2 overflow-x-auto">
+      {/* Month Selector Bar (Tablet & Desktop) */}
+      <div className="hidden md:flex bg-white p-2.5 rounded-2xl border border-gray-200 shadow-xs items-center justify-between gap-2 overflow-x-auto">
         <div className="flex items-center gap-1.5 pl-2">
           <span className="text-xs font-bold text-gray-600 whitespace-nowrap">
             Month ({selectedYear}):
@@ -747,10 +832,17 @@ export const CreditCardCashback: React.FC = () => {
                                 (e.target as HTMLInputElement).blur();
                               }
                             }}
-                            title={spendFormulas[cat.id] ? `Formula: ${spendFormulas[cat.id]} (Total: RM ${spend})` : 'Supports math formulas like 12+12+12'}
+                            title={spendFormulas[cat.id] ? `Preserved formula: ${spendFormulas[cat.id]} (Calculated: RM ${spend})` : 'Supports math formulas like 12+12+12'}
                             className="w-full bg-gray-50 border border-gray-200 px-2 py-1 rounded-lg text-gray-900 font-semibold focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-mono"
                           />
                         </div>
+                        {spendFormulas[cat.id] && !isFocused && (
+                          <div className="text-[10px] font-mono text-blue-600 font-medium mt-0.5 flex items-center gap-1">
+                            <span className="bg-blue-50 px-1 py-0.2 rounded border border-blue-100" title={`Preserved formula: ${spendFormulas[cat.id]}`}>
+                              fx: {spendFormulas[cat.id]}
+                            </span>
+                          </div>
+                        )}
                       </td>
 
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-indigo-600">

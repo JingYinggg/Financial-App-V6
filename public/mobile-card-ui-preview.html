@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mobile Preview — Cards Tab (Proposed Card UI Review)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Google+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-heading: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-financial: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      font-family: var(--font-body);
+      background-color: #F1F5F9;
+      color: #0F172A;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    h1, h2, h3, h4, h5, h6, .font-heading {
+      font-family: var(--font-heading);
+      letter-spacing: -0.012em;
+    }
+    .font-mono,
+    .financial-num,
+    .font-financial,
+    .tabular-nums {
+      font-family: var(--font-financial);
+      font-variant-numeric: tabular-nums;
+    }
+    /* Smooth custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    /* Animate transition */
+    .fade-enter {
+      animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="p-3 sm:p-6 flex flex-col items-center min-h-screen bg-slate-200/80">
+
+  <!-- ========================================================================= -->
+  <!-- PREVIEW CONTROL PANEL & DESIGN REVIEW BANNER                              -->
+  <!-- ========================================================================= -->
+  <header class="w-full max-w-md mb-3 bg-white p-4 rounded-3xl border border-slate-300 shadow-sm space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+        <span class="text-xs font-bold text-slate-800 tracking-tight">Proposed Mobile Card UI Preview</span>
+      </div>
+      <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full">
+        Testing Review
+      </span>
+    </div>
+
+    <!-- Design Rationale & Principles -->
+    <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 text-[11px] text-slate-600 space-y-2 leading-relaxed">
+      <div class="font-bold text-slate-800 flex items-center justify-between">
+        <span>✨ Consistent Design Language:</span>
+        <span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold">100% Data Preserved</span>
+      </div>
+      <p class="text-slate-500">
+        Adapting the mobile card architecture established in <strong>Stock Portfolio</strong> and <strong>Dividend</strong> tabs for the <strong>Cards</strong> tab. Replaces the horizontal desktop table with phone-optimized mobile cards.
+      </p>
+
+      <!-- Layout Variant Switcher -->
+      <div class="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
+        <span class="text-[11px] font-bold text-slate-700">Choose Card Style:</span>
+        <div class="flex items-center gap-1 bg-slate-200/70 p-0.5 rounded-xl text-[10px] font-bold">
+          <button
+            id="btn-style-compact"
+            onclick="setCardStyle('compact')"
+            class="px-2.5 py-1 rounded-lg transition-all cursor-pointer text-slate-600 hover:text-slate-900"
+          >
+            Option A: Streamlined Row Card
+          </button>
+          <button
+            id="btn-style-bento"
+            onclick="setCardStyle('bento')"
+            class="px-2.5 py-1 rounded-lg transition-all cursor-pointer bg-white text-blue-600 shadow-xs"
+          >
+            Option B: Modern Bento Card
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- PHONE FRAME CONTAINER (Simulating 390px Mobile Viewport)                  -->
+  <!-- ========================================================================= -->
+  <div id="phone-frame" class="w-full max-w-md bg-white border border-slate-300 rounded-[38px] shadow-2xl overflow-hidden flex flex-col min-h-[850px] relative">
+    
+    <!-- Mobile App Top Bar -->
+    <div class="bg-white border-b border-slate-100 px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-xs">
+          MY
+        </div>
+        <div>
+          <h1 class="text-xs font-black tracking-tight text-slate-900 leading-tight">MY Fortune</h1>
+          <span class="text-[10px] text-slate-400 font-medium leading-none">Cards & Cashback</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <!-- Year Dropdown in Top Bar -->
+        <div class="relative flex items-center">
+          <select
+            id="select-year-top"
+            onchange="selectYear(parseInt(this.value, 10))"
+            class="appearance-none bg-slate-100 hover:bg-slate-200/80 text-slate-800 text-[11px] font-bold font-mono pl-2 pr-5 py-1 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
+          >
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+          </select>
+          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400 absolute right-1.5 pointer-events-none"></i>
+        </div>
+        <button
+          onclick="alert('Add Card modal trigger — preserved in app logic.')"
+          class="flex items-center gap-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] rounded-lg shadow-xs transition cursor-pointer"
+        >
+          <i data-lucide="plus" class="w-3 h-3"></i>
+          <span>Add Card</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Scrollable Content Area -->
+    <div class="p-3.5 space-y-3 grow overflow-y-auto bg-slate-50/70">
+
+      <!-- ===================================================================== -->
+      <!-- 1. ACTIVE CONTROLS & DROPDOWN SELECTION BAR                           -->
+      <!-- ===================================================================== -->
+      <section class="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs space-y-2.5">
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Year Dropdown -->
+          <div class="space-y-1">
+            <label for="select-year" class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">
+              Year
+            </label>
+            <div class="relative flex items-center">
+              <select
+                id="select-year"
+                onchange="selectYear(parseInt(this.value, 10))"
+                class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 text-slate-800 text-xs font-bold font-mono px-2.5 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+              >
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026" selected>2026</option>
+                <option value="2027">2027</option>
+              </select>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 pointer-events-none"></i>
+            </div>
+          </div>
+
+          <!-- Month Dropdown -->
+          <div class="space-y-1">
+            <label for="select-month" class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">
+              Month
+            </label>
+            <div class="relative flex items-center">
+              <select
+                id="select-month"
+                onchange="selectMonth(this.value)"
+                class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 text-slate-800 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+              >
+                <!-- Populated by JS -->
+              </select>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 pointer-events-none"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Select Active Card Dropdown -->
+        <div class="space-y-1">
+          <label for="select-card" class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">
+            Select Active Card
+          </label>
+          <div class="relative flex items-center">
+            <select
+              id="select-card"
+              onchange="selectCard(this.value)"
+              class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 text-slate-900 text-xs font-bold pl-2.5 pr-8 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer truncate"
+            >
+              <!-- Populated by JS -->
+            </select>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-2.5 pointer-events-none"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- 3. KPI SUMMARY CARDS (Stock Portfolio / Dividend Design Language)     -->
+      <!-- ===================================================================== -->
+      <section class="space-y-2.5">
+        <!-- Main Spend & Cashback 2x2 Grid -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs space-y-3">
+          
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Metric 1: Monthly Total Spend -->
+            <div id="kpi-spend-box" class="space-y-0.5 border-l-2 pl-2.5 border-emerald-500">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Total Spend (<span id="summary-month-label">Feb</span>)
+              </span>
+              <div class="text-sm font-extrabold font-mono text-slate-900 block leading-tight" id="kpi-total-spend">
+                RM 1,050.00
+              </div>
+            </div>
+
+            <!-- Metric 2: Monthly Statement Cashback -->
+            <div class="space-y-0.5 border-l-2 pl-2.5 border-blue-500">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Cashback (<span id="summary-month-label-2">Feb</span>)
+              </span>
+              <div class="text-sm font-extrabold font-mono text-emerald-600 block leading-tight" id="kpi-total-cashback">
+                RM 62.40
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Micro Status Bar (Min Spend Requirement + Return Rate) -->
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+            <div id="kpi-tier-status" class="flex items-center gap-1 font-medium text-emerald-600">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5 shrink-0 text-emerald-600"></i>
+              <span class="font-semibold">Unlocked tier (Min RM 1,000.00)</span>
+            </div>
+
+            <div class="text-slate-500 font-mono text-[10px] flex items-center gap-1">
+              <span>Return:</span>
+              <span id="kpi-return-rate" class="font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                5.94%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Annual Overview KPI Pill Card -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs flex items-center justify-between">
+          <div>
+            <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 block">
+              Annual Total Cashback (<span id="annual-overview-year">2026</span>)
+            </span>
+            <div class="text-sm font-extrabold text-blue-600 font-mono" id="kpi-annual-cashback">
+              RM 1,245.00
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] font-bold text-slate-400 block">Year Total Spend</span>
+            <span class="text-xs font-bold text-slate-700 font-mono" id="kpi-annual-spend">RM 24,500.00</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- 4. CATEGORY CARDS SECTION HEADER                                      -->
+      <!-- ===================================================================== -->
+      <div class="flex items-center justify-between pt-1 px-1">
+        <span class="text-xs font-bold text-slate-900 tracking-tight">Transaction Categories</span>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- 5. CATEGORY CARDS CONTAINER (OPTION A & OPTION B RENDERED HERE)       -->
+      <!-- ===================================================================== -->
+      <div id="category-cards-container" class="space-y-2.5">
+        <!-- Dynamically rendered according to chosen style -->
+      </div>
+
+      <!-- Card Notes / Min Spend Rules Card -->
+      <div class="bg-blue-50/60 border border-blue-100 rounded-2xl p-3 text-[11px] text-blue-800 space-y-1">
+        <div class="flex items-center justify-between font-bold">
+          <span class="flex items-center gap-1">
+            <i data-lucide="info" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span>Card Rule Notes</span>
+          </span>
+          <button
+            onclick="openMinSpendInfoModal()"
+            class="text-[10px] text-blue-600 underline font-semibold cursor-pointer"
+          >
+            Configure
+          </button>
+        </div>
+        <p id="card-rules-notes" class="text-blue-700 text-[10px] leading-relaxed">
+          Requires min RM1,000 monthly total spend to trigger 7.8% tier rate (otherwise 0.2% base rate applies).
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: ELIGIBILITY & RULES PREVIEW                                        -->
+  <!-- ========================================================================= -->
+  <div id="rule-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white rounded-3xl border border-slate-200 max-w-sm w-full p-4 shadow-2xl space-y-3 fade-enter">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <div id="modal-cat-icon" class="p-1.5 rounded-lg bg-slate-100 text-slate-700">
+            <i data-lucide="tag" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 id="modal-cat-name" class="font-bold text-slate-900 text-xs">Groceries</h3>
+            <span id="modal-cat-rate" class="text-[10px] text-blue-600 font-bold font-mono">7.8% Cashback</span>
+          </div>
+        </div>
+        <button onclick="closeRuleModal()" class="p-1 rounded-full text-slate-400 hover:text-slate-600 cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2.5 text-xs">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Conditions</span>
+          <p id="modal-cat-conditions" class="text-slate-700 text-[11px] mt-0.5">MCC 5411 (Grocery Stores/Supermarkets). Min RM1,000 total spend threshold.</p>
+        </div>
+
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Eligible Items / Merchants</span>
+          <div id="modal-cat-eligible" class="flex flex-wrap gap-1 mt-1">
+            <!-- Tags -->
+          </div>
+        </div>
+
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Excluded Items</span>
+          <div id="modal-cat-excluded" class="flex flex-wrap gap-1 mt-1">
+            <!-- Tags -->
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-100 flex justify-end">
+        <button onclick="closeRuleModal()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl cursor-pointer">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC & MOCK DATA (MATCHING REACT APP STATE EXACTLY)            -->
+  <!-- ========================================================================= -->
+  <script>
+    // Exact cards data from defaultData.ts
+    const creditCards = [
+      {
+        id: 'hsbc_5458',
+        bank: 'HSBC',
+        accountNo: '5458',
+        minMonthlySpend: 1000,
+        notes: 'Requires min RM1,000 monthly total spend to trigger 7.8% tier rate (otherwise 0.2% base rate applies).',
+        categories: [
+          {
+            id: 'c1',
+            name: 'Retail',
+            icon: 'shopping-cart',
+            ratePercent: 0.2,
+            conditions: 'Base rate with no monthly cap.',
+            eligibleItems: ['All generic retail point-of-sale transactions', 'Departmental stores', 'Local boutiques', 'General merchandise'],
+            excludedItems: ['Government tax & penalties', 'JomPAY billers', 'Cash advance', 'Crypto exchanges']
+          },
+          {
+            id: 'c2',
+            name: 'E-Wallet',
+            icon: 'smartphone',
+            ratePercent: 7.8,
+            capRM: 50,
+            conditions: 'Requires min monthly card spend of RM1,000. Capped at RM50/month combined.',
+            eligibleItems: ["Touch 'n Go eWallet (TNG)", 'GrabPay Reload', 'Boost Wallet', 'BigPay Reload', 'ShopeePay'],
+            excludedItems: ['Direct peer-to-peer FPX transfers', 'Non-MYR foreign e-wallets']
+          },
+          {
+            id: 'c3',
+            name: 'Groceries',
+            icon: 'shopping-cart',
+            ratePercent: 7.8,
+            capRM: 50,
+            conditions: 'MCC 5411 (Grocery Stores/Supermarkets). Min RM1,000 total spend threshold.',
+            eligibleItems: ["Lotus's / Tesco", 'Giant Hypermarket', 'Mydin', 'AEON Supermarket', 'AEON BiG', 'Jaya Grocer', 'Village Grocer', 'Cold Storage'],
+            excludedItems: ['Convenience stores (7-Eleven, FamilyMart)', 'Wholesale clubs']
+          },
+          {
+            id: 'c4',
+            name: 'Petrol',
+            icon: 'fuel',
+            ratePercent: 7.8,
+            capRM: 50,
+            conditions: 'MCC 5541 / 5542 (Service Stations & Automated Fuel Dispensers).',
+            eligibleItems: ['Shell Station & Shell App', 'Petronas Mesra & Setel App', 'Caltex Journey', 'BHPetrol & eCard', 'Petron Miles'],
+            excludedItems: ['Commercial transport bulk diesel fuel distributors']
+          }
+        ]
+      },
+      {
+        id: 'uob_visa_2052',
+        bank: 'UOB',
+        accountNo: '2052',
+        minMonthlySpend: 1500,
+        notes: 'Tiered cashback up to 10% when monthly retail spend >= RM1,500.',
+        categories: [
+          {
+            id: 'c5',
+            name: 'Retail',
+            icon: 'shopping-cart',
+            ratePercent: 0.2,
+            conditions: 'Unlimited base cashback for all non-special categories.',
+            eligibleItems: ['General retail purchases', 'Hardware stores', 'Fashion & apparel'],
+            excludedItems: ['LHDN tax payments', 'JomPAY', 'Casino / Gambling']
+          },
+          {
+            id: 'c6',
+            name: 'Grab',
+            icon: 'smartphone',
+            ratePercent: 10.0,
+            capRM: 15,
+            conditions: 'Transactions via Grab App directly charged to card. Cap RM15/mo.',
+            eligibleItems: ['GrabFood Orders', 'Grab Rides / Transport', 'GrabMart grocery deliveries'],
+            excludedItems: ['GrabPay wallet balance manual cash reloads']
+          },
+          {
+            id: 'c7',
+            name: 'Groceries',
+            icon: 'shopping-cart',
+            ratePercent: 10.0,
+            capRM: 15,
+            conditions: 'MCC 5411. Min monthly spend tier RM1,500 required for 10%.',
+            eligibleItems: ['AEON BiG', 'Cold Storage', 'Jaya Grocer', 'Mercato', 'Village Grocer'],
+            excludedItems: ['Sundry shops / Pasar malam without standard MCC']
+          },
+          {
+            id: 'c8',
+            name: 'Petrol',
+            icon: 'fuel',
+            ratePercent: 10.0,
+            capRM: 15,
+            conditions: 'Automated fuel dispenser or pump cashier POS. Cap RM15/mo.',
+            eligibleItems: ['Shell Stations', 'Petronas Service Stations', 'Caltex', 'Petron'],
+            excludedItems: ['Convenience mart purchases made without fuel link']
+          },
+          {
+            id: 'c9',
+            name: 'Dining',
+            icon: 'utensils',
+            ratePercent: 10.0,
+            capRM: 15,
+            conditions: 'MCC 5812 / 5814 (Eating Places & Fast Food). Cap RM15/mo.',
+            eligibleItems: ['Fast food (McDonalds, KFC)', 'Cafes (Starbucks, Zus)', 'Casual dining'],
+            excludedItems: ['Hotel banquet catering billed under Hotel MCC']
+          }
+        ]
+      },
+      {
+        id: 'affin_5760',
+        bank: 'Affin',
+        accountNo: '5760',
+        minMonthlySpend: 0,
+        notes: 'No min spend requirement! Direct 3% cashback on digital, e-wallets, e-commerce, and auto-billings.',
+        categories: [
+          {
+            id: 'c15',
+            name: 'E-Wallet',
+            icon: 'smartphone',
+            ratePercent: 3.0,
+            capRM: 30,
+            conditions: '3% direct rebate on e-wallet top-ups. Cap RM30/month.',
+            eligibleItems: ["Touch 'n Go eWallet (TNG)", 'BigPay Reload', 'ShopeePay Reload', 'Boost eWallet'],
+            excludedItems: ['Direct merchant FPX']
+          },
+          {
+            id: 'c16',
+            name: 'Utilities',
+            icon: 'credit-card',
+            ratePercent: 3.0,
+            capRM: 30,
+            conditions: 'Recurring auto-debit billing setup with service providers. Cap RM30/month.',
+            eligibleItems: ['Tenaga Nasional (TNB Auto-debit)', 'Indah Water Konsortium (IWK)', 'Unifi / TM Broadband'],
+            excludedItems: ['Counter bill payments at Pos Malaysia']
+          },
+          {
+            id: 'c17',
+            name: 'Online Shopping',
+            icon: 'globe',
+            ratePercent: 3.0,
+            capRM: 30,
+            conditions: 'MCC 5311 / 5999 Online transactions in 3D Secure checkout. Cap RM30/mo.',
+            eligibleItems: ['Shopee Malaysia', 'Lazada Malaysia', 'TikTok Shop', 'Taobao / Tmall', 'Amazon'],
+            excludedItems: ['Online betting & forex trading']
+          },
+          {
+            id: 'c18',
+            name: 'Subscriptions',
+            icon: 'tag',
+            ratePercent: 3.0,
+            conditions: 'Recurring card-on-file digital memberships.',
+            eligibleItems: ['Netflix', 'Spotify Premium', 'YouTube Premium', 'Apple Services', 'ChatGPT Plus'],
+            excludedItems: ['One-off gaming gift cards']
+          }
+        ]
+      },
+      {
+        id: 'rhb_shell_8881',
+        bank: 'RHB',
+        accountNo: '8881',
+        minMonthlySpend: 2500,
+        notes: 'Up to 12% cashback for Shell petrol with min RM2,500 total monthly retail spend.',
+        categories: [
+          {
+            id: 'c19',
+            name: 'Petrol',
+            icon: 'fuel',
+            ratePercent: 12.0,
+            capRM: 50,
+            conditions: 'Spend >= RM2,500 triggers 12% (Cap RM50/mo). Spend RM1,000-RM2,499 gets 5%. Spend <RM1,000 gets 0.2%.',
+            eligibleItems: ['Shell Fuel (FuelSave 95, V-Power 97)', 'Shell App Pay-at-Pump', 'Shell Helix Engine Oil'],
+            excludedItems: ['Non-Shell brand petrol stations (Petronas, Caltex, Petron)']
+          },
+          {
+            id: 'c20',
+            name: 'Groceries',
+            icon: 'shopping-cart',
+            ratePercent: 0.2,
+            conditions: 'Unlimited base cashback to help hit the RM2,500 monthly tier threshold.',
+            eligibleItems: ['All other spending in Malaysia & overseas', 'Online shopping', 'Groceries'],
+            excludedItems: ['Government transactions', 'Charities / Donations']
+          }
+        ]
+      }
+    ];
+
+    // State
+    let currentYear = 2026;
+    let currentCardId = 'hsbc_5458';
+    let currentMonth = 'Feb';
+    let currentStyle = 'bento'; // 'compact' | 'bento' - default to Option B
+    let expandedCardId = null;
+    let focusedCatId = null;
+
+    // Monthly Spend Storage
+    const spendsData = {
+      hsbc_5458: {
+        Feb: { c1: 200, c2: 300, c3: 400, c4: 150 }
+      },
+      uob_visa_2052: {
+        Feb: { c5: 500, c6: 150, c7: 300, c8: 200, c9: 350 }
+      },
+      affin_5760: {
+        Feb: { c15: 970, c16: 120, c17: 250, c18: 50 }
+      },
+      rhb_shell_8881: {
+        Feb: { c19: 250, c20: 300 }
+      }
+    };
+
+    // Store mathematical formula strings (e.g., '12 + 12')
+    const spendFormulas = {
+      hsbc_5458: { Feb: {} },
+      uob_visa_2052: { Feb: {} },
+      affin_5760: { Feb: {} },
+      rhb_shell_8881: { Feb: {} }
+    };
+
+    // Temporary user input during active typing
+    const activeInputs = {};
+
+    // Safe mathematical expression evaluator
+    function evaluateExpression(expr) {
+      try {
+        if (!expr) return 0;
+        const sanitized = String(expr).replace(/^=/, '').trim();
+        if (!sanitized) return 0;
+        // Allow digits, decimal points, and basic math operators +, -, *, /, (, )
+        if (/^[0-9+\-*/().\s]+$/.test(sanitized)) {
+          const result = Function(`"use strict"; return (${sanitized})`)();
+          return typeof result === 'number' && !isNaN(result) ? result : 0;
+        }
+        const num = parseFloat(sanitized);
+        return isNaN(num) ? 0 : num;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const fullMonthNames = {
+      Jan: 'January',
+      Feb: 'February',
+      Mar: 'March',
+      Apr: 'April',
+      May: 'May',
+      Jun: 'June',
+      Jul: 'July',
+      Aug: 'August',
+      Sep: 'September',
+      Oct: 'October',
+      Nov: 'November',
+      Dec: 'December'
+    };
+
+    function getActiveCard() {
+      return creditCards.find(c => c.id === currentCardId) || creditCards[0];
+    }
+
+    function setCardStyle(style) {
+      currentStyle = style;
+      document.getElementById('btn-style-compact').className = style === 'compact'
+        ? 'px-2.5 py-1 rounded-lg transition-all cursor-pointer bg-white text-blue-600 shadow-xs'
+        : 'px-2.5 py-1 rounded-lg transition-all cursor-pointer text-slate-600 hover:text-slate-900';
+      document.getElementById('btn-style-bento').className = style === 'bento'
+        ? 'px-2.5 py-1 rounded-lg transition-all cursor-pointer bg-white text-blue-600 shadow-xs'
+        : 'px-2.5 py-1 rounded-lg transition-all cursor-pointer text-slate-600 hover:text-slate-900';
+      renderCategories();
+    }
+
+    function selectCard(cardId) {
+      currentCardId = cardId;
+      expandedCardId = null;
+      syncDropdownValues();
+      renderCardsCarousel();
+      renderDropdowns();
+      updateKpisAndCategories();
+    }
+
+    function selectMonth(m) {
+      currentMonth = m;
+      syncDropdownValues();
+      renderDropdowns();
+      updateKpisAndCategories();
+    }
+
+    function selectYear(yr) {
+      currentYear = yr;
+      syncDropdownValues();
+      renderDropdowns();
+      updateKpisAndCategories();
+    }
+
+    function syncDropdownValues() {
+      const cardSelect = document.getElementById('select-card');
+      if (cardSelect && cardSelect.value !== currentCardId) {
+        cardSelect.value = currentCardId;
+      }
+      const monthSelect = document.getElementById('select-month');
+      if (monthSelect && monthSelect.value !== currentMonth) {
+        monthSelect.value = currentMonth;
+      }
+      const yearSelect = document.getElementById('select-year');
+      if (yearSelect && parseInt(yearSelect.value, 10) !== currentYear) {
+        yearSelect.value = String(currentYear);
+      }
+      const yearTopSelect = document.getElementById('select-year-top');
+      if (yearTopSelect && parseInt(yearTopSelect.value, 10) !== currentYear) {
+        yearTopSelect.value = String(currentYear);
+      }
+      const annualYearLabel = document.getElementById('annual-overview-year');
+      if (annualYearLabel) {
+        annualYearLabel.innerText = currentYear;
+      }
+    }
+
+    function renderDropdowns() {
+      // 1. Populate/update Card Dropdown
+      const cardSelect = document.getElementById('select-card');
+      if (cardSelect) {
+        cardSelect.innerHTML = creditCards.map(card => {
+          const isSelected = card.id === currentCardId;
+          return `<option value="${card.id}" ${isSelected ? 'selected' : ''}>${card.bank} (${card.accountNo})</option>`;
+        }).join('');
+      }
+
+      // 2. Populate/update Month Dropdown
+      const monthSelect = document.getElementById('select-month');
+      if (monthSelect) {
+        const cardSpends = spendsData[currentCardId] || {};
+        monthSelect.innerHTML = months.map(m => {
+          const isSelected = m === currentMonth;
+          const hasSpend = cardSpends[m] && Object.values(cardSpends[m]).some(v => v > 0);
+          const dotIndicator = hasSpend ? ' •' : '';
+          const monthLabel = fullMonthNames[m] || m;
+          return `<option value="${m}" ${isSelected ? 'selected' : ''}>${monthLabel}${dotIndicator}</option>`;
+        }).join('');
+      }
+
+      // 3. Update summary labels
+      const sm1 = document.getElementById('summary-month-label');
+      if (sm1) sm1.innerText = currentMonth;
+      const sm2 = document.getElementById('summary-month-label-2');
+      if (sm2) sm2.innerText = currentMonth;
+      const ym = document.getElementById('annual-overview-year');
+      if (ym) ym.innerText = currentYear;
+    }
+
+    function toggleExpand(catId) {
+      expandedCardId = (expandedCardId === catId) ? null : catId;
+      renderCategories();
+    }
+
+    function handleSpendInputFocus(catId, inputEl) {
+      focusedCatId = catId;
+      const currentFormula = (spendFormulas[currentCardId] && spendFormulas[currentCardId][currentMonth] && spendFormulas[currentCardId][currentMonth][catId]) || '';
+      const currentVal = (spendsData[currentCardId] && spendsData[currentCardId][currentMonth] && spendsData[currentCardId][currentMonth][catId]) || 0;
+      const formulaToEdit = currentFormula || (currentVal > 0 ? String(currentVal) : '');
+      activeInputs[catId] = formulaToEdit;
+
+      if (inputEl) {
+        inputEl.value = formulaToEdit;
+        setTimeout(() => {
+          try {
+            inputEl.setSelectionRange(0, inputEl.value.length);
+          } catch (e) {}
+        }, 10);
+      }
+    }
+
+    function handleSpendInputChange(catId, val) {
+      activeInputs[catId] = val;
+      const evaluated = evaluateExpression(val);
+      if (evaluated >= 0) {
+        if (!spendsData[currentCardId]) spendsData[currentCardId] = {};
+        if (!spendsData[currentCardId][currentMonth]) spendsData[currentCardId][currentMonth] = {};
+        spendsData[currentCardId][currentMonth][catId] = Math.round(evaluated * 100) / 100;
+        updateKpisOnly();
+        const activeCard = getActiveCard();
+        const cat = activeCard.categories.find(c => c.id === catId);
+        if (cat) {
+          const cb = calculateCategoryCashback(cat, evaluated);
+          const cbEl = document.getElementById(`cat-cb-${catId}`);
+          if (cbEl) {
+            cbEl.innerText = `+RM ${cb.earned.toFixed(2)}`;
+            cbEl.className = `text-xs font-extrabold ${cb.earned > 0 ? 'text-emerald-600' : 'text-slate-400'} leading-tight`;
+          }
+          const bentoCbEl = document.getElementById(`bento-cb-${catId}`);
+          if (bentoCbEl) {
+            bentoCbEl.innerText = `RM ${cb.earned.toFixed(2)}`;
+            bentoCbEl.className = `font-mono text-sm font-extrabold ${cb.earned > 0 ? 'text-emerald-600' : 'text-slate-400'}`;
+          }
+        }
+      }
+    }
+
+    function handleSpendInputBlur(catId, val, inputEl) {
+      focusedCatId = null;
+      const raw = (val !== undefined ? val : (activeInputs[catId] || '')).trim();
+
+      if (!spendsData[currentCardId]) spendsData[currentCardId] = {};
+      if (!spendsData[currentCardId][currentMonth]) spendsData[currentCardId][currentMonth] = {};
+      if (!spendFormulas[currentCardId]) spendFormulas[currentCardId] = {};
+      if (!spendFormulas[currentCardId][currentMonth]) spendFormulas[currentCardId][currentMonth] = {};
+
+      if (!raw) {
+        spendsData[currentCardId][currentMonth][catId] = 0;
+        delete spendFormulas[currentCardId][currentMonth][catId];
+        delete activeInputs[catId];
+        updateKpisAndCategories();
+        return;
+      }
+
+      const calculated = Math.round(evaluateExpression(raw) * 100) / 100;
+      spendsData[currentCardId][currentMonth][catId] = calculated;
+
+      // If user typed a calculation with operators (+, -, *, /) preserve the expression string
+      if (/[+\-*/]/.test(raw)) {
+        spendFormulas[currentCardId][currentMonth][catId] = raw;
+      } else {
+        delete spendFormulas[currentCardId][currentMonth][catId];
+      }
+      delete activeInputs[catId];
+
+      if (inputEl) {
+        inputEl.value = calculated > 0 ? (calculated % 1 === 0 ? String(calculated) : calculated.toFixed(2)) : '';
+      }
+
+      updateKpisAndCategories();
+    }
+
+    function calculateCategoryCashback(cat, spend) {
+      const activeCard = getActiveCard();
+      const currentSpendMap = (spendsData[currentCardId] && spendsData[currentCardId][currentMonth]) || {};
+      const totalSpend = Object.values(currentSpendMap).reduce((a, b) => a + b, 0);
+
+      // Check min spend rule
+      let effectiveRate = cat.ratePercent;
+      if (activeCard.minMonthlySpend && activeCard.minMonthlySpend > 0) {
+        if (totalSpend < activeCard.minMonthlySpend) {
+          // If min spend not reached, base fallback is 0.2%
+          effectiveRate = 0.2;
+        }
+      }
+
+      let rawEarned = (spend * effectiveRate) / 100;
+      let isCapped = false;
+      if (cat.capRM !== undefined && cat.capRM > 0) {
+        if (rawEarned > cat.capRM) {
+          rawEarned = cat.capRM;
+          isCapped = true;
+        }
+      }
+      return {
+        earned: rawEarned,
+        rate: effectiveRate,
+        isCapped: isCapped
+      };
+    }
+
+    function renderCardsCarousel() {
+      const carousel = document.getElementById('cards-carousel');
+      if (!carousel) return;
+      carousel.innerHTML = creditCards.map(card => {
+        const isSelected = card.id === currentCardId;
+        return `
+          <button
+            onclick="selectCard('${card.id}')"
+            class="px-3 py-2 rounded-2xl border text-left transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
+              isSelected
+                ? 'bg-white border-blue-500 shadow-xs ring-2 ring-blue-500/20'
+                : 'bg-white border-slate-200 hover:border-slate-300'
+            }"
+          >
+            <div class="w-6 h-6 rounded-lg ${isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'} flex items-center justify-center text-[10px] font-bold shrink-0">
+              ${card.bank.substring(0, 2)}
+            </div>
+            <div>
+              <div class="text-xs font-bold leading-tight ${isSelected ? 'text-blue-600' : 'text-slate-800'}">
+                ${card.bank}
+              </div>
+              <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-slate-100 text-slate-500 font-semibold">
+                ${card.accountNo}
+              </span>
+            </div>
+          </button>
+        `;
+      }).join('');
+      const metaEl = document.getElementById('active-card-meta');
+      if (metaEl) metaEl.innerText = `${getActiveCard().bank} (${getActiveCard().accountNo})`;
+    }
+
+    function renderMonthPills() {
+      const pillsContainer = document.getElementById('month-pills');
+      if (!pillsContainer) return;
+      const cardSpends = spendsData[currentCardId] || {};
+      
+      pillsContainer.innerHTML = months.map(m => {
+        const isSelected = m === currentMonth;
+        const hasSpend = cardSpends[m] && Object.values(cardSpends[m]).some(v => v > 0);
+        return `
+          <button
+            onclick="selectMonth('${m}')"
+            class="px-2.5 py-1 text-[11px] font-bold rounded-xl transition-all relative cursor-pointer ${
+              isSelected
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }"
+          >
+            ${m}
+            ${hasSpend && !isSelected ? '<span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-600"></span>' : ''}
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('summary-month-label').innerText = currentMonth;
+      document.getElementById('summary-month-label-2').innerText = currentMonth;
+    }
+
+    function updateKpisOnly() {
+      const activeCard = getActiveCard();
+      const currentSpendMap = (spendsData[currentCardId] && spendsData[currentCardId][currentMonth]) || {};
+      
+      let totalSpend = 0;
+      let totalCashback = 0;
+
+      activeCard.categories.forEach(cat => {
+        const spend = currentSpendMap[cat.id] || 0;
+        totalSpend += spend;
+        const cb = calculateCategoryCashback(cat, spend);
+        totalCashback += cb.earned;
+      });
+
+      // Update KPIs
+      const elSpend = document.getElementById('kpi-total-spend');
+      if (elSpend) elSpend.innerText = `RM ${totalSpend.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const elCb = document.getElementById('kpi-total-cashback');
+      if (elCb) elCb.innerText = `RM ${totalCashback.toFixed(2)}`;
+
+      const returnRate = totalSpend > 0 ? ((totalCashback / totalSpend) * 100).toFixed(2) : '0.00';
+      const elRate = document.getElementById('kpi-return-rate');
+      if (elRate) elRate.innerText = `${returnRate}%`;
+
+      // Min Spend Tier status
+      const spendBox = document.getElementById('kpi-spend-box');
+      const tierStatus = document.getElementById('kpi-tier-status');
+      if (spendBox && tierStatus) {
+        if (activeCard.minMonthlySpend && activeCard.minMonthlySpend > 0) {
+          if (totalSpend >= activeCard.minMonthlySpend) {
+            spendBox.className = 'space-y-0.5 border-l-2 pl-2.5 border-emerald-500';
+            tierStatus.className = 'flex items-center gap-1 font-medium text-emerald-600';
+            tierStatus.innerHTML = `
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5 shrink-0 text-emerald-600"></i>
+              <span class="font-semibold">Unlocked tier (Min RM ${activeCard.minMonthlySpend.toFixed(2)})</span>
+            `;
+          } else {
+            const diff = activeCard.minMonthlySpend - totalSpend;
+            spendBox.className = 'space-y-0.5 border-l-2 pl-2.5 border-amber-500';
+            tierStatus.className = 'flex items-center gap-1 font-medium text-amber-600';
+            tierStatus.innerHTML = `
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5 shrink-0 text-amber-600"></i>
+              <span class="font-semibold">RM ${diff.toFixed(2)} to min spend tier</span>
+            `;
+          }
+        } else {
+          spendBox.className = 'space-y-0.5 border-l-2 pl-2.5 border-emerald-500';
+          tierStatus.className = 'flex items-center gap-1 font-medium text-slate-500';
+          tierStatus.innerHTML = `
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 shrink-0 text-emerald-600"></i>
+            <span>No minimum spend required</span>
+          `;
+        }
+      }
+    }
+
+    function updateKpisAndCategories() {
+      updateKpisOnly();
+      const activeCard = getActiveCard();
+      const notesEl = document.getElementById('card-rules-notes');
+      if (notesEl) notesEl.innerText = activeCard.notes || 'Standard card cashback policies apply.';
+      const badgeEl = document.getElementById('category-count-badge');
+      if (badgeEl) badgeEl.innerText = activeCard.categories.length;
+
+      renderCategories();
+      lucide.createIcons();
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('category-cards-container');
+      const activeCard = getActiveCard();
+      const currentSpendMap = (spendsData[currentCardId] && spendsData[currentCardId][currentMonth]) || {};
+
+      if (currentStyle === 'compact') {
+        // ===================================================================
+        // OPTION A: STREAMLINED LIST CARDS (STOCK PORTFOLIO / DIVIDEND MIRROR)
+        // ===================================================================
+        container.innerHTML = activeCard.categories.map(cat => {
+          const spend = currentSpendMap[cat.id] || 0;
+          const cb = calculateCategoryCashback(cat, spend);
+          const isExpanded = expandedCardId === cat.id;
+          const capText = (cat.capRM !== undefined && cat.capRM > 0) ? `Cap: RM ${cat.capRM}` : 'No Cap';
+
+          const cardFormulas = (spendFormulas[currentCardId] && spendFormulas[currentCardId][currentMonth]) || {};
+          const formulaStr = cardFormulas[cat.id];
+          const isFocused = focusedCatId === cat.id;
+          const displayVal = isFocused
+            ? (activeInputs[cat.id] !== undefined ? activeInputs[cat.id] : (formulaStr || (spend > 0 ? String(spend) : '')))
+            : (spend > 0 ? (spend % 1 === 0 ? String(spend) : spend.toFixed(2)) : '');
+
+          return `
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden transition-all">
+              <!-- Primary Card Row: 3-column structured hierarchy -->
+              <div
+                onclick="toggleExpand('${cat.id}')"
+                class="px-3.5 py-3 flex items-center justify-between gap-2 hover:bg-slate-50/70 active:bg-slate-100 cursor-pointer select-none"
+              >
+                <!-- Left: Category Icon, Name & Rate pill -->
+                <div class="flex items-center gap-2.5 min-w-0 pr-1">
+                  <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                    <i data-lucide="${cat.icon || 'tag'}" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-extrabold text-xs text-slate-900 truncate leading-tight flex items-center gap-1.5">
+                      <span>${cat.name}</span>
+                      <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 font-bold border border-blue-200 shrink-0">
+                        ${cat.ratePercent}%
+                      </span>
+                    </div>
+                    <div class="text-[10px] text-slate-400 font-mono mt-0.5 leading-tight">
+                      ${capText}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Middle / Right: Monthly Spend Input & Earned Cashback -->
+                <div class="flex items-center gap-2.5 shrink-0" onclick="event.stopPropagation()">
+                  <!-- Compact Formatted Spend Input -->
+                  <div class="w-24 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-2 py-1 flex items-center gap-1 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
+                    <span class="text-[10px] text-slate-400 font-mono font-medium">RM</span>
+                    <input
+                      type="text"
+                      value="${displayVal}"
+                      placeholder="0.00"
+                      onfocus="handleSpendInputFocus('${cat.id}', this)"
+                      oninput="handleSpendInputChange('${cat.id}', this.value)"
+                      onblur="handleSpendInputBlur('${cat.id}', this.value, this)"
+                      onkeydown="if (event.key === 'Enter') { this.blur(); }"
+                      title="${formulaStr ? 'Formula: ' + formulaStr + ' = RM ' + spend : 'Supports math formulas like 12+12'}"
+                      class="w-full bg-transparent text-right font-mono font-bold text-xs text-slate-900 focus:outline-none"
+                    />
+                  </div>
+
+                  <!-- Cashback Return Pill -->
+                  <div class="text-right font-mono min-w-[62px]">
+                    <div id="cat-cb-${cat.id}" class="text-xs font-extrabold ${cb.earned > 0 ? 'text-emerald-600' : 'text-slate-400'} leading-tight">
+                      +RM ${cb.earned.toFixed(2)}
+                    </div>
+                    <div class="text-[9px] text-slate-400 font-medium leading-tight mt-0.5">
+                      ${cb.isCapped ? '<span class="text-amber-600 font-bold">Capped</span>' : 'Final'}
+                    </div>
+                  </div>
+
+                  <!-- Expand Arrow -->
+                  <div class="text-slate-400 shrink-0">
+                    <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Expandable Details Drawer (Stock / Dividend Pattern) -->
+              ${isExpanded ? `
+                <div class="bg-slate-50/90 px-3.5 py-3 border-t border-slate-100 space-y-2.5 fade-enter">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-bold text-slate-700">Category Rules & Criteria</span>
+                    <button
+                      onclick="openRuleModal('${cat.id}')"
+                      class="text-[10px] font-bold text-blue-600 hover:text-blue-700 cursor-pointer flex items-center gap-1"
+                    >
+                      <span>Full Criteria</span>
+                      <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
+                    </button>
+                  </div>
+
+                  <!-- Cap Progress Bar -->
+                  ${cat.capRM ? `
+                    <div class="space-y-1">
+                      <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                        <span>Cap Utilization (RM ${cat.capRM.toFixed(2)} max)</span>
+                        <span class="font-bold text-slate-700">${Math.min(100, Math.round((cb.earned / cat.capRM) * 100))}%</span>
+                      </div>
+                      <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div
+                          class="h-full rounded-full ${cb.isCapped ? 'bg-amber-500' : 'bg-blue-600'}"
+                          style="width: ${Math.min(100, (cb.earned / cat.capRM) * 100)}%"
+                        ></div>
+                      </div>
+                    </div>
+                  ` : ''}
+
+                  <!-- Key Eligible Merchant Tags Preview -->
+                  <div class="space-y-1">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Eligible Highlights:</span>
+                    <div class="flex flex-wrap gap-1">
+                      ${cat.eligibleItems.slice(0, 4).map(item => `
+                        <span class="text-[10px] px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 font-medium">
+                          ${item}
+                        </span>
+                      `).join('')}
+                      ${cat.eligibleItems.length > 4 ? `
+                        <span class="text-[10px] px-1.5 py-0.5 text-slate-400 font-mono font-bold">+${cat.eligibleItems.length - 4} more</span>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      } else {
+        // ===================================================================
+        // OPTION B: MODERN BENTO FINTECH CARDS (ELEVATED MODULAR DESIGN)
+        // ===================================================================
+        container.innerHTML = activeCard.categories.map(cat => {
+          const spend = currentSpendMap[cat.id] || 0;
+          const cb = calculateCategoryCashback(cat, spend);
+          const capText = (cat.capRM !== undefined && cat.capRM > 0) ? `Max RM ${cat.capRM}` : 'Unlimited';
+
+          // Display stored formula (e.g. "12 + 12") or formatted spend number
+          const cardFormulas = (spendFormulas[currentCardId] && spendFormulas[currentCardId][currentMonth]) || {};
+          const formulaStr = cardFormulas[cat.id];
+          const isFocused = focusedCatId === cat.id;
+          const displayVal = isFocused
+            ? (activeInputs[cat.id] !== undefined ? activeInputs[cat.id] : (formulaStr || (spend > 0 ? String(spend) : '')))
+            : (spend > 0 ? (spend % 1 === 0 ? String(spend) : spend.toFixed(2)) : '');
+
+          return `
+            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs space-y-3">
+              <!-- Top Row: Icon + Name + Badge + Info Trigger -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <i data-lucide="${cat.icon || 'tag'}" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-extrabold text-xs text-slate-900 truncate leading-tight">
+                      ${cat.name}
+                    </div>
+                    <span class="text-[10px] font-mono text-slate-400">
+                      Cap: ${capText}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-mono font-extrabold px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    ${cat.ratePercent}%
+                  </span>
+                  <button
+                    onclick="openRuleModal('${cat.id}')"
+                    class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+                    title="View eligible merchants"
+                  >
+                    <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Bottom Row: Input + Live Cashback -->
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-3">
+                <div class="grow">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Monthly Spend
+                    </span>
+                    ${formulaStr ? `
+                      <span class="text-[9px] font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200" title="Preserved formula: ${formulaStr}">
+                        fx: ${formulaStr}
+                      </span>
+                    ` : ''}
+                  </div>
+                  <div class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 flex items-center gap-1 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
+                    <span class="text-[10px] text-slate-400 font-mono font-medium">RM</span>
+                    <input
+                      type="text"
+                      value="${displayVal}"
+                      placeholder="0.00"
+                      onfocus="handleSpendInputFocus('${cat.id}', this)"
+                      oninput="handleSpendInputChange('${cat.id}', this.value)"
+                      onblur="handleSpendInputBlur('${cat.id}', this.value, this)"
+                      onkeydown="if (event.key === 'Enter') { this.blur(); }"
+                      title="${formulaStr ? 'Formula: ' + formulaStr + ' = RM ' + spend : 'Supports math formulas like 12+12'}"
+                      class="w-full bg-transparent text-left font-mono font-bold text-xs text-slate-900 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div class="text-right shrink-0">
+                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Statement Cashback
+                  </span>
+                  <div id="bento-cb-${cat.id}" class="font-mono text-sm font-extrabold ${cb.earned > 0 ? 'text-emerald-600' : 'text-slate-400'}">
+                    RM ${cb.earned.toFixed(2)}
+                  </div>
+                  ${cb.isCapped ? '<span class="text-[9px] text-amber-600 font-bold block">Cap Reached</span>' : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      lucide.createIcons();
+    }
+
+    function openRuleModal(catId) {
+      const activeCard = getActiveCard();
+      const cat = activeCard.categories.find(c => c.id === catId);
+      if (!cat) return;
+
+      document.getElementById('modal-cat-name').innerText = cat.name;
+      document.getElementById('modal-cat-rate').innerText = `${cat.ratePercent}% Cashback`;
+      document.getElementById('modal-cat-conditions').innerText = cat.conditions || 'Standard category rules apply.';
+
+      const elContainer = document.getElementById('modal-cat-eligible');
+      elContainer.innerHTML = (cat.eligibleItems && cat.eligibleItems.length > 0)
+        ? cat.eligibleItems.map(item => `
+          <span class="text-[10px] px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+            ✓ ${item}
+          </span>
+        `).join('')
+        : '<span class="text-[10px] text-slate-400">All category transactions qualify</span>';
+
+      const exContainer = document.getElementById('modal-cat-excluded');
+      exContainer.innerHTML = (cat.excludedItems && cat.excludedItems.length > 0)
+        ? cat.excludedItems.map(item => `
+          <span class="text-[10px] px-2 py-0.5 rounded-md bg-rose-50 text-rose-800 border border-rose-200 font-medium">
+            ✕ ${item}
+          </span>
+        `).join('')
+        : '<span class="text-[10px] text-slate-400">No exclusions specified</span>';
+
+      document.getElementById('rule-detail-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeRuleModal() {
+      document.getElementById('rule-detail-modal').classList.add('hidden');
+    }
+
+    function openMinSpendInfoModal() {
+      alert('Card Minimum Spend requirement settings modal: Preserved from existing functionality.');
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCardsCarousel();
+      renderDropdowns();
+      syncDropdownValues();
+      updateKpisAndCategories();
+    });
+  </script>
+</body>
+</html>
