@@ -1166,7 +1166,7 @@ export const BalanceSheetView: React.FC = () => {
       )}
 
       {/* Visual Charts: ALWAYS visible on mobile (<md). On desktop (md+), visible when activeTab === 'charts' */}
-      <div className={`${activeTab === 'charts' ? 'block' : 'hidden md:hidden'} space-y-6`}>
+      <div className={`${activeTab === 'charts' ? 'block' : 'block md:hidden'} space-y-6`}>
         {/* Chart 1: Balance Sheet Assets Distribution */}
           <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
             <div className="flex items-center justify-between">

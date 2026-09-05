@@ -3,7 +3,7 @@ import { useWealth } from '../context/WealthContext';
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid
 } from 'recharts';
-import { Plus, TrendingUp, Trash2, Building2 } from 'lucide-react';
+import { Plus, Trash2, Building2 } from 'lucide-react';
 import { YearSelector } from './YearSelector';
 import { FormattedNumberInput } from './FormattedNumberInput';
 
@@ -50,13 +50,26 @@ export const DividendTracker: React.FC = () => {
     const holdingCost = matchedHoldings.reduce((sum, h) => sum + h.units * h.buyUnitPrice, 0);
     const holdingMarketVal = matchedHoldings.reduce((sum, h) => sum + h.units * (h.currentPrice ?? h.buyUnitPrice), 0);
 
+    let cost = holdingCost;
+    if (cost === 0) {
+      const matchedTrades = realizedTrades.filter(
+        t => (row.code && t.code && t.code.trim().toUpperCase() === row.code.trim().toUpperCase()) || t.name.toLowerCase().trim() === row.stockName.toLowerCase().trim()
+      );
+      if (matchedTrades.length > 0) {
+        cost = matchedTrades.reduce((sum, t) => sum + t.units * t.buyUnitPrice, 0);
+      }
+    }
+    if (cost === 0 && row.totalMarketValue) {
+      cost = row.totalMarketValue;
+    }
+
     const initUnitPrice = prevValRecord ? prevValRecord.endOfYearValue : (valRecord?.startOfYearValue || 0);
     const endUnitPrice = (valRecord?.endOfYearValue && valRecord.endOfYearValue > 0) ? valRecord.endOfYearValue : (valRecord?.startOfYearValue || initUnitPrice);
 
     const initialVal = initUnitPrice > 0 && matchedUnits > 0 ? initUnitPrice * matchedUnits : (holdingCost > 0 ? holdingCost : (row.totalMarketValue || 0));
     const endVal = endUnitPrice > 0 && matchedUnits > 0 ? endUnitPrice * matchedUnits : (holdingMarketVal > 0 ? holdingMarketVal : (row.totalMarketValue || initialVal));
 
-    return { initialVal, endVal, matchedUnits };
+    return { initialVal, endVal, matchedUnits, cost };
   };
 
   // Stock Portfolio Valuation for the selected year (sum across all tracked stocks for that year)
@@ -85,10 +98,24 @@ export const DividendTracker: React.FC = () => {
     }, 0);
   }, [yearDividends, currentYearNum, stockValuations, holdings]);
 
+  // Total Portfolio Cost Basis for the selected year
+  const portfolioCostBasis = useMemo(() => {
+    if (yearDividends.length > 0) {
+      return yearDividends.reduce((sum, d) => sum + getRecordValuation(d, currentYearNum).cost, 0);
+    }
+    const yrVals = stockValuations.filter(v => v.year === currentYearNum && v.market === 'MY');
+    return yrVals.reduce((sum, v) => {
+      const matched = holdings.filter(h => (v.code && h.code && h.code.toUpperCase() === v.code.toUpperCase()) || h.name.toLowerCase() === v.stockName.toLowerCase());
+      const cost = matched.reduce((s, h) => s + h.units * h.buyUnitPrice, 0);
+      return sum + cost;
+    }, 0);
+  }, [yearDividends, currentYearNum, stockValuations, holdings, realizedTrades]);
+
   const effectivePortfolioVal = portfolioValEnd > 0 ? portfolioValEnd : portfolioValInitial;
   const overallYieldInit = portfolioValInitial > 0 ? (yearTotalDividend / portfolioValInitial) * 100 : 0;
   const overallYieldEnd = portfolioValEnd > 0 ? (yearTotalDividend / portfolioValEnd) * 100 : 0;
   const yearDividendYieldPercent = effectivePortfolioVal > 0 ? (yearTotalDividend / effectivePortfolioVal) * 100 : 0;
+  const yearYieldOnCostPercent = portfolioCostBasis > 0 ? (yearTotalDividend / portfolioCostBasis) * 100 : 0;
 
   // Historical Chart data across all years using Stock Portfolio valuations
   const historicalChartData = allYears.map(yr => {
@@ -215,7 +242,7 @@ export const DividendTracker: React.FC = () => {
       </div>
 
       {/* Year Metric Summary Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
@@ -243,23 +270,32 @@ export const DividendTracker: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-1.5 mb-1">
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
-                Overall Dividend Yield (D/Y %)
-              </span>
-            </div>
-            <div className="text-xl font-extrabold text-emerald-600 font-mono">
-              {yearDividendYieldPercent.toFixed(2)}%
-            </div>
-            <span className="text-[10px] text-gray-500 mt-0.5 block font-mono">
-              Init: {overallYieldInit.toFixed(2)}% | End: {overallYieldEnd.toFixed(2)}%
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+              Dividend Yield ({currentYearNum})
             </span>
           </div>
-          <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200">
-            <TrendingUp className="w-5 h-5" />
+          <div className="text-xl font-extrabold text-emerald-600 font-mono">
+            {yearDividendYieldPercent.toFixed(2)}%
           </div>
+          <span className="text-[10px] text-gray-500 mt-0.5 block font-mono">
+            Init: {overallYieldInit.toFixed(2)}% | End: {overallYieldEnd.toFixed(2)}%
+          </span>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+              Yield on Cost ({currentYearNum})
+            </span>
+          </div>
+          <div className="text-xl font-extrabold text-blue-600 font-mono">
+            {yearYieldOnCostPercent.toFixed(2)}%
+          </div>
+          <span className="text-[10px] text-gray-500 mt-0.5 block font-mono">
+            Cost Basis: <span className="text-blue-600 font-semibold">{formatRM(portfolioCostBasis)}</span>
+          </span>
         </div>
       </div>
 
@@ -328,7 +364,7 @@ export const DividendTracker: React.FC = () => {
             className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Add Stock Payout</span>
+            <span>Add Dividend Payout</span>
           </button>
         </div>
 
@@ -344,10 +380,10 @@ export const DividendTracker: React.FC = () => {
                   Annual Total
                 </th>
                 <th className="py-3 px-3 text-right min-w-[75px] bg-gray-50">
-                  Yield (Init)
+                  Yield
                 </th>
                 <th className="py-3 px-3 text-right min-w-[75px] bg-gray-50">
-                  Yield (End)
+                  YOC
                 </th>
                 <th className="py-3 px-2 text-center w-10 bg-gray-50"></th>
               </tr>
@@ -356,16 +392,16 @@ export const DividendTracker: React.FC = () => {
               {yearDividends.length === 0 ? (
                 <tr>
                   <td colSpan={15} className="py-8 text-center text-gray-400">
-                    No dividend records for {currentYearNum}. Click "Add Stock Payout" to add a stock.
+                    No dividend records for {currentYearNum}. Click "Add Dividend Payout" to add a stock.
                   </td>
                 </tr>
               ) : (
                 yearDividends.map(row => {
                   const stockSum = (Object.values(row.monthlyPayouts) as number[]).reduce((a, b) => a + b, 0);
-                  const { initialVal, endVal } = getRecordValuation(row, currentYearNum);
+                  const { endVal, cost } = getRecordValuation(row, currentYearNum);
 
-                  const yieldInit = initialVal > 0 ? (stockSum / initialVal) * 100 : 0;
                   const yieldEnd = endVal > 0 ? (stockSum / endVal) * 100 : 0;
+                  const yoc = cost > 0 ? (stockSum / cost) * 100 : 0;
 
                   return (
                     <tr key={row.id} className="hover:bg-gray-50 transition-colors group">
@@ -392,11 +428,11 @@ export const DividendTracker: React.FC = () => {
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-indigo-600" title="Auto-flowing annual total">
                         {formatRM(stockSum)}
                       </td>
-                      <td className="py-2.5 px-3 text-right font-mono text-[11px] text-gray-600" title={`Initial Portfolio Valuation: ${formatRM(initialVal)}`}>
-                        {yieldInit > 0 ? `${yieldInit.toFixed(2)}%` : '-'}
-                      </td>
                       <td className="py-2.5 px-3 text-right font-mono text-[11px] text-gray-600" title={`End Portfolio Valuation: ${formatRM(endVal)}`}>
                         {yieldEnd > 0 ? `${yieldEnd.toFixed(2)}%` : '-'}
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-mono text-[11px] text-blue-600 font-semibold" title={`Purchase Cost Basis: ${formatRM(cost)}`}>
+                        {yoc > 0 ? `${yoc.toFixed(2)}%` : '-'}
                       </td>
                       <td className="py-2.5 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
@@ -425,10 +461,10 @@ export const DividendTracker: React.FC = () => {
                     {formatRM(yearTotalDividend)}
                   </td>
                   <td className="py-3 px-3 text-right text-[11px] font-mono text-gray-700 font-semibold">
-                    {overallYieldInit > 0 ? `${overallYieldInit.toFixed(2)}%` : '-'}
-                  </td>
-                  <td className="py-3 px-3 text-right text-[11px] font-mono text-gray-700 font-semibold">
                     {overallYieldEnd > 0 ? `${overallYieldEnd.toFixed(2)}%` : '-'}
+                  </td>
+                  <td className="py-3 px-3 text-right text-[11px] font-mono text-blue-600 font-bold">
+                    {yearYieldOnCostPercent > 0 ? `${yearYieldOnCostPercent.toFixed(2)}%` : '-'}
                   </td>
                   <td></td>
                 </tr>
