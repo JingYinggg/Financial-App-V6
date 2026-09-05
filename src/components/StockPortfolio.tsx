@@ -19,7 +19,6 @@ import {
   Check
 } from 'lucide-react';
 import { YearSelector } from './YearSelector';
-import { InfoTooltip } from './InfoTooltip';
 import { FormattedNumberInput } from './FormattedNumberInput';
 
 interface AggregatedHolding {
@@ -57,6 +56,15 @@ export const StockPortfolio: React.FC = () => {
   // Sub-tabs: holdings | realized | valuation
   const [activeSubTab, setActiveSubTab] = useState<'holdings' | 'realized' | 'valuation'>('holdings');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Mobile-specific State
+  const [mobileMarket, setMobileMarket] = useState<'MY' | 'US'>('MY');
+  const [mobileRightColumnMode, setMobileRightColumnMode] = useState<'value' | 'pnl'>('value');
+  const [mobileRealizedMarket, setMobileRealizedMarket] = useState<'MY' | 'US'>('MY');
+  const [mobileRealizedRightColumnMode, setMobileRealizedRightColumnMode] = useState<'pnl' | 'date'>('pnl');
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [mobileSearchQuery, setMobileSearchQuery] = useState('');
+  const [selectedMobileStock, setSelectedMobileStock] = useState<AggregatedHolding | null>(null);
 
   // Holdings Market Filter
   const [holdingMarketFilter, setHoldingMarketFilter] = useState<'ALL' | 'MY' | 'US' | 'Crypto'>('ALL');
@@ -311,6 +319,24 @@ export const StockPortfolio: React.FC = () => {
   const unrealizedUSD = portfolioValueUSD - totalCostUSD;
   const unrealizedUSDPct = totalCostUSD > 0 ? (unrealizedUSD / totalCostUSD) * 100 : 0;
 
+  // Mobile Filtered Holdings (Search by stock name or code)
+  const mobileFilteredHoldings = useMemo(() => {
+    return aggregatedHoldings.filter(h => {
+      const matchMarket = h.market === mobileMarket;
+      const query = mobileSearchQuery.trim().toLowerCase();
+      const matchQuery = query
+        ? (h.name && h.name.toLowerCase().includes(query)) || (h.code && h.code.toLowerCase().includes(query))
+        : true;
+      return matchMarket && matchQuery;
+    });
+  }, [aggregatedHoldings, mobileMarket, mobileSearchQuery]);
+
+  const mobileTotalCost = mobileMarket === 'MY' ? totalCostMYR : totalCostUSD;
+  const mobilePortfolioValue = mobileMarket === 'MY' ? portfolioValueMYR : portfolioValueUSD;
+  const mobileUnrealized = mobileMarket === 'MY' ? unrealizedMYR : unrealizedUSD;
+  const mobileUnrealizedPct = mobileMarket === 'MY' ? unrealizedMYRPct : unrealizedUSDPct;
+  const mobileCurrency = mobileMarket === 'MY' ? 'MYR' : 'USD';
+
   // Filtered Realized Trades
   const filteredTrades = useMemo(() => {
     return realizedTrades
@@ -363,6 +389,57 @@ export const StockPortfolio: React.FC = () => {
       netUSD: winUSD + lossUSD
     };
   }, [filteredTrades]);
+
+  // Mobile Filtered Realized Trades (Sync with mobile market selection and search)
+  const mobileFilteredRealizedTrades = useMemo(() => {
+    return realizedTrades
+      .filter(t => {
+        const matchMarket = t.market === mobileRealizedMarket;
+        const query = mobileSearchQuery.trim().toLowerCase();
+        const matchQuery = query
+          ? (t.name && t.name.toLowerCase().includes(query)) || (t.code && t.code.toLowerCase().includes(query))
+          : true;
+        let matchYear = true;
+        if (realizedYearFilter !== 'ALL') {
+          const yrStr = realizedYearFilter.toString();
+          matchYear = t.sellDate.includes(yrStr) || t.sellDate.endsWith(yrStr.slice(-2));
+        }
+        return matchMarket && matchQuery && matchYear;
+      })
+      .sort((a, b) => new Date(b.sellDate).getTime() - new Date(a.sellDate).getTime());
+  }, [realizedTrades, mobileRealizedMarket, mobileSearchQuery, realizedYearFilter]);
+
+  // Mobile Realized Summary (2x2 KPI grid for mobile)
+  const mobileRealizedSummary = useMemo(() => {
+    let totalGain = 0;
+    let totalLoss = 0;
+    let totalCost = 0;
+
+    mobileFilteredRealizedTrades.forEach(t => {
+      const buyTotal = t.units * t.buyUnitPrice;
+      const sellTotal = t.units * t.sellUnitPrice;
+      const fee = t.fees || 0;
+      const net = sellTotal - buyTotal - fee;
+      totalCost += buyTotal;
+
+      if (net >= 0) {
+        totalGain += net;
+      } else {
+        totalLoss += Math.abs(net);
+      }
+    });
+
+    const netPL = totalGain - totalLoss;
+    const netReturnPct = totalCost > 0 ? (netPL / totalCost) * 100 : 0;
+
+    return {
+      totalGain,
+      totalLoss,
+      netPL,
+      netReturnPct,
+      currency: mobileRealizedMarket === 'MY' ? 'MYR' : 'USD'
+    };
+  }, [mobileFilteredRealizedTrades, mobileRealizedMarket]);
 
   // Helper to get auto-flowed dividend from Dividend Tracker for a stock & year
   const getAutoDividend = (code: string | undefined, name: string, yr: number) => {
@@ -684,44 +761,40 @@ export const StockPortfolio: React.FC = () => {
     };
 
     return (
-      <div className="bg-[#FAF8F5] rounded-xl border border-[#EAE3D6] p-4 shadow-xs space-y-3 mt-3">
+      <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 shadow-xs space-y-3 mt-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <h4 className="text-xs font-bold text-[#2D2823] flex items-center gap-1.5">
-              <TrendingUp className="w-3.5 h-3.5 text-[#B86B30]" />
+            <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5 text-blue-600" />
               <span>Annual Valuation Ledger</span>
             </h4>
           </div>
           <button
             onClick={handleAddValuation}
-            className="inline-flex items-center gap-1 px-3 py-1 bg-white hover:bg-[#FAF7F2] text-[#8F4E1D] border border-[#E2DAD0] rounded-lg text-xs font-bold transition-all shadow-2xs cursor-pointer"
+            className="inline-flex items-center gap-1 px-3 py-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-lg text-xs font-bold transition-all shadow-2xs cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Year</span>
           </button>
         </div>
 
-        <div className="overflow-x-auto rounded-lg border border-[#EAE3D6] bg-white">
+        <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-[#F8F5EE] border-b border-[#E6E0D3] text-[#5C544C] font-semibold text-[11px]">
+              <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold text-[11px]">
                 <th className="py-2.5 px-3">Year</th>
-                <th className="py-2.5 px-3 text-right">
-                  <InfoTooltip type="synced" align="right" label="Initial Price" tooltip="Prior year End Price" />
-                </th>
+                <th className="py-2.5 px-3 text-right">Initial Price</th>
                 <th className="py-2.5 px-3 text-right">End Price</th>
                 <th className="py-2.5 px-3 text-right">Stamp Duty</th>
-                <th className="py-2.5 px-3 text-right">
-                  <InfoTooltip type="synced" align="right" label="Div Received" tooltip="Dividend Tracker payouts" />
-                </th>
+                <th className="py-2.5 px-3 text-right">Div Received</th>
                 <th className="py-2.5 px-3 text-center w-12">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F2ECE2]">
+            <tbody className="divide-y divide-gray-100">
               {vals.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-6 text-center text-[#8C8379]">
-                    No annual valuation records logged for this stock yet. Click <strong className="text-[#8F4E1D]">Add Year</strong> to record.
+                  <td colSpan={6} className="py-6 text-center text-gray-400">
+                    No annual valuation records logged for this stock yet. Click <strong className="text-blue-600">Add Year</strong> to record.
                   </td>
                 </tr>
               ) : (
@@ -739,9 +812,9 @@ export const StockPortfolio: React.FC = () => {
                   const isEditingStampDuty = editingValCell?.id === val.id && editingValCell?.field === 'stampDuty';
 
                   return (
-                    <tr key={val.id} className="hover:bg-[#FAF8F5] transition-colors">
+                    <tr key={val.id} className="hover:bg-gray-50/70 transition-colors">
                       {/* Year */}
-                      <td className="py-2.5 px-3 font-bold text-[#2D2823] font-mono text-xs align-middle">
+                      <td className="py-2.5 px-3 font-bold text-gray-900 font-mono text-xs align-middle">
                         {val.year}
                       </td>
                       
@@ -765,7 +838,7 @@ export const StockPortfolio: React.FC = () => {
                                 }
                                 if (e.key === 'Escape') setEditingValCell(null);
                               }}
-                              className="w-24 px-1.5 py-0.5 text-right font-mono font-semibold text-xs border border-[#B86B30] rounded bg-white text-[#2D2823] focus:outline-none focus:ring-1 focus:ring-[#B86B30] shadow-xs"
+                              className="w-24 px-1.5 py-0.5 text-right font-mono font-semibold text-xs border border-blue-500 rounded bg-white text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-xs"
                               autoFocus
                               onFocus={e => e.target.select()}
                             />
@@ -775,14 +848,14 @@ export const StockPortfolio: React.FC = () => {
                                 setEditingValCell({ id: val.id, field: 'start' });
                                 setValInputNumber(val.startOfYearValue === 0 ? '' : String(val.startOfYearValue));
                               }}
-                              className="cursor-pointer font-semibold text-[#5C544C] hover:text-[#8F4E1D] hover:bg-[#FAF7F2] rounded px-1.5 py-0.5 transition-colors inline-block"
+                              className="cursor-pointer font-semibold text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded px-1.5 py-0.5 transition-colors inline-block"
                               title="Click to edit initial price"
                             >
                               {formatMoney(initialVal, val.currency as any)}
                             </span>
                           )
                         ) : (
-                          <span className="font-semibold text-[#7E22CE] font-mono px-1.5 py-0.5 inline-block" title="Auto-flows from preceding year End Price">
+                          <span className="font-semibold text-indigo-600 font-mono px-1.5 py-0.5 inline-block" title="Auto-flows from preceding year End Price">
                             {formatMoney(initialVal, val.currency as any)}
                           </span>
                         )}
@@ -807,7 +880,7 @@ export const StockPortfolio: React.FC = () => {
                               }
                               if (e.key === 'Escape') setEditingValCell(null);
                             }}
-                            className="w-24 px-1.5 py-0.5 text-right font-mono font-bold text-xs border border-[#B86B30] rounded bg-white text-[#2D2823] focus:outline-none focus:ring-1 focus:ring-[#B86B30] shadow-xs"
+                            className="w-24 px-1.5 py-0.5 text-right font-mono font-bold text-xs border border-blue-500 rounded bg-white text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-xs"
                             autoFocus
                             onFocus={e => e.target.select()}
                           />
@@ -817,7 +890,7 @@ export const StockPortfolio: React.FC = () => {
                               setEditingValCell({ id: val.id, field: 'end' });
                               setValInputNumber(val.endOfYearValue === 0 ? '' : String(val.endOfYearValue));
                             }}
-                            className="cursor-pointer font-bold text-[#2D2823] hover:text-[#8F4E1D] hover:bg-[#FAF7F2] rounded px-1.5 py-0.5 transition-colors inline-block"
+                            className="cursor-pointer font-bold text-gray-900 hover:text-blue-600 hover:bg-gray-100 rounded px-1.5 py-0.5 transition-colors inline-block"
                             title="Click to edit end price"
                           >
                             {formatMoney(val.endOfYearValue, val.currency as any)}
@@ -844,7 +917,7 @@ export const StockPortfolio: React.FC = () => {
                               }
                               if (e.key === 'Escape') setEditingValCell(null);
                             }}
-                            className="w-24 px-1.5 py-0.5 text-right font-mono font-semibold text-xs border border-[#B86B30] rounded bg-white text-[#2D2823] focus:outline-none focus:ring-1 focus:ring-[#B86B30] shadow-xs"
+                            className="w-24 px-1.5 py-0.5 text-right font-mono font-semibold text-xs border border-blue-500 rounded bg-white text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-xs"
                             autoFocus
                             onFocus={e => e.target.select()}
                           />
@@ -854,7 +927,7 @@ export const StockPortfolio: React.FC = () => {
                               setEditingValCell({ id: val.id, field: 'stampDuty' });
                               setValInputNumber(val.stampDuty === undefined || val.stampDuty === 0 ? '' : String(val.stampDuty));
                             }}
-                            className="cursor-pointer font-semibold text-[#5C544C] hover:text-[#8F4E1D] hover:bg-[#FAF7F2] rounded px-1.5 py-0.5 transition-colors inline-block"
+                            className="cursor-pointer font-semibold text-gray-700 hover:text-blue-600 hover:bg-gray-100 rounded px-1.5 py-0.5 transition-colors inline-block"
                             title="Click to edit stamp duty"
                           >
                             {formatMoney(val.stampDuty || 0, val.currency as any)}
@@ -863,7 +936,7 @@ export const StockPortfolio: React.FC = () => {
                       </td>
 
                       {/* Div Received Column */}
-                      <td className="py-2.5 px-3 text-right font-mono text-[#7E22CE] font-bold align-middle" title="Auto-flows from Dividend Tracker">
+                      <td className="py-2.5 px-3 text-right font-mono text-indigo-600 font-bold align-middle" title="Auto-flows from Dividend Tracker">
                         {formatMoney(div, val.currency as any)}
                       </td>
 
@@ -871,7 +944,7 @@ export const StockPortfolio: React.FC = () => {
                       <td className="py-2.5 px-3 text-center align-middle">
                         <button
                           onClick={() => deleteStockValuation(val.id)}
-                          className="p-1 text-[#8C8379] hover:text-[#B54838] hover:bg-[#FDF0EE] rounded transition-all cursor-pointer"
+                          className="p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-all cursor-pointer"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -891,14 +964,14 @@ export const StockPortfolio: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Bar: SubTab Navigation & Global Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FAF8F5] p-3 rounded-2xl border border-[#EAE3D6] shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-200 shadow-xs">
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveSubTab('holdings')}
-            className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer ${
               activeSubTab === 'holdings'
-                ? 'bg-[#3D3731] text-[#FAF8F5] shadow-xs'
-                : 'text-[#6B635A] hover:text-[#2D2823] hover:bg-[#EFE8DD]'
+                ? 'bg-gray-900 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
             Active Holdings
@@ -906,10 +979,10 @@ export const StockPortfolio: React.FC = () => {
 
           <button
             onClick={() => setActiveSubTab('realized')}
-            className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer ${
               activeSubTab === 'realized'
-                ? 'bg-[#3D3731] text-[#FAF8F5] shadow-xs'
-                : 'text-[#6B635A] hover:text-[#2D2823] hover:bg-[#EFE8DD]'
+                ? 'bg-gray-900 text-white shadow-xs'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
             Realized P/L
@@ -920,7 +993,7 @@ export const StockPortfolio: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleSyncAllMarketData}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-[#8F4E1D] border border-[#E2DAD0] hover:bg-[#FAF7F2] rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
               title="Sync latest market prices and update Annual Valuation Ledger for all active holdings"
             >
               <RefreshCw className="w-3.5 h-3.5" />
@@ -939,7 +1012,7 @@ export const StockPortfolio: React.FC = () => {
                 });
                 setShowHoldingModal(true);
               }}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#8F4E1D] text-white rounded-xl text-xs font-bold hover:bg-[#733E16] transition-all shadow-xs"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-xs cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Stock Holding</span>
@@ -949,8 +1022,8 @@ export const StockPortfolio: React.FC = () => {
       </div>
 
       {marketSyncStatus && (
-        <div className="p-3 bg-[#EAF5EC] border border-[#BDE5C5] rounded-xl text-xs text-[#2B6135] font-semibold flex items-center gap-2 animate-in fade-in duration-200">
-          <CheckCircle2 className="w-4 h-4 text-[#3D633C] shrink-0" />
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{marketSyncStatus}</span>
         </div>
       )}
@@ -958,37 +1031,303 @@ export const StockPortfolio: React.FC = () => {
       {/* ----------------- SUB-TAB 1: ACTIVE HOLDINGS ----------------- */}
       {activeSubTab === 'holdings' && (
         <div className="space-y-6">
-          {/* Summary KPIs */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
+          {/* ========================================================= */}
+          {/* MOBILE VIEW (block md:hidden) - Approved Layout          */}
+          {/* ========================================================= */}
+          <div className="block md:hidden space-y-3.5">
+            {/* Mobile Header Controls: Segmented Market Switcher + Search Toggle */}
+            <div className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs flex flex-col gap-2.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                    Portfolio Market
+                  </h3>
+                  <div className="inline-flex p-0.5 bg-slate-100 rounded-xl border border-slate-200 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => setMobileMarket('MY')}
+                      className={`px-3.5 py-1 text-xs font-bold rounded-lg transition-all ${
+                        mobileMarket === 'MY'
+                          ? 'shadow-xs bg-white text-slate-900'
+                          : 'text-slate-500 hover:text-slate-900'
+                      }`}
+                    >
+                      Malaysia
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMobileMarket('US')}
+                      className={`px-3.5 py-1 text-xs font-bold rounded-lg transition-all ${
+                        mobileMarket === 'US'
+                          ? 'shadow-xs bg-white text-slate-900'
+                          : 'text-slate-500 hover:text-slate-900'
+                      }`}
+                    >
+                      Overseas
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileSearchOpen(!isMobileSearchOpen);
+                      if (isMobileSearchOpen) setMobileSearchQuery('');
+                    }}
+                    className={`p-2 rounded-xl transition-colors ${
+                      isMobileSearchOpen
+                        ? 'bg-blue-50 text-blue-600 border border-blue-100'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    }`}
+                    title="Search stocks"
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Expandable Search Input (Audited to ticker code only) */}
+              {isMobileSearchOpen && (
+                <div className="relative flex items-center pt-0.5">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={mobileSearchQuery}
+                    onChange={e => setMobileSearchQuery(e.target.value)}
+                    placeholder="Search stock..."
+                    className="w-full pl-9 pr-8 py-2 text-xs bg-slate-100/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-900 font-medium placeholder:text-slate-400"
+                    autoFocus
+                  />
+                  {mobileSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setMobileSearchQuery('')}
+                      className="absolute right-2.5 p-0.5 text-slate-400 hover:text-slate-700"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* 2x2 Summary Card */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Portfolio Summary
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                {/* Total Gross Investment */}
+                <div className="space-y-0.5 border-l-2 border-slate-300 pl-2.5">
+                  <span className="text-[10px] text-slate-400 font-medium block">Total Gross Investment</span>
+                  <span className="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                    {mobileCurrency} {mobileTotalCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+
+                {/* Total Portfolio Value */}
+                <div className="space-y-0.5 border-l-2 border-blue-500 pl-2.5">
+                  <span className="text-[10px] text-slate-400 font-medium block">Total Portfolio Value</span>
+                  <span className="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                    {mobileCurrency} {mobilePortfolioValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+
+                {/* Unrealized P&L ($) */}
+                <div className={`space-y-0.5 border-l-2 pl-2.5 ${mobileUnrealized >= 0 ? 'border-emerald-500' : 'border-rose-500'}`}>
+                  <span className="text-[10px] text-slate-400 font-medium block">Unr. P&L ($)</span>
+                  <span className={`text-sm font-extrabold font-mono block leading-tight ${mobileUnrealized >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                    {mobileCurrency} {mobileUnrealized >= 0 ? '+' : ''}{mobileUnrealized.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+
+                {/* Unrealized P&L (%) */}
+                <div className={`space-y-0.5 border-l-2 pl-2.5 ${mobileUnrealizedPct >= 0 ? 'border-emerald-500' : 'border-rose-500'}`}>
+                  <span className="text-[10px] text-slate-400 font-medium block">Unr. P&L (%)</span>
+                  <span className={`text-sm font-extrabold font-mono block leading-tight ${mobileUnrealizedPct >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                    {mobileUnrealizedPct >= 0 ? '+' : ''}{mobileUnrealizedPct.toFixed(2)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Compact 3-Column Holdings Table */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+              {/* Header */}
+              <div className="grid grid-cols-12 bg-slate-50 border-b border-slate-200 px-3 py-2.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider items-center select-none">
+                <div className="col-span-5 flex flex-col justify-center">
+                  <span className="leading-tight text-slate-700 font-extrabold">STOCK NAME</span>
+                  <span className="text-[9px] text-slate-400 font-medium leading-tight">QUANTITY</span>
+                </div>
+                <div className="col-span-3 text-right flex flex-col justify-center pr-1">
+                  <span className="leading-tight text-slate-700 font-extrabold">LAST PRICE</span>
+                  <span className="text-[9px] text-slate-400 font-medium leading-tight">AVG PRICE</span>
+                </div>
+                <div className="col-span-4 flex items-center justify-end gap-1.5 pl-1">
+                  <div className="text-right flex flex-col justify-center">
+                    {mobileRightColumnMode === 'value' ? (
+                      <>
+                        <span className="leading-tight text-slate-700 font-extrabold">MARKET VALUE</span>
+                        <span className="text-[9px] text-slate-400 font-medium leading-tight">TOTAL COST</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="leading-tight text-slate-700 font-extrabold">UNR. P&L ($)</span>
+                        <span className="text-[9px] text-slate-400 font-medium leading-tight">UNR. P&L (%)</span>
+                      </>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMobileRightColumnMode(mobileRightColumnMode === 'value' ? 'pnl' : 'value')}
+                    className="p-1.5 rounded-lg bg-white border border-slate-200 text-blue-600 hover:bg-blue-50 active:scale-95 transition-all shadow-2xs shrink-0 cursor-pointer"
+                    title="Toggle Market Value / P&L display"
+                  >
+                    <span className="font-bold text-xs leading-none select-none">⇄</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Holdings Rows */}
+              <div className="divide-y divide-slate-100">
+                {mobileFilteredHoldings.length === 0 ? (
+                  <div className="py-8 px-4 text-center">
+                    <p className="text-xs text-slate-400 font-medium">
+                      {mobileSearchQuery
+                        ? `No stocks matching "${mobileSearchQuery}"`
+                        : `No active ${mobileMarket === 'MY' ? 'Malaysia' : 'Overseas'} stock holdings.`}
+                    </p>
+                  </div>
+                ) : (
+                  mobileFilteredHoldings.map(h => {
+                    const isProfit = h.unrealizedPL >= 0;
+                    const pnlColor = isProfit ? 'text-emerald-600' : 'text-rose-600';
+                    const isSelected = selectedMobileStock?.code === h.code;
+
+                    return (
+                      <div key={h.code} className="transition-colors">
+                        <div
+                          onClick={() => setSelectedMobileStock(isSelected ? null : h)}
+                          className="grid grid-cols-12 px-3 py-3 items-center hover:bg-slate-50/70 active:bg-slate-100 transition-colors cursor-pointer"
+                        >
+                          {/* Left Column: Stock Name & Quantity */}
+                          <div className="col-span-5 flex flex-col min-w-0 pr-1">
+                            <div className="font-extrabold text-xs text-slate-900 truncate leading-tight" title={h.name || h.code}>
+                              {h.name || h.code}
+                            </div>
+                            <div className="text-[10px] text-slate-500 font-mono mt-0.5 leading-tight">
+                              {h.totalUnits.toLocaleString()}
+                            </div>
+                          </div>
+
+                          {/* Middle Column: Last Price & Avg Price */}
+                          <div className="col-span-3 text-right font-mono pr-1">
+                            <div className="font-extrabold text-xs text-slate-900 leading-tight">
+                              {h.currentPrice.toFixed(3)}
+                            </div>
+                            <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                              {h.avgBuyPrice.toFixed(3)}
+                            </div>
+                          </div>
+
+                          {/* Right Column: Value or P&L */}
+                          <div className="col-span-4 text-right font-mono pl-1">
+                            {mobileRightColumnMode === 'value' ? (
+                              <>
+                                <div className="font-extrabold text-xs text-slate-900 leading-tight">
+                                  {h.marketValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </div>
+                                <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">
+                                  {h.totalCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className={`font-extrabold text-xs leading-tight ${pnlColor}`}>
+                                  {isProfit ? '+' : ''}{h.unrealizedPL.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </div>
+                                <div className={`text-[10px] font-bold mt-0.5 leading-tight ${pnlColor}`}>
+                                  {isProfit ? '+' : ''}{h.gainPercent.toFixed(2)}%
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Expanded mobile details drawer if row is tapped */}
+                        {isSelected && (
+                          <div className="bg-slate-50 px-3 py-3 border-t border-slate-100 space-y-2.5 animate-in fade-in">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-bold text-slate-700">{h.name}</span>
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openAddLotForStock(h.code, h.name, h.market, h.currentPrice);
+                                  }}
+                                  className="px-2 py-1 bg-blue-600 text-white font-bold text-[11px] rounded-lg shadow-2xs"
+                                >
+                                  + Buy Lot
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openSellDialog(h);
+                                  }}
+                                  className="px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-200 font-bold text-[11px] rounded-lg shadow-2xs"
+                                >
+                                  Sell
+                                </button>
+                              </div>
+                            </div>
+                            <div className="text-[11px] text-slate-500">
+                              {h.lots.length} purchase lot{h.lots.length > 1 ? 's' : ''} logged • Tap row to collapse
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ========================================================= */}
+          {/* DESKTOP VIEW (hidden md:block) - Preserved Unchanged     */}
+          {/* ========================================================= */}
+          <div className="hidden md:block space-y-6">
+            {/* Summary KPIs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider">
-                      Total Portfolio Value (MYR)
-                    </span>
-                    <InfoTooltip
-                      type="synced"
-                      tooltip="Sum of active MY stock holdings"
-                    />
-                  </div>
-                  <span className="text-[10px] font-semibold text-[#8C8379]">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                    Total Portfolio Value (MYR)
+                  </span>
+                  <span className="text-[10px] font-semibold text-gray-400">
                     {latestYear}
                   </span>
                 </div>
-                <p className="text-xl font-extrabold text-[#7E22CE] font-mono">
+                <p className="text-xl font-extrabold text-indigo-600 font-mono">
                   {formatRM(portfolioValueMYR)}
                 </p>
               </div>
 
-              <div className="mt-3 pt-2.5 border-t border-[#F2ECE2] flex items-center justify-between text-xs">
+              <div className="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-between text-xs">
                 <div>
-                  <span className="text-[#8C8379] text-[10px] block">Total Gross Investment</span>
-                  <span className="font-bold text-[#5C544C] font-mono text-xs">{formatRM(totalCostMYR)}</span>
+                  <span className="text-gray-400 text-[10px] block">Total Gross Investment</span>
+                  <span className="font-bold text-gray-700 font-mono text-xs">{formatRM(totalCostMYR)}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[#8C8379] text-[10px] block">Unrealized P/L</span>
-                  <span className={`font-bold font-mono text-xs ${unrealizedMYR >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'}`}>
+                  <span className="text-gray-400 text-[10px] block">Unrealized P/L</span>
+                  <span className={`font-bold font-mono text-xs ${unrealizedMYR >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                     {unrealizedMYR >= 0 ? '+' : '-'}{formatRM(Math.abs(unrealizedMYR))}
                     <span className="text-[10px] ml-1 font-medium">
                       ({unrealizedMYR >= 0 ? '+' : ''}{unrealizedMYRPct.toFixed(2)}%)
@@ -998,35 +1337,29 @@ export const StockPortfolio: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
+            <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider">
-                      Total Portfolio Value (USD)
-                    </span>
-                    <InfoTooltip
-                      type="synced"
-                      tooltip="Sum of active US stock holdings"
-                    />
-                  </div>
-                  <span className="text-[10px] font-semibold text-[#8C8379]">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                    Total Portfolio Value (USD)
+                  </span>
+                  <span className="text-[10px] font-semibold text-gray-400">
                     {latestYear}
                   </span>
                 </div>
-                <p className="text-xl font-extrabold text-[#7E22CE] font-mono">
+                <p className="text-xl font-extrabold text-indigo-600 font-mono">
                   {formatUSD(portfolioValueUSD)}
                 </p>
               </div>
 
-              <div className="mt-3 pt-2.5 border-t border-[#F2ECE2] flex items-center justify-between text-xs">
+              <div className="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-between text-xs">
                 <div>
-                  <span className="text-[#8C8379] text-[10px] block">Total Gross Investment</span>
-                  <span className="font-bold text-[#5C544C] font-mono text-xs">{formatUSD(totalCostUSD)}</span>
+                  <span className="text-gray-400 text-[10px] block">Total Gross Investment</span>
+                  <span className="font-bold text-gray-700 font-mono text-xs">{formatUSD(totalCostUSD)}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[#8C8379] text-[10px] block">Unrealized P/L</span>
-                  <span className={`font-bold font-mono text-xs ${unrealizedUSD >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'}`}>
+                  <span className="text-gray-400 text-[10px] block">Unrealized P/L</span>
+                  <span className={`font-bold font-mono text-xs ${unrealizedUSD >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                     {unrealizedUSD >= 0 ? '+' : '-'}{formatUSD(Math.abs(unrealizedUSD))}
                     <span className="text-[10px] ml-1 font-medium">
                       ({unrealizedUSD >= 0 ? '+' : ''}{unrealizedUSDPct.toFixed(2)}%)
@@ -1038,16 +1371,16 @@ export const StockPortfolio: React.FC = () => {
           </div>
 
           {/* Filter Bar & Dropdown Expand Controls */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FAF8F5] p-3 rounded-2xl border border-[#EAE3D6] shadow-xs">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-200 shadow-xs">
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto">
               {(['ALL', 'MY', 'US', 'Crypto'] as const).map(mkt => (
                 <button
                   key={mkt}
                   onClick={() => setHoldingMarketFilter(mkt)}
-                  className={`px-3 py-1 text-xs font-bold rounded-lg transition-all ${
+                  className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                     holdingMarketFilter === mkt
-                      ? 'bg-[#3D3731] text-[#FAF8F5]'
-                      : 'text-[#6B635A] hover:bg-[#EFE8DD]'
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   {mkt === 'ALL' ? 'All Markets' : mkt === 'MY' ? 'Malaysia (MYR)' : mkt === 'US' ? 'Overseas (USD)' : 'Crypto'}
@@ -1056,17 +1389,17 @@ export const StockPortfolio: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="flex items-center gap-1 bg-[#EFE8DD] p-1 rounded-xl">
+              <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
                 <button
                   onClick={expandAllLots}
-                  className="px-2.5 py-1 text-[11px] font-bold text-[#5C544C] hover:text-[#2D2823] hover:bg-white rounded-lg transition-all"
+                  className="px-2.5 py-1 text-[11px] font-bold text-gray-700 hover:text-gray-900 hover:bg-white rounded-lg transition-all cursor-pointer"
                   title="Expand all purchase lots dropdowns"
                 >
                   Expand All Lots
                 </button>
                 <button
                   onClick={collapseAllLots}
-                  className="px-2.5 py-1 text-[11px] font-bold text-[#5C544C] hover:text-[#2D2823] hover:bg-white rounded-lg transition-all"
+                  className="px-2.5 py-1 text-[11px] font-bold text-gray-700 hover:text-gray-900 hover:bg-white rounded-lg transition-all cursor-pointer"
                   title="Collapse all purchase lots dropdowns"
                 >
                   Collapse
@@ -1074,48 +1407,38 @@ export const StockPortfolio: React.FC = () => {
               </div>
 
               <div className="relative w-full sm:w-56">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#8C8379]" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search stock..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-[#E2DAD0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B86B30] text-[#2D2823]"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
             </div>
           </div>
 
           {/* Holdings Table with Dropdown Purchase Lots */}
-          <div className="bg-white rounded-2xl border border-[#EAE3D6] shadow-xs overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
             <div className="overflow-x-auto overflow-y-auto max-h-[65vh] no-scrollbar touch-scroll relative">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="sticky top-0 z-20 bg-[#F8F5EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
-                  <tr className="border-b border-[#E6E0D3] text-[#5C544C] font-bold uppercase text-[10px] tracking-wider">
-                    <th className="py-3 px-4 min-w-[160px] sticky left-0 top-0 z-30 bg-[#F8F5EE] border-r border-[#E6E0D3] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Stock</th>
+                <thead className="sticky top-0 z-20 bg-gray-50 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
+                  <tr className="border-b border-gray-200 text-gray-600 font-bold uppercase text-[10px] tracking-wider">
+                    <th className="py-3 px-4 min-w-[160px] sticky left-0 top-0 z-30 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Stock</th>
                     <th className="py-3 px-4">Market</th>
-                    <th className="py-3 px-4 text-right">
-                      <InfoTooltip type="synced" align="right" label="Units" tooltip="Total units owned" />
-                    </th>
-                    <th className="py-3 px-4 text-right">
-                      <InfoTooltip type="synced" align="right" label="Avg Cost" tooltip="Total Cost ÷ Units" />
-                    </th>
-                    <th className="py-3 px-4 text-right">
-                      <InfoTooltip type="synced" align="right" label="Total Cost" tooltip="Total purchase expenditure" />
-                    </th>
-                    <th className="py-3 px-4 text-right">
-                      <InfoTooltip type="synced" align="right" label="Market Value" tooltip="Units × Current Price" />
-                    </th>
-                    <th className="py-3 px-4 text-right">
-                      <InfoTooltip type="synced" align="right" label="P/L %" tooltip="((Market Value - Cost) ÷ Cost) × 100" />
-                    </th>
+                    <th className="py-3 px-4 text-right">Units</th>
+                    <th className="py-3 px-4 text-right">Avg Cost</th>
+                    <th className="py-3 px-4 text-right">Total Cost</th>
+                    <th className="py-3 px-4 text-right">Market Value</th>
+                    <th className="py-3 px-4 text-right">P/L %</th>
                     <th className="py-3 px-4 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F2ECE2] font-medium text-[#2D2823]">
+                <tbody className="divide-y divide-gray-100 font-medium text-gray-900">
                   {filteredAggregated.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="py-8 text-center text-[#8C8379]">
+                      <td colSpan={8} className="py-8 text-center text-gray-400">
                         No stock holdings matching criteria.
                       </td>
                     </tr>
@@ -1124,32 +1447,32 @@ export const StockPortfolio: React.FC = () => {
                       const isExpanded = expandedCodes.has(agg.code);
                       return (
                         <React.Fragment key={agg.code}>
-                          <tr className="hover:bg-[#FAF8F5] transition-colors">
-                            <td className="py-3 px-4 sticky left-0 z-10 bg-white group-hover:bg-[#FAF8F5] border-r border-[#EAE3D6] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
+                          <tr className="hover:bg-gray-50/70 transition-colors">
+                            <td className="py-3 px-4 sticky left-0 z-10 bg-white group-hover:bg-gray-50/70 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
                               <div className="flex items-center gap-2">
                                 <button
                                   type="button"
                                   onClick={() => toggleExpand(agg.code)}
-                                  className="p-1 rounded-md hover:bg-[#EFE8DD] text-[#8C8379] hover:text-[#2D2823] transition-colors"
+                                  className="p-1 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer"
                                   title={isExpanded ? 'Collapse Purchase Lots' : 'Drop Down All Purchase Lots'}
                                 >
                                   {isExpanded ? (
-                                    <ChevronDown className="w-4 h-4 text-[#8F4E1D]" />
+                                    <ChevronDown className="w-4 h-4 text-blue-600" />
                                   ) : (
                                     <ChevronRight className="w-4 h-4" />
                                   )}
                                 </button>
                                 <div>
-                                  <div className="font-bold text-[#2D2823] flex items-center gap-2">
+                                  <div className="font-bold text-gray-900 flex items-center gap-2">
                                     <span>{agg.name}</span>
                                   </div>
-                                  <span className="font-mono text-[10px] text-[#8C8379]">{agg.code}</span>
+                                  <span className="font-mono text-[10px] text-gray-400">{agg.code}</span>
                                 </div>
                               </div>
                             </td>
                             <td className="py-3 px-4">
                               <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
-                                agg.market === 'MY' ? 'bg-[#EEF4EE] text-[#3D633C]' : 'bg-[#F5EEFD] text-[#7E22CE]'
+                                agg.market === 'MY' ? 'bg-emerald-50 text-emerald-700' : 'bg-purple-50 text-purple-700'
                               }`}>
                                 {agg.market}
                               </span>
@@ -1160,14 +1483,14 @@ export const StockPortfolio: React.FC = () => {
                             <td className="py-3 px-4 text-right font-mono">
                               {formatMoney(agg.avgBuyPrice, agg.currency)}
                             </td>
-                            <td className="py-3 px-4 text-right font-mono font-bold text-[#2D2823]">
+                            <td className="py-3 px-4 text-right font-mono font-bold text-gray-900">
                               {formatMoney(agg.totalCost, agg.currency)}
                             </td>
-                            <td className="py-3 px-4 text-right font-mono font-bold text-[#2D2823]">
+                            <td className="py-3 px-4 text-right font-mono font-bold text-gray-900">
                               {formatMoney(agg.marketValue, agg.currency)}
                             </td>
                             <td className={`py-3 px-4 text-right font-mono font-bold ${
-                              agg.gainPercent >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'
+                              agg.gainPercent >= 0 ? 'text-emerald-600' : 'text-rose-600'
                             }`}>
                               {agg.gainPercent >= 0 ? '+' : ''}{agg.gainPercent.toFixed(2)}%
                             </td>
@@ -1175,14 +1498,14 @@ export const StockPortfolio: React.FC = () => {
                               <div className="flex items-center justify-center gap-1.5">
                                 <button
                                   onClick={() => openAddLotForStock(agg.code, agg.name, agg.market, agg.currentPrice)}
-                                  className="p-1 text-[#8F4E1D] hover:bg-[#FAF7F2] rounded-lg transition-colors"
+                                  className="p-1 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                                   title="Add Purchase Lot for this stock"
                                 >
                                   <Plus className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={() => openSellDialog(agg)}
-                                  className="px-2.5 py-1 bg-[#FAF7F2] hover:bg-[#FDF0EE] hover:text-[#B54838] text-[#5C544C] border border-[#E2DAD0] font-bold rounded-lg transition-all text-[11px]"
+                                  className="px-2.5 py-1 bg-gray-50 hover:bg-rose-50 hover:text-rose-600 text-gray-700 border border-gray-200 font-bold rounded-lg transition-all text-[11px] cursor-pointer"
                                 >
                                   Sell
                                 </button>
@@ -1192,22 +1515,22 @@ export const StockPortfolio: React.FC = () => {
 
                           {/* Inline Dropdown for All Purchase Lots */}
                           {isExpanded && (
-                            <tr className="bg-[#FAF8F5] border-y border-[#EAE3D6]">
+                            <tr className="bg-gray-50 border-y border-gray-200">
                               <td colSpan={8} className="p-4">
-                                <div className="bg-white rounded-xl border border-[#EAE3D6] p-3.5 shadow-xs space-y-3">
+                                <div className="bg-white rounded-xl border border-gray-200 p-3.5 shadow-xs space-y-3">
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                      <Layers className="w-4 h-4 text-[#8F4E1D]" />
-                                      <h4 className="text-xs font-bold text-[#2D2823]">
+                                      <Layers className="w-4 h-4 text-blue-600" />
+                                      <h4 className="text-xs font-bold text-gray-900">
                                         All Purchase Lots for {agg.name} ({agg.code})
                                       </h4>
-                                      <span className="text-[11px] text-[#8C8379]">
+                                      <span className="text-[11px] text-gray-400">
                                         ({agg.lots.length} logged purchase transactions)
                                       </span>
                                     </div>
                                     <button
                                       onClick={() => openAddLotForStock(agg.code, agg.name, agg.market, agg.currentPrice)}
-                                      className="flex items-center gap-1 px-2.5 py-1 bg-[#FAF7F2] text-[#8F4E1D] border border-[#E2DAD0] rounded-lg text-xs font-bold hover:bg-[#F5EFE6] transition-all"
+                                      className="flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg text-xs font-bold hover:bg-blue-100 transition-all cursor-pointer"
                                     >
                                       <Plus className="w-3 h-3" />
                                       <span>Add Purchase Lot</span>
@@ -1217,7 +1540,7 @@ export const StockPortfolio: React.FC = () => {
                                   <div className="overflow-x-auto">
                                     <table className="w-full text-left text-xs border-collapse">
                                       <thead>
-                                        <tr className="bg-[#F8F5EE] border-b border-[#E6E0D3] text-[#5C544C] font-semibold text-[10px] uppercase">
+                                        <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-semibold text-[10px] uppercase">
                                           <th className="py-2 px-3">Lot Buy Date</th>
                                           <th className="py-2 px-3 text-right">Units</th>
                                           <th className="py-2 px-3 text-right">Buy Price</th>
@@ -1227,38 +1550,38 @@ export const StockPortfolio: React.FC = () => {
                                           <th className="py-2 px-3 text-center w-20">Actions</th>
                                         </tr>
                                       </thead>
-                                      <tbody className="divide-y divide-[#F2ECE2]">
+                                      <tbody className="divide-y divide-gray-100">
                                         {agg.lots.map((lot, idx) => {
                                           const cost = lot.units * lot.buyUnitPrice;
                                           const val = lot.units * (lot.currentPrice || agg.currentPrice);
                                           const pl = val - cost;
                                           const plPct = cost > 0 ? (pl / cost) * 100 : 0;
                                           return (
-                                            <tr key={lot.id} className="hover:bg-[#FAF8F5]">
-                                              <td className="py-2 px-3 font-mono text-[#5C544C] font-medium">
+                                            <tr key={lot.id} className="hover:bg-gray-50/70">
+                                              <td className="py-2 px-3 font-mono text-gray-700 font-medium">
                                                 {lot.buyDate || `Lot #${idx + 1}`}
                                               </td>
-                                              <td className="py-2 px-3 text-right font-mono font-semibold text-[#2D2823]">
+                                              <td className="py-2 px-3 text-right font-mono font-semibold text-gray-900">
                                                 {lot.units.toLocaleString()}
                                               </td>
-                                              <td className="py-2 px-3 text-right font-mono text-[#5C544C]">
+                                              <td className="py-2 px-3 text-right font-mono text-gray-700">
                                                 {formatMoney(lot.buyUnitPrice, agg.currency)}
                                               </td>
-                                              <td className="py-2 px-3 text-right font-mono font-bold text-[#2D2823]">
+                                              <td className="py-2 px-3 text-right font-mono font-bold text-gray-900">
                                                 {formatMoney(cost, agg.currency)}
                                               </td>
-                                              <td className="py-2 px-3 text-right font-mono font-bold text-[#2D2823]">
+                                              <td className="py-2 px-3 text-right font-mono font-bold text-gray-900">
                                                 {formatMoney(val, agg.currency)}
                                               </td>
                                               <td className={`py-2 px-3 text-right font-mono font-bold ${
-                                                pl >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'
+                                                pl >= 0 ? 'text-emerald-600' : 'text-rose-600'
                                               }`}>
                                                 {pl >= 0 ? '+' : ''}{formatMoney(pl, agg.currency)} ({plPct.toFixed(1)}%)
                                               </td>
                                               <td className="py-2 px-3 text-center">
                                                 <button
                                                   onClick={() => deleteHolding(lot.id)}
-                                                  className="p-1 text-[#8C8379] hover:text-[#B54838] hover:bg-[#FDF0EE] rounded transition-colors"
+                                                  className="p-1 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors cursor-pointer"
                                                   title="Delete this purchase lot"
                                                 >
                                                   <Trash2 className="w-3.5 h-3.5" />
@@ -1284,13 +1607,267 @@ export const StockPortfolio: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
       )}
 
       {/* ----------------- SUB-TAB 2: REALIZED P/L ----------------- */}
       {activeSubTab === 'realized' && (
         <div className="space-y-6">
+          {/* ========================================================= */}
+          {/* MOBILE VIEW (block md:hidden) - Exact 3-Column Layout     */}
+          {/* ========================================================= */}
+          <div className="block md:hidden space-y-3.5">
+            {/* Mobile Header Controls: Segmented Market Switcher + Search Toggle */}
+            <div className="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs flex flex-col gap-2.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                    Portfolio Market
+                  </h3>
+                  <div className="flex items-center bg-slate-100 p-1 rounded-xl">
+                    <button
+                      type="button"
+                      onClick={() => setMobileRealizedMarket('MY')}
+                      className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                        mobileRealizedMarket === 'MY'
+                          ? 'bg-white text-slate-900 shadow-xs'
+                          : 'text-slate-500 hover:text-slate-900'
+                      }`}
+                    >
+                      Malaysia
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMobileRealizedMarket('US')}
+                      className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                        mobileRealizedMarket === 'US'
+                          ? 'bg-white text-slate-900 shadow-xs'
+                          : 'text-slate-500 hover:text-slate-900'
+                      }`}
+                    >
+                      Overseas
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileSearchOpen(!isMobileSearchOpen);
+                      if (isMobileSearchOpen) setMobileSearchQuery('');
+                    }}
+                    className={`p-2 rounded-xl transition-colors ${
+                      isMobileSearchOpen
+                        ? 'bg-blue-50 text-blue-600 border border-blue-100'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    }`}
+                    title="Search trades"
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Expandable Search Input */}
+              {isMobileSearchOpen && (
+                <div className="relative flex items-center pt-0.5">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={mobileSearchQuery}
+                    onChange={e => setMobileSearchQuery(e.target.value)}
+                    placeholder="Search trade..."
+                    className="w-full pl-9 pr-8 py-2 text-xs bg-slate-100/90 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-900 font-medium placeholder:text-slate-400"
+                    autoFocus
+                  />
+                  {mobileSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setMobileSearchQuery('')}
+                      className="absolute right-2.5 p-0.5 text-slate-400 hover:text-slate-700"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* 2x2 Summary Card */}
+            <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Portfolio Summary
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                {/* Total Realized Gain */}
+                <div className="space-y-0.5 border-l-2 border-slate-300 pl-2.5">
+                  <span className="text-[10px] text-slate-400 font-medium block">Total Realized Gain</span>
+                  <span className="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                    {mobileRealizedSummary.currency} {mobileRealizedSummary.totalGain.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+
+                {/* Total Realized Loss */}
+                <div className="space-y-0.5 border-l-2 border-blue-500 pl-2.5">
+                  <span className="text-[10px] text-slate-400 font-medium block">Total Realized Loss</span>
+                  <span className="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                    {mobileRealizedSummary.currency} {mobileRealizedSummary.totalLoss.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+
+                {/* Realized P&L ($) */}
+                <div className={`space-y-0.5 border-l-2 pl-2.5 ${mobileRealizedSummary.netPL >= 0 ? 'border-emerald-500' : 'border-rose-500'}`}>
+                  <span className="text-[10px] text-slate-400 font-medium block">Realized P&L ($)</span>
+                  <span className={`text-sm font-extrabold font-mono block leading-tight ${
+                    mobileRealizedSummary.netPL >= 0 ? 'text-emerald-600' : 'text-rose-600'
+                  }`}>
+                    {mobileRealizedSummary.currency} {mobileRealizedSummary.netPL >= 0 ? '+' : ''}{mobileRealizedSummary.netPL.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+
+                {/* Realized P&L (%) */}
+                <div className={`space-y-0.5 border-l-2 pl-2.5 ${mobileRealizedSummary.netReturnPct >= 0 ? 'border-emerald-500' : 'border-rose-500'}`}>
+                  <span className="text-[10px] text-slate-400 font-medium block">Realized P&L (%)</span>
+                  <span className={`text-sm font-extrabold font-mono block leading-tight ${
+                    mobileRealizedSummary.netReturnPct >= 0 ? 'text-emerald-600' : 'text-rose-600'
+                  }`}>
+                    {mobileRealizedSummary.netReturnPct >= 0 ? '+' : ''}{mobileRealizedSummary.netReturnPct.toFixed(2)}%
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Compact 3-Column Realized P/L Table */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+              {/* Table Header */}
+              <div className="grid grid-cols-12 bg-white border-b border-slate-200 px-3.5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider items-center select-none">
+                <div className="col-span-5 flex flex-col justify-center">
+                  <span className="leading-tight text-slate-800 font-extrabold">STOCK NAME</span>
+                  <span className="text-[9px] text-slate-400 font-medium leading-tight">QUANTITY</span>
+                </div>
+                <div className="col-span-3 text-right flex flex-col justify-center pr-1">
+                  <span className="leading-tight text-slate-800 font-extrabold">PURCHASE PRICE</span>
+                  <span className="text-[9px] text-slate-400 font-medium leading-tight">DISPOSAL PRICE</span>
+                </div>
+                <div className="col-span-4 flex items-center justify-end gap-1.5 pl-1">
+                  <div className="text-right flex flex-col justify-center">
+                    {mobileRealizedRightColumnMode === 'pnl' ? (
+                      <>
+                        <span className="leading-tight text-slate-800 font-extrabold">REALIZED P&L ($)</span>
+                        <span className="text-[9px] text-slate-400 font-medium leading-tight">REALIZED P&L (%)</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="leading-tight text-slate-800 font-extrabold">PURCHASE DATE</span>
+                        <span className="text-[9px] text-slate-400 font-medium leading-tight">DISPOSAL DATE</span>
+                      </>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMobileRealizedRightColumnMode(mobileRealizedRightColumnMode === 'pnl' ? 'date' : 'pnl')}
+                    className="w-7 h-7 rounded-lg border border-slate-200 bg-white text-blue-600 hover:bg-slate-50 active:scale-95 transition-all shadow-2xs flex items-center justify-center shrink-0 cursor-pointer"
+                    title="Toggle Realized P&L / Dates"
+                  >
+                    <span className="font-bold text-xs leading-none select-none">⇄</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Trade Rows */}
+              <div className="divide-y divide-slate-100">
+                {mobileFilteredRealizedTrades.length === 0 ? (
+                  <div className="py-8 px-4 text-center">
+                    <p className="text-xs text-slate-400 font-medium">
+                      {mobileSearchQuery
+                        ? `No trades matching "${mobileSearchQuery}"`
+                        : `No realized ${mobileRealizedMarket === 'MY' ? 'Malaysia' : 'Overseas'} stock trades.`}
+                    </p>
+                  </div>
+                ) : (
+                  mobileFilteredRealizedTrades.map(trade => {
+                    const buyTotal = trade.units * trade.buyUnitPrice;
+                    const sellTotal = trade.units * trade.sellUnitPrice;
+                    const fee = trade.fees || 0;
+                    const netGain = sellTotal - buyTotal - fee;
+                    const roi = buyTotal > 0 ? (netGain / buyTotal) * 100 : 0;
+                    const isProfit = netGain >= 0;
+                    const pnlColor = isProfit ? 'text-emerald-600' : 'text-rose-600';
+
+                    // Format dates to MM/YYYY
+                    const formatMMYYYY = (dateStr: string) => {
+                      if (!dateStr) return '-';
+                      const parts = dateStr.split('-');
+                      if (parts.length === 3) {
+                        const yr = parts[0].length === 4 ? parts[0] : parts[2];
+                        const mo = parts[0].length === 4 ? parts[1] : parts[0];
+                        return `${mo.padStart(2, '0')}/${yr}`;
+                      }
+                      return dateStr;
+                    };
+
+                    return (
+                      <div key={trade.id} className="grid grid-cols-12 px-3.5 py-3 items-center hover:bg-slate-50/70 transition-colors">
+                        {/* Left Column: Stock Name & Quantity */}
+                        <div className="col-span-5 flex flex-col min-w-0 pr-1">
+                          <div className="font-extrabold text-xs text-slate-900 truncate leading-tight" title={trade.name || trade.code}>
+                            {trade.name || trade.code}
+                          </div>
+                          <div className="text-[11px] text-slate-400 font-mono mt-0.5 leading-tight">
+                            {trade.units.toLocaleString()}
+                          </div>
+                        </div>
+
+                        {/* Middle Column: Purchase Price & Disposal Price */}
+                        <div className="col-span-3 text-right font-mono pr-1">
+                          <div className="font-extrabold text-xs text-slate-900 leading-tight">
+                            {trade.buyUnitPrice.toFixed(3)}
+                          </div>
+                          <div className="text-[11px] text-slate-400 mt-0.5 leading-tight">
+                            {trade.sellUnitPrice.toFixed(3)}
+                          </div>
+                        </div>
+
+                        {/* Right Column: Realized P&L or Purchase/Disposal Dates */}
+                        <div className="col-span-4 text-right font-mono pl-1">
+                          {mobileRealizedRightColumnMode === 'pnl' ? (
+                            <>
+                              <div className={`font-extrabold text-xs leading-tight ${pnlColor}`}>
+                                {isProfit ? '+' : ''}{formatMoney(netGain, trade.currency)}
+                              </div>
+                              <div className={`text-[11px] font-bold mt-0.5 leading-tight ${pnlColor}`}>
+                                {isProfit ? '+' : ''}{roi.toFixed(2)}%
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="font-extrabold text-xs text-slate-900 leading-tight">
+                                {formatMMYYYY(trade.buyDate)}
+                              </div>
+                              <div className="text-[11px] text-slate-400 mt-0.5 leading-tight">
+                                {formatMMYYYY(trade.sellDate)}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ========================================================= */}
+          {/* DESKTOP / TABLET VIEW (hidden md:block) - Untouched       */}
+          {/* ========================================================= */}
+          <div className="hidden md:block space-y-6">
           {/* Filter Bar with Standard YearSelector & Right-Click to Delete */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FAF8F5] p-3 rounded-2xl border border-[#EAE3D6] shadow-xs">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-200 shadow-xs">
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
               <YearSelector
                 years={realizedYears}
@@ -1314,10 +1891,10 @@ export const StockPortfolio: React.FC = () => {
                   <button
                     key={mkt}
                     onClick={() => setRealizedMarketFilter(mkt)}
-                    className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
+                    className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                       realizedMarketFilter === mkt
-                        ? 'bg-[#3D3731] text-[#FAF8F5]'
-                        : 'text-[#6B635A] hover:bg-[#EFE8DD]'
+                        ? 'bg-gray-900 text-white'
+                        : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     {mkt}
@@ -1326,13 +1903,13 @@ export const StockPortfolio: React.FC = () => {
               </div>
 
               <div className="relative w-48">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[#8C8379]" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search trades..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-[#E2DAD0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B86B30] text-[#2D2823]"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
             </div>
@@ -1343,45 +1920,45 @@ export const StockPortfolio: React.FC = () => {
             {/* MYR Row */}
             {(realizedMarketFilter === 'ALL' || realizedMarketFilter === 'MY') && (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Realized Trades (MYR)
                   </span>
-                  <p className="text-lg font-extrabold text-[#8F4E1D] font-mono">
+                  <p className="text-lg font-extrabold text-blue-600 font-mono">
                     {filteredTrades.filter(t => t.currency === 'MYR').length} Trades
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Total Gain (MYR)
                   </span>
-                  <p className="text-lg font-extrabold text-[#3D633C] font-mono">
+                  <p className="text-lg font-extrabold text-emerald-600 font-mono">
                     +{formatRM(realizedSummary.winMYR)}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Total Loss (MYR)
                   </span>
-                  <p className="text-lg font-extrabold text-[#B54838] font-mono">
+                  <p className="text-lg font-extrabold text-rose-600 font-mono">
                     {realizedSummary.lossMYR !== 0
                       ? formatRM(Math.abs(realizedSummary.lossMYR)).replace('RM ', '-RM ')
                       : 'RM 0.00'}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Admin Fees (MYR)
                   </span>
-                  <p className="text-lg font-extrabold text-[#7A7268] font-mono">
+                  <p className="text-lg font-extrabold text-gray-500 font-mono">
                     {formatRM(realizedSummary.feesMYR)}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Net P/L (MYR)
                   </span>
-                  <p className={`text-lg font-extrabold font-mono ${realizedSummary.netMYR >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'}`}>
+                  <p className={`text-lg font-extrabold font-mono ${realizedSummary.netMYR >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                     {realizedSummary.netMYR >= 0 ? '+' : ''}
                     {realizedSummary.netMYR < 0
                       ? formatRM(Math.abs(realizedSummary.netMYR)).replace('RM ', '-RM ')
@@ -1394,45 +1971,45 @@ export const StockPortfolio: React.FC = () => {
             {/* USD Row */}
             {(realizedMarketFilter === 'ALL' || realizedMarketFilter === 'US' || realizedMarketFilter === 'Crypto') && (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Realized Trades (USD)
                   </span>
-                  <p className="text-lg font-extrabold text-[#8F4E1D] font-mono">
+                  <p className="text-lg font-extrabold text-blue-600 font-mono">
                     {filteredTrades.filter(t => t.currency === 'USD').length} Trades
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Total Gain (USD)
                   </span>
-                  <p className="text-lg font-extrabold text-[#3D633C] font-mono">
+                  <p className="text-lg font-extrabold text-emerald-600 font-mono">
                     +{formatUSD(realizedSummary.winUSD)}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Total Loss (USD)
                   </span>
-                  <p className="text-lg font-extrabold text-[#B54838] font-mono">
+                  <p className="text-lg font-extrabold text-rose-600 font-mono">
                     {realizedSummary.lossUSD !== 0
                       ? formatUSD(Math.abs(realizedSummary.lossUSD)).replace('$ ', '-$ ')
                       : '$ 0.00'}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Admin Fees (USD)
                   </span>
-                  <p className="text-lg font-extrabold text-[#7A7268] font-mono">
+                  <p className="text-lg font-extrabold text-gray-500 font-mono">
                     {formatUSD(realizedSummary.feesUSD)}
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-2xl border border-[#EAE3D6] shadow-xs flex flex-col justify-between">
-                  <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block mb-1">
+                <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
                     Net P/L (USD)
                   </span>
-                  <p className={`text-lg font-extrabold font-mono ${realizedSummary.netUSD >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'}`}>
+                  <p className={`text-lg font-extrabold font-mono ${realizedSummary.netUSD >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                     {realizedSummary.netUSD >= 0 ? '+' : ''}
                     {realizedSummary.netUSD < 0
                       ? formatUSD(Math.abs(realizedSummary.netUSD)).replace('$ ', '-$ ')
@@ -1444,12 +2021,12 @@ export const StockPortfolio: React.FC = () => {
           </div>
 
           {/* Realized Trades Table */}
-          <div className="bg-white rounded-2xl border border-[#EAE3D6] shadow-xs overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
             <div className="overflow-x-auto overflow-y-auto max-h-[65vh] no-scrollbar touch-scroll relative">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="sticky top-0 z-20 bg-[#F8F5EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
-                  <tr className="border-b border-[#E6E0D3] text-[#5C544C] font-bold uppercase text-[10px] tracking-wider">
-                    <th className="py-3 px-4 min-w-[160px] sticky left-0 top-0 z-30 bg-[#F8F5EE] border-r border-[#E6E0D3] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Asset</th>
+                <thead className="sticky top-0 z-20 bg-gray-50 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
+                  <tr className="border-b border-gray-200 text-gray-600 font-bold uppercase text-[10px] tracking-wider">
+                    <th className="py-3 px-4 min-w-[160px] sticky left-0 top-0 z-30 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Asset</th>
                     <th className="py-3 px-4">Market</th>
                     <th className="py-3 px-4">Buy Date</th>
                     <th className="py-3 px-4">Sell Date</th>
@@ -1462,10 +2039,10 @@ export const StockPortfolio: React.FC = () => {
                     <th className="py-3 px-2 text-center w-10"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F2ECE2] font-medium text-[#2D2823]">
+                <tbody className="divide-y divide-gray-100 font-medium text-gray-900">
                   {filteredTrades.length === 0 ? (
                     <tr>
-                      <td colSpan={11} className="py-8 text-center text-[#8C8379]">
+                      <td colSpan={11} className="py-8 text-center text-gray-400">
                         No realized trades matching filter.
                       </td>
                     </tr>
@@ -1480,58 +2057,58 @@ export const StockPortfolio: React.FC = () => {
 
                       return (
                         <React.Fragment key={trade.id}>
-                          <tr className="hover:bg-[#FAF8F5] transition-colors group">
-                            <td className="py-2.5 px-4 sticky left-0 z-10 bg-white group-hover:bg-[#FAF8F5] border-r border-[#EAE3D6] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
+                          <tr className="hover:bg-gray-50/70 transition-colors group">
+                            <td className="py-2.5 px-4 sticky left-0 z-10 bg-white group-hover:bg-gray-50/70 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
                               <div className="flex items-center gap-2">
                                 <button
                                   type="button"
                                   onClick={() => toggleExpand(trade.id)}
-                                  className="p-1 rounded-md hover:bg-[#EFE8DD] text-[#8C8379] hover:text-[#2D2823] transition-colors"
+                                  className="p-1 rounded-md hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-colors cursor-pointer"
                                   title={isExpanded ? 'Collapse' : 'Expand'}
                                 >
                                   {isExpanded ? (
-                                    <ChevronDown className="w-4 h-4 text-[#8F4E1D]" />
+                                    <ChevronDown className="w-4 h-4 text-blue-600" />
                                   ) : (
                                     <ChevronRight className="w-4 h-4" />
                                   )}
                                 </button>
                                 <div>
-                                  <div className="font-bold text-[#2D2823]">{trade.name}</div>
-                                  <span className="font-mono text-[10px] text-[#8C8379]">{trade.code}</span>
+                                  <div className="font-bold text-gray-900">{trade.name}</div>
+                                  <span className="font-mono text-[10px] text-gray-400">{trade.code}</span>
                                 </div>
                               </div>
                             </td>
                             <td className="py-2.5 px-4">
-                              <span className="px-2 py-0.5 bg-[#EFE8DD] text-[#5C544C] rounded text-[10px] font-bold">
+                              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] font-bold">
                                 {trade.market}
                               </span>
                             </td>
-                            <td className="py-2.5 px-4 text-[#5C544C] font-mono text-[11px]">{trade.buyDate}</td>
-                            <td className="py-2.5 px-4 text-[#2D2823] font-mono text-[11px] font-semibold">{trade.sellDate}</td>
+                            <td className="py-2.5 px-4 text-gray-600 font-mono text-[11px]">{trade.buyDate}</td>
+                            <td className="py-2.5 px-4 text-gray-900 font-mono text-[11px] font-semibold">{trade.sellDate}</td>
                             <td className="py-2.5 px-4 text-right font-mono">{trade.units.toLocaleString()}</td>
                             <td className="py-2.5 px-4 text-right font-mono">{formatMoney(trade.buyUnitPrice, trade.currency)}</td>
                             <td className="py-2.5 px-4 text-right font-mono">{formatMoney(trade.sellUnitPrice, trade.currency)}</td>
-                            <td className="py-2.5 px-4 text-right font-mono text-[#7A7268]">
+                            <td className="py-2.5 px-4 text-right font-mono text-gray-500">
                               {formatMoney(fee, trade.currency)}
                             </td>
                             <td className={`py-2.5 px-4 text-right font-mono font-bold ${
-                              netGain >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'
+                              netGain >= 0 ? 'text-emerald-600' : 'text-rose-600'
                             }`}>
                               <div>{formatMoney(netGain, trade.currency)}</div>
                               <span className="text-[10px] font-normal">({roi >= 0 ? '+' : ''}{roi.toFixed(2)}%)</span>
                             </td>
-                            <td className="py-2.5 px-4 text-[11px] text-[#7A7268] max-w-xs truncate">{trade.notes || '-'}</td>
+                            <td className="py-2.5 px-4 text-[11px] text-gray-500 max-w-xs truncate">{trade.notes || '-'}</td>
                             <td className="py-2.5 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
                                 onClick={() => deleteTrade(trade.id)}
-                                className="text-[#8C8379] hover:text-[#B54838] p-1"
+                                className="text-gray-400 hover:text-rose-600 p-1 cursor-pointer"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </td>
                           </tr>
                           {isExpanded && (
-                            <tr className="bg-[#FAF8F5] border-y border-[#EAE3D6]">
+                            <tr className="bg-gray-50 border-y border-gray-200">
                               <td colSpan={11} className="p-4">
                                 {renderValuationLedger(trade.code, trade.name, trade.market, trade.currency)}
                               </td>
@@ -1546,17 +2123,18 @@ export const StockPortfolio: React.FC = () => {
             </div>
           </div>
         </div>
+        </div>
       )}
 
       {/* Add Stock Holding Modal */}
       {showHoldingModal && (
-        <div className="fixed inset-0 bg-[#2D2823]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] max-w-md w-full p-5 shadow-xl space-y-4">
+        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl border border-gray-200 max-w-md w-full p-5 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#2D2823]">Add Stock Holding / Lot</h3>
+              <h3 className="text-sm font-bold text-gray-900">Add Stock Holding / Lot</h3>
               <button
                 onClick={() => setShowHoldingModal(false)}
-                className="text-[#8C8379] hover:text-[#2D2823]"
+                className="text-gray-400 hover:text-gray-900 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1572,36 +2150,36 @@ export const StockPortfolio: React.FC = () => {
             >
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Stock Name</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Stock Name</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. MAYBANK, APPLE"
                     value={newHolding.name}
                     onChange={e => setNewHolding({ ...newHolding, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Code / Ticker</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Code / Ticker</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. 1155, AAPL"
                     value={newHolding.code}
                     onChange={e => setNewHolding({ ...newHolding, code: e.target.value.toUpperCase() })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none font-mono"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Market</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Market</label>
                   <select
                     value={newHolding.market}
                     onChange={e => setNewHolding({ ...newHolding, market: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   >
                     <option value="MY">Malaysia (MYR)</option>
                     <option value="US">US / Global (USD)</option>
@@ -1609,46 +2187,46 @@ export const StockPortfolio: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Buy Date</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Buy Date</label>
                   <input
                     type="date"
                     required
                     value={newHolding.buyDate}
                     onChange={e => setNewHolding({ ...newHolding, buyDate: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none font-mono"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Units (Quantity)</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Units (Quantity)</label>
                   <FormattedNumberInput
                     required
                     value={newHolding.units}
                     onChange={v => setNewHolding({ ...newHolding, units: v })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none font-mono"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Buy Price Per Unit</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Buy Price Per Unit</label>
                   <FormattedNumberInput
                     required
                     value={newHolding.buyUnitPrice}
                     maxDecimals={4}
                     onChange={v => setNewHolding({ ...newHolding, buyUnitPrice: v })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none font-mono"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-[#5C544C] block mb-1">Current Unit Price (Market)</label>
+                <label className="font-semibold text-gray-600 block mb-1">Current Unit Price (Market)</label>
                 <FormattedNumberInput
                   value={newHolding.currentPrice}
                   maxDecimals={4}
                   onChange={v => setNewHolding({ ...newHolding, currentPrice: v })}
-                  className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none font-mono"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
                 />
               </div>
 
@@ -1656,13 +2234,13 @@ export const StockPortfolio: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowHoldingModal(false)}
-                  className="px-4 py-2 rounded-xl text-[#6B635A] hover:bg-[#EFE8DD] font-bold"
+                  className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 font-bold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-[#8F4E1D] text-white font-bold shadow-xs hover:bg-[#733E16]"
+                  className="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold shadow-xs hover:bg-blue-700 cursor-pointer"
                 >
                   Save Holding
                 </button>
@@ -1674,27 +2252,27 @@ export const StockPortfolio: React.FC = () => {
 
       {/* Sell Modal */}
       {showSellModal && sellTarget && (
-        <div className="fixed inset-0 bg-[#2D2823]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] max-w-md w-full p-5 shadow-xl space-y-4">
+        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl border border-gray-200 max-w-md w-full p-5 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#2D2823]">
+              <h3 className="text-sm font-bold text-gray-900">
                 Sell Holding: {sellTarget.name} ({sellTarget.code})
               </h3>
               <button
                 onClick={() => setShowSellModal(false)}
-                className="text-[#8C8379] hover:text-[#2D2823]"
+                className="text-gray-400 hover:text-gray-900 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#EAE3D6] text-xs text-[#5C544C] space-y-1">
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600 space-y-1">
               <div className="flex justify-between">
                 <span>Available Units:</span>
-                <span className="font-bold font-mono text-[#2D2823]">{sellTarget.availableUnits.toLocaleString()}</span>
+                <span className="font-bold font-mono text-gray-900">{sellTarget.availableUnits.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Avg Buy Price:</span>
-                <span className="font-bold font-mono text-[#2D2823]">{formatMoney(sellTarget.avgBuyPrice, sellTarget.currency)}</span>
+                <span className="font-bold font-mono text-gray-900">{formatMoney(sellTarget.avgBuyPrice, sellTarget.currency)}</span>
               </div>
             </div>
             <form
@@ -1706,58 +2284,58 @@ export const StockPortfolio: React.FC = () => {
             >
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Units to Sell</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Units to Sell</label>
                   <FormattedNumberInput
                     max={sellTarget.availableUnits}
                     min={1}
                     required
                     value={sellForm.unitsToSell}
                     onChange={v => setSellForm({ ...sellForm, unitsToSell: v })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none font-mono"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Sell Price Per Unit</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Sell Price Per Unit</label>
                   <FormattedNumberInput
                     required
                     value={sellForm.sellUnitPrice}
                     maxDecimals={4}
                     onChange={v => setSellForm({ ...sellForm, sellUnitPrice: v })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none font-mono"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Sell Date</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Sell Date</label>
                   <input
                     type="date"
                     required
                     value={sellForm.sellDate}
                     onChange={e => setSellForm({ ...sellForm, sellDate: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none font-mono"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-[#5C544C] block mb-1">Brokerage / Fees</label>
+                  <label className="font-semibold text-gray-600 block mb-1">Brokerage / Fees</label>
                   <FormattedNumberInput
                     value={sellForm.fees}
                     maxDecimals={2}
                     onChange={v => setSellForm({ ...sellForm, fees: v })}
-                    className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none font-mono"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-semibold text-[#5C544C] block mb-1">Notes (Optional)</label>
+                <label className="font-semibold text-gray-600 block mb-1">Notes (Optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. Taking profit, rebalancing"
                   value={sellForm.notes}
                   onChange={e => setSellForm({ ...sellForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] focus:ring-2 focus:ring-[#B86B30] focus:outline-none"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -1765,13 +2343,13 @@ export const StockPortfolio: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowSellModal(false)}
-                  className="px-4 py-2 rounded-xl text-[#6B635A] hover:bg-[#EFE8DD] font-bold"
+                  className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 font-bold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-[#B54838] text-white font-bold shadow-xs hover:bg-[#9E3E30]"
+                  className="px-4 py-2 rounded-xl bg-rose-600 text-white font-bold shadow-xs hover:bg-rose-700 cursor-pointer"
                 >
                   Confirm Sell
                 </button>

@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Typography Preview — Google AI Studio Style Font</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for live interactive chart typography preview -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Google Fonts: Google Sans Text, Google Sans, Open Sans + Original fonts for side-by-side comparison -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Google+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Google AI Studio Signature Typography Stack + Open Sans for Financial Figures */
+    :root {
+      --font-google-heading: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-google-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-financial: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      
+      --font-old-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-old-mono: 'JetBrains Mono', monospace;
+    }
+
+    /* Active Font State */
+    .app-google-font {
+      font-family: var(--font-google-body);
+      font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .app-google-font h1, 
+    .app-google-font h2, 
+    .app-google-font h3, 
+    .app-google-font .font-heading {
+      font-family: var(--font-google-heading);
+      letter-spacing: -0.015em;
+    }
+    .app-google-font .font-mono,
+    .app-google-font .financial-num,
+    .app-google-font table,
+    .app-google-font td,
+    .app-google-font th,
+    .app-google-font .font-financial {
+      font-family: var(--font-financial);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Old Font for Comparison */
+    .app-old-font {
+      font-family: var(--font-old-body) !important;
+    }
+    .app-old-font h1, 
+    .app-old-font h2, 
+    .app-old-font h3, 
+    .app-old-font .font-heading {
+      font-family: var(--font-old-body) !important;
+      letter-spacing: -0.03em;
+    }
+    .app-old-font .font-mono,
+    .app-old-font .financial-num,
+    .app-old-font table,
+    .app-old-font td,
+    .app-old-font th,
+    .app-old-font .font-financial {
+      font-family: var(--font-old-mono) !important;
+    }
+
+    /* Custom Device Frame Shadows */
+    .device-shadow {
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(15, 23, 42, 0.08);
+    }
+    
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center p-3 sm:p-6 antialiased">
+
+  <!-- TOP PREVIEW CONTROLLER BAR -->
+  <header class="w-full max-w-7xl bg-slate-800/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-4 mb-6 shadow-xl sticky top-3 z-50">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      
+      <!-- Title & Context -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
+          Aa
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-bold text-white tracking-tight">Typography Preview: Google AI Studio Style</h1>
+            <span class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full">
+              Preview Only • No Code Modified Yet
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Review the clean, natural Google Sans typography across all app components before applying.</p>
+        </div>
+      </div>
+
+      <!-- Controls: Font Switcher, Device Switcher, View Switcher -->
+      <div class="flex flex-wrap items-center gap-3">
+        
+        <!-- Live Font Toggle -->
+        <div class="flex items-center bg-slate-900/80 border border-slate-700 p-1 rounded-xl">
+          <button id="btnFontGoogle" onclick="setFontMode('google')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-blue-600 text-white shadow-xs flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-white"></span>
+            Google AI Studio Style
+          </button>
+          <button id="btnFontOld" onclick="setFontMode('old')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white flex items-center gap-1.5">
+            Original (Previous Font)
+          </button>
+          <button id="btnFontCompare" onclick="setFontMode('compare')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white flex items-center gap-1.5">
+            Side-by-Side Comparison
+          </button>
+        </div>
+
+        <!-- Device Responsive Mode Switcher -->
+        <div class="flex items-center bg-slate-900/80 border border-slate-700 p-1 rounded-xl">
+          <button id="btnDevDesktop" onclick="setDeviceMode('desktop')" title="Desktop View" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-700 text-white flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+            Desktop
+          </button>
+          <button id="btnDevTablet" onclick="setDeviceMode('tablet')" title="Tablet View" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
+            Tablet
+          </button>
+          <button id="btnDevMobile" onclick="setDeviceMode('mobile')" title="Mobile View" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
+            Mobile
+          </button>
+        </div>
+
+        <!-- Direct Shortcut to Realized P/L Mobile Preview -->
+        <button onclick="switchAppTab('portfolio'); switchStocksSubTab('realized'); setDeviceMode('mobile');" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-emerald-600 hover:bg-emerald-500 text-white shadow-xs flex items-center gap-1.5 cursor-pointer">
+          <span class="text-xs">📱</span>
+          <span>View Realized P/L Mobile</span>
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Active Font Attributes Summary Banner -->
+    <div class="mt-3 pt-3 border-t border-slate-700/60 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-4 text-slate-300">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+          <strong>Headings & Display:</strong> <code class="bg-slate-900/60 text-blue-300 px-1.5 py-0.5 rounded border border-slate-700 font-mono text-[11px]">Google Sans (500, 600, 700)</code>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <strong>UI Body & Labels:</strong> <code class="bg-slate-900/60 text-emerald-300 px-1.5 py-0.5 rounded border border-slate-700 font-mono text-[11px]">Google Sans Text (400, 500)</code>
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <strong>Financial Figures & Tables:</strong> <code class="bg-slate-900/60 text-amber-300 px-1.5 py-0.5 rounded border border-slate-700 font-mono text-[11px]">Open Sans (400, 600, 700) • Tabular Nums</code>
+        </span>
+      </div>
+      <div class="text-slate-400 italic">
+        *Zero layout, color, or sizing changes. Pure typography refinement.
+      </div>
+    </div>
+  </header>
+
+
+  <!-- SIDE-BY-SIDE COMPARISON CONTAINER (Toggled via "Side-by-Side" mode) -->
+  <div id="sideBySideContainer" class="w-full max-w-7xl hidden grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    
+    <!-- LEFT: ORIGINAL PREVIOUS FONT -->
+    <div class="bg-white text-slate-900 rounded-3xl p-6 border-2 border-rose-300 shadow-2xl app-old-font flex flex-col space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 text-xs font-bold bg-rose-100 text-rose-800 rounded-lg">PREVIOUS / CURRENT</span>
+          <span class="text-xs font-semibold text-slate-500">Plus Jakarta Sans & JetBrains Mono</span>
+        </div>
+        <span class="text-xs text-rose-600 font-bold">Futuristic / Geometric</span>
+      </div>
+
+      <!-- Sample Headings -->
+      <div class="space-y-1">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Page Titles & Headings</span>
+        <h1 class="text-2xl font-extrabold text-slate-900">MY Fortune Wealth Manager</h1>
+        <p class="text-xs text-slate-500 font-medium">Annual Financial Report & Cashflow Projection</p>
+      </div>
+
+      <!-- Sample Financial Metrics Card -->
+      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-3 gap-3">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase">Total Net Worth</span>
+          <div class="text-base font-bold text-slate-900 font-mono">RM 552,168.64</div>
+          <span class="text-[10px] text-emerald-600 font-semibold font-mono">+14.28% YoY</span>
+        </div>
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase">Passive Income</span>
+          <div class="text-base font-bold text-slate-900 font-mono">RM 11,629.75</div>
+          <span class="text-[10px] text-blue-600 font-semibold font-mono">7.37% Yield</span>
+        </div>
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase">Debt Ratio</span>
+          <div class="text-base font-bold text-emerald-600 font-mono">0.59 (Healthy)</div>
+          <span class="text-[10px] text-slate-500 font-mono">-0.27 Ratio</span>
+        </div>
+      </div>
+
+      <!-- Sample Table -->
+      <div class="border border-slate-200 rounded-xl overflow-hidden">
+        <table class="w-full text-xs">
+          <thead class="bg-slate-100 font-bold text-slate-700">
+            <tr>
+              <th class="p-2 text-left">Asset Category</th>
+              <th class="p-2 text-right">2024 (RM)</th>
+              <th class="p-2 text-right">2025 (RM)</th>
+              <th class="p-2 text-right">2026 (RM)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr>
+              <td class="p-2 font-medium">EPF Retirement</td>
+              <td class="p-2 text-right font-mono">171,654.73</td>
+              <td class="p-2 text-right font-mono">199,092.41</td>
+              <td class="p-2 text-right font-mono font-bold text-blue-600">301,000.00</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-medium">ASNB Fixed Price</td>
+              <td class="p-2 text-right font-mono">120,551.52</td>
+              <td class="p-2 text-right font-mono">127,296.60</td>
+              <td class="p-2 text-right font-mono font-bold text-blue-600">133,565.92</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-medium">Stock Portfolio</td>
+              <td class="p-2 text-right font-mono">34,347.70</td>
+              <td class="p-2 text-right font-mono">22,856.68</td>
+              <td class="p-2 text-right font-mono font-bold text-blue-600">24,236.50</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sample Buttons & Inputs -->
+      <div class="flex items-center gap-2">
+        <button class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold">Add Transaction</button>
+        <button class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200">Filter Year: 2026</button>
+        <input type="text" value="RM 4,500.00" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono w-28 text-right" readonly />
+      </div>
+
+    </div>
+
+
+    <!-- RIGHT: NEW GOOGLE AI STUDIO STYLE FONT WITH OPEN SANS FOR FIGURES -->
+    <div class="bg-white text-slate-900 rounded-3xl p-6 border-2 border-emerald-400 shadow-2xl app-google-font flex flex-col space-y-5">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 text-xs font-bold bg-emerald-100 text-emerald-800 rounded-lg">NEW PROPOSED STYLE</span>
+          <span class="text-xs font-semibold text-slate-500">Google Sans + Open Sans (Figures & Tables)</span>
+        </div>
+        <span class="text-xs text-emerald-600 font-bold">Clean • Professional • Modern • Simple</span>
+      </div>
+
+      <!-- Sample Headings -->
+      <div class="space-y-1">
+        <span class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Page Titles & Headings</span>
+        <h1 class="text-2xl font-bold text-slate-900">MY Fortune Wealth Manager</h1>
+        <p class="text-xs text-slate-500 font-normal">Annual Financial Report & Cashflow Projection</p>
+      </div>
+
+      <!-- Sample Financial Metrics Card -->
+      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 grid grid-cols-3 gap-3">
+        <div>
+          <span class="text-[10px] font-medium text-slate-400 uppercase">Total Net Worth</span>
+          <div class="text-base font-bold text-slate-900 financial-num">RM 552,168.64</div>
+          <span class="text-[10px] text-emerald-600 font-semibold financial-num">+14.28% YoY</span>
+        </div>
+        <div>
+          <span class="text-[10px] font-medium text-slate-400 uppercase">Passive Income</span>
+          <div class="text-base font-bold text-slate-900 financial-num">RM 11,629.75</div>
+          <span class="text-[10px] text-blue-600 font-semibold financial-num">7.37% Yield</span>
+        </div>
+        <div>
+          <span class="text-[10px] font-medium text-slate-400 uppercase">Debt Ratio</span>
+          <div class="text-base font-bold text-emerald-600 financial-num">0.59 (Healthy)</div>
+          <span class="text-[10px] text-slate-500 financial-num">-0.27 Ratio</span>
+        </div>
+      </div>
+
+      <!-- Sample Table (Using Open Sans) -->
+      <div class="border border-slate-200 rounded-xl overflow-hidden">
+        <table class="w-full text-xs">
+          <thead class="bg-slate-100 font-semibold text-slate-700">
+            <tr>
+              <th class="p-2 text-left">Asset Category</th>
+              <th class="p-2 text-right">2024 (RM)</th>
+              <th class="p-2 text-right">2025 (RM)</th>
+              <th class="p-2 text-right">2026 (RM)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr>
+              <td class="p-2 font-medium text-slate-800">EPF Retirement</td>
+              <td class="p-2 text-right financial-num">171,654.73</td>
+              <td class="p-2 text-right financial-num">199,092.41</td>
+              <td class="p-2 text-right financial-num font-semibold text-blue-600">301,000.00</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-medium text-slate-800">ASNB Fixed Price</td>
+              <td class="p-2 text-right financial-num">120,551.52</td>
+              <td class="p-2 text-right financial-num">127,296.60</td>
+              <td class="p-2 text-right financial-num font-semibold text-blue-600">133,565.92</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-medium text-slate-800">Stock Portfolio</td>
+              <td class="p-2 text-right financial-num">34,347.70</td>
+              <td class="p-2 text-right financial-num">22,856.68</td>
+              <td class="p-2 text-right financial-num font-semibold text-blue-600">24,236.50</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sample Buttons & Inputs -->
+      <div class="flex items-center gap-2">
+        <button class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium">Add Transaction</button>
+        <button class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-medium border border-slate-200">Filter Year: 2026</button>
+        <input type="text" value="RM 4,500.00" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs financial-num w-28 text-right" readonly />
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- LIVE INTERACTIVE APPLICATION FRAME (Simulating Desktop / Tablet / Mobile) -->
+  <main id="appFrameWrapper" class="w-full max-w-7xl transition-all duration-300 flex justify-center">
+    
+    <div id="deviceFrame" class="w-full bg-[#F8F9FA] text-[#0F172A] rounded-3xl border border-slate-300/80 device-shadow overflow-hidden app-google-font flex flex-col min-h-[840px] transition-all duration-300">
+      
+      <!-- TOP NAVIGATION BAR (Exact App Replica) -->
+      <nav class="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+            MY
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-gray-900 leading-none">MY Fortune</span>
+              <span class="text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
+                Live Preview
+              </span>
+            </div>
+            <p class="text-[11px] text-gray-500 font-normal mt-0.5">Comprehensive Wealth Manager</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="hidden md:flex items-center gap-1 bg-gray-100/80 p-1 rounded-xl border border-gray-200/80 text-xs">
+          <button onclick="switchAppTab('balance-sheet')" id="navTabBalance" class="px-3 py-1.5 rounded-lg font-medium transition-all bg-white text-gray-900 shadow-2xs border border-gray-200/60">
+            Annual Report
+          </button>
+          <button onclick="switchAppTab('portfolio')" id="navTabPortfolio" class="px-3 py-1.5 rounded-lg font-medium transition-all text-gray-600 hover:text-gray-900">
+            Stocks
+          </button>
+          <button onclick="switchAppTab('dividend')" id="navTabDividend" class="px-3 py-1.5 rounded-lg font-medium transition-all text-gray-600 hover:text-gray-900">
+            Dividend
+          </button>
+          <button onclick="switchAppTab('credit-card')" id="navTabCard" class="px-3 py-1.5 rounded-lg font-medium transition-all text-gray-600 hover:text-gray-900">
+            Cards
+          </button>
+          <button onclick="switchAppTab('cashflow')" id="navTabCashflow" class="px-3 py-1.5 rounded-lg font-medium transition-all text-gray-600 hover:text-gray-900">
+            Cash Flow
+          </button>
+          <button id="navTabPlanner" class="px-3 py-1.5 rounded-lg font-medium transition-all text-gray-600 hover:text-gray-900">
+            Planner
+          </button>
+        </div>
+
+        <!-- Action / Quick Metric -->
+        <div class="flex items-center gap-2">
+          <div class="hidden sm:block text-right">
+            <span class="text-[10px] font-medium text-gray-400 block uppercase">Net Assets</span>
+            <span class="text-xs font-bold text-gray-900 font-mono">RM 552,168.64</span>
+          </div>
+          <button class="px-3 py-1.5 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 transition-colors shadow-xs">
+            Export Data
+          </button>
+        </div>
+      </nav>
+
+
+      <!-- MAIN APP CONTENT AREA -->
+      <div class="p-4 sm:p-6 lg:p-8 space-y-6 grow overflow-y-auto">
+
+        <!-- TAB 1: ANNUAL REPORT / BALANCE SHEET VIEW -->
+        <div id="viewBalanceSheet" class="space-y-6">
+          
+          <!-- Section Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Annual Financial Report</h2>
+              <p class="text-xs sm:text-sm text-gray-500 font-normal">Track historical asset progression, debt distribution, and investment returns.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-medium text-gray-600">Active Year:</span>
+              <select class="text-xs font-medium bg-white border border-gray-300 rounded-xl px-3 py-1.5 text-gray-800 shadow-2xs focus:ring-2 focus:ring-blue-500">
+                <option>2026 (Current Plan)</option>
+                <option>2025</option>
+                <option>2024</option>
+                <option>2023</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Top 4 Summary Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs space-y-1">
+              <span class="text-[11px] font-medium text-gray-500 uppercase tracking-wider">Total Assets</span>
+              <div class="text-xl sm:text-2xl font-bold text-gray-900 font-mono">RM 552,168.64</div>
+              <div class="flex items-center gap-1.5 text-xs text-emerald-600 font-medium">
+                <span>↑ +RM 159,526.50</span>
+                <span class="text-[10px] text-gray-400 font-mono">(+40.6%)</span>
+              </div>
+            </div>
+
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs space-y-1">
+              <span class="text-[11px] font-medium text-gray-500 uppercase tracking-wider">Total Liabilities</span>
+              <div class="text-xl sm:text-2xl font-bold text-rose-600 font-mono">RM 328,155.00</div>
+              <div class="flex items-center gap-1.5 text-xs text-emerald-600 font-medium">
+                <span>↓ -RM 8,347.00</span>
+                <span class="text-[10px] text-gray-400 font-mono">(-2.48%)</span>
+              </div>
+            </div>
+
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs space-y-1">
+              <span class="text-[11px] font-medium text-gray-500 uppercase tracking-wider">Net Worth (Equity)</span>
+              <div class="text-xl sm:text-2xl font-bold text-blue-600 font-mono">RM 224,013.64</div>
+              <div class="flex items-center gap-1.5 text-xs text-emerald-600 font-medium">
+                <span>↑ +RM 167,873.50</span>
+                <span class="text-[10px] text-gray-400 font-mono">(+299%)</span>
+              </div>
+            </div>
+
+            <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200 shadow-xs space-y-1">
+              <span class="text-[11px] font-medium text-gray-500 uppercase tracking-wider">Debt-to-Asset Ratio</span>
+              <div class="text-xl sm:text-2xl font-bold text-emerald-600 font-mono">0.59</div>
+              <div class="text-xs text-emerald-600 font-medium">
+                <span>✓ Healthy Leverage Range</span>
+              </div>
+            </div>
+
+          </div>
+
+
+          <!-- 2 Visual Charts Grid (Demonstrating Canvas/Chart Labels Typography) -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Chart 1: Balance Sheet Assets Distribution -->
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-xs font-bold text-gray-900 tracking-tight">Balance Sheet: Assets Distribution</h3>
+                  <span class="text-[11px] text-gray-500 font-normal">Stacked asset breakdown by portfolio vehicle</span>
+                </div>
+                <span class="text-[11px] font-mono text-gray-500 font-medium">(RM)</span>
+              </div>
+              <div class="relative h-64 w-full">
+                <canvas id="chartPreviewAssets"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 2: Debt Ratio -->
+            <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-xs font-bold text-gray-900 tracking-tight">Debt Ratio Progression</h3>
+                  <span class="text-[11px] text-gray-500 font-normal">Asset growth against total liability reduction</span>
+                </div>
+                <span class="text-[11px] font-mono text-gray-500 font-medium">Left: (RM) | Right: (Ratio)</span>
+              </div>
+              <div class="relative h-64 w-full">
+                <canvas id="chartPreviewDebt"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+
+          <!-- Balance Sheet Multi-Year Financial Data Table -->
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50/70">
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider">Multi-Year Asset Valuation Matrix</h3>
+                <span class="text-[10px] px-2 py-0.5 bg-blue-50 text-blue-700 font-medium rounded-full border border-blue-200">
+                  RM Currency
+                </span>
+              </div>
+              <div class="text-xs text-gray-500 font-normal">4 Historical Years + 2026 Target</div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-gray-100/80 text-gray-600 font-semibold border-b border-gray-200">
+                  <tr>
+                    <th class="py-3 px-4">Financial Category</th>
+                    <th class="py-3 px-4">Type</th>
+                    <th class="py-3 px-4 text-right">2023 (RM)</th>
+                    <th class="py-3 px-4 text-right">2024 (RM)</th>
+                    <th class="py-3 px-4 text-right">2025 (RM)</th>
+                    <th class="py-3 px-4 text-right bg-blue-50/50 text-blue-900">2026 Target (RM)</th>
+                    <th class="py-3 px-4 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-700 font-normal">
+                  <tr class="hover:bg-gray-50/60">
+                    <td class="py-3 px-4 font-medium text-gray-900">Amanah Saham (ASNB)</td>
+                    <td class="py-3 px-4 text-gray-500">Fixed Price Unit Trust</td>
+                    <td class="py-3 px-4 text-right font-mono">102,768.00</td>
+                    <td class="py-3 px-4 text-right font-mono">120,551.52</td>
+                    <td class="py-3 px-4 text-right font-mono">127,296.60</td>
+                    <td class="py-3 px-4 text-right font-mono font-medium text-blue-700 bg-blue-50/30">133,565.92</td>
+                    <td class="py-3 px-4 text-center">
+                      <span class="px-2 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md">Compounding</span>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50/60">
+                    <td class="py-3 px-4 font-medium text-gray-900">EPF / KWSP Account 1 & 2</td>
+                    <td class="py-3 px-4 text-gray-500">Mandatory Retirement</td>
+                    <td class="py-3 px-4 text-right font-mono">149,467.00</td>
+                    <td class="py-3 px-4 text-right font-mono">171,654.73</td>
+                    <td class="py-3 px-4 text-right font-mono">199,092.41</td>
+                    <td class="py-3 px-4 text-right font-mono font-medium text-blue-700 bg-blue-50/30">301,000.00</td>
+                    <td class="py-3 px-4 text-center">
+                      <span class="px-2 py-0.5 text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200 rounded-md">Active Growth</span>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50/60">
+                    <td class="py-3 px-4 font-medium text-gray-900">Versa Cash & Invest</td>
+                    <td class="py-3 px-4 text-gray-500">MMF Liquidity</td>
+                    <td class="py-3 px-4 text-right font-mono">18,858.00</td>
+                    <td class="py-3 px-4 text-right font-mono">20,124.14</td>
+                    <td class="py-3 px-4 text-right font-mono">27,659.16</td>
+                    <td class="py-3 px-4 text-right font-mono font-medium text-blue-700 bg-blue-50/30">43,223.22</td>
+                    <td class="py-3 px-4 text-center">
+                      <span class="px-2 py-0.5 text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200 rounded-md">Daily Yield</span>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50/60">
+                    <td class="py-3 px-4 font-medium text-gray-900">Bursa & US Equities</td>
+                    <td class="py-3 px-4 text-gray-500">Stock Portfolio</td>
+                    <td class="py-3 px-4 text-right font-mono">6,096.00</td>
+                    <td class="py-3 px-4 text-right font-mono">34,347.70</td>
+                    <td class="py-3 px-4 text-right font-mono">22,856.68</td>
+                    <td class="py-3 px-4 text-right font-mono font-medium text-blue-700 bg-blue-50/30">24,236.50</td>
+                    <td class="py-3 px-4 text-center">
+                      <span class="px-2 py-0.5 text-[10px] font-medium bg-purple-50 text-purple-700 border border-purple-200 rounded-md">Dividend Core</span>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot class="bg-gray-50 font-semibold border-t-2 border-gray-200 text-gray-900">
+                  <tr>
+                    <td colspan="2" class="py-3.5 px-4 font-bold">TOTAL ASSETS</td>
+                    <td class="py-3.5 px-4 text-right font-mono">287,127.00</td>
+                    <td class="py-3.5 px-4 text-right font-mono">358,617.12</td>
+                    <td class="py-3.5 px-4 text-right font-mono">392,642.14</td>
+                    <td class="py-3.5 px-4 text-right font-mono font-bold text-blue-700 bg-blue-50/60">552,168.64</td>
+                    <td class="py-3.5 px-4 text-center text-[11px] text-emerald-600 font-medium">Verified</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- TAB 2: STOCKS VIEW (Realized P/L Mobile Layout) -->
+        <div id="viewPortfolio" class="space-y-6 hidden">
+          
+          <!-- SUB-VIEW A: REALIZED P/L MOBILE 3-COLUMN COMPACT LAYOUT -->
+          <div id="subViewRealized" class="space-y-3">
+
+            <!-- Mobile Device Mockup Canvas (Exact width as mobile viewport) -->
+            <div class="max-w-[420px] mx-auto space-y-3">
+
+              <!-- Card 1: Sub-Tabs (Exact match to original Realized P/L state) -->
+              <div class="bg-white rounded-2xl p-3 border border-slate-200 shadow-xs">
+                <div class="flex items-center gap-2">
+                  <button onclick="switchStocksSubTab('holdings')" class="px-4 py-1.5 text-xs font-bold rounded-xl transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
+                    Active Holdings
+                  </button>
+                  <button onclick="switchStocksSubTab('realized')" class="px-4 py-1.5 text-xs font-bold rounded-xl transition-all bg-slate-900 text-white shadow-xs cursor-pointer">
+                    Realized P/L
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 2: PORTFOLIO MARKET Selector (Exact match to screenshot) -->
+              <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs space-y-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                  PORTFOLIO MARKET
+                </span>
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center bg-slate-100 p-1 rounded-xl">
+                    <button onclick="setRealizedMarket('MY')" id="btnMktMY" class="px-4 py-1 text-xs font-bold rounded-lg transition-all bg-white text-slate-900 shadow-xs cursor-pointer">
+                      Malaysia
+                    </button>
+                    <button onclick="setRealizedMarket('US')" id="btnMktUS" class="px-4 py-1 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-900 cursor-pointer">
+                      Overseas
+                    </button>
+                  </div>
+                  <button class="p-2 text-slate-500 hover:text-slate-900 rounded-xl hover:bg-slate-100 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 3: PORTFOLIO SUMMARY 2x2 Grid (Exact match to screenshot) -->
+              <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    PORTFOLIO SUMMARY
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                  <!-- Total Realized Gain -->
+                  <div class="space-y-0.5 border-l-2 border-slate-300 pl-2.5">
+                    <span class="text-[10px] text-slate-400 font-medium block">Total Realized Gain</span>
+                    <span class="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                      MYR 9,840.50
+                    </span>
+                  </div>
+
+                  <!-- Total Realized Loss -->
+                  <div class="space-y-0.5 border-l-2 border-blue-500 pl-2.5">
+                    <span class="text-[10px] text-slate-400 font-medium block">Total Realized Loss</span>
+                    <span class="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                      MYR 1,220.00
+                    </span>
+                  </div>
+
+                  <!-- Realized P&L ($) -->
+                  <div class="space-y-0.5 border-l-2 border-emerald-500 pl-2.5">
+                    <span class="text-[10px] text-slate-400 font-medium block">Realized P&L ($)</span>
+                    <span class="text-sm font-extrabold text-emerald-600 font-mono block leading-tight">
+                      MYR +8,620.50
+                    </span>
+                  </div>
+
+                  <!-- Realized P&L (%) -->
+                  <div class="space-y-0.5 border-l-2 border-emerald-500 pl-2.5">
+                    <span class="text-[10px] text-slate-400 font-medium block">Realized P&L (%)</span>
+                    <span class="text-sm font-extrabold text-emerald-600 font-mono block leading-tight">
+                      +28.45%
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: Compact 3-Column Realized P/L Table (Exact match to screenshot structure) -->
+              <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                
+                <!-- Table Header with Interactive ⇄ Toggle -->
+                <div class="grid grid-cols-12 bg-white border-b border-slate-200 px-3.5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider items-center select-none">
+                  
+                  <!-- Left Column Header: Stock Name & Quantity -->
+                  <div class="col-span-5 flex flex-col justify-center">
+                    <span class="leading-tight text-slate-800 font-extrabold">STOCK NAME</span>
+                    <span class="text-[9px] text-slate-400 font-medium leading-tight">QUANTITY</span>
+                  </div>
+
+                  <!-- Middle Column Header: Purchase Price & Disposal Price -->
+                  <div class="col-span-3 text-right flex flex-col justify-center pr-1">
+                    <span class="leading-tight text-slate-800 font-extrabold">PURCHASE PRICE</span>
+                    <span class="text-[9px] text-slate-400 font-medium leading-tight">DISPOSAL PRICE</span>
+                  </div>
+
+                  <!-- Right Column Header: Mode A (P&L $ / %) vs Mode B (Date) with ⇄ Button -->
+                  <div class="col-span-4 flex items-center justify-end gap-1.5 pl-1">
+                    <div id="realizedHeaderRight" class="text-right flex flex-col justify-center">
+                      <span class="leading-tight text-slate-800 font-extrabold">REALIZED P&L ($)</span>
+                      <span class="text-[9px] text-slate-400 font-medium leading-tight">REALIZED P&L (%)</span>
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onclick="toggleRealizedMode()"
+                      class="w-7 h-7 rounded-lg border border-slate-200 bg-white text-blue-600 hover:bg-slate-50 active:scale-95 transition-all shadow-2xs flex items-center justify-center shrink-0 cursor-pointer"
+                      title="Toggle between Realized P&L and Dates"
+                    >
+                      <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                    </button>
+                  </div>
+
+                </div>
+
+                <!-- Table Rows (Divide lines & exact typography) -->
+                <div id="realizedRowsContainer" class="divide-y divide-slate-100">
+                  
+                  <!-- Row 1: SUNWAY PA -->
+                  <div class="grid grid-cols-12 px-3.5 py-3 items-center hover:bg-slate-50/70 transition-colors">
+                    <div class="col-span-5 flex flex-col min-w-0 pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 truncate leading-tight">SUNWAY PA</div>
+                      <div class="text-[11px] text-slate-400 font-mono mt-0.5 leading-tight">120</div>
+                    </div>
+                    <div class="col-span-3 text-right font-mono pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 leading-tight">1.000</div>
+                      <div class="text-[11px] text-slate-400 mt-0.5 leading-tight">1.250</div>
+                    </div>
+                    <div class="col-span-4 text-right font-mono pl-1 realized-col-right" 
+                         data-pnl-val="+MYR 30.00" data-pnl-pct="+25.00%" data-is-profit="true"
+                         data-buy-date="03/2023" data-sell-date="01/2026">
+                      <div class="font-extrabold text-xs leading-tight text-emerald-600">+MYR 30.00</div>
+                      <div class="text-[11px] font-bold mt-0.5 leading-tight text-emerald-600">+25.00%</div>
+                    </div>
+                  </div>
+
+                  <!-- Row 2: SUNWAY -->
+                  <div class="grid grid-cols-12 px-3.5 py-3 items-center hover:bg-slate-50/70 transition-colors">
+                    <div class="col-span-5 flex flex-col min-w-0 pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 truncate leading-tight">SUNWAY</div>
+                      <div class="text-[11px] text-slate-400 font-mono mt-0.5 leading-tight">60</div>
+                    </div>
+                    <div class="col-span-3 text-right font-mono pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 leading-tight">1.000</div>
+                      <div class="text-[11px] text-slate-400 mt-0.5 leading-tight">5.080</div>
+                    </div>
+                    <div class="col-span-4 text-right font-mono pl-1 realized-col-right"
+                         data-pnl-val="+MYR 244.80" data-pnl-pct="+408.00%" data-is-profit="true"
+                         data-buy-date="01/2022" data-sell-date="02/2026">
+                      <div class="font-extrabold text-xs leading-tight text-emerald-600">+MYR 244.80</div>
+                      <div class="text-[11px] font-bold mt-0.5 leading-tight text-emerald-600">+408.00%</div>
+                    </div>
+                  </div>
+
+                  <!-- Row 3: FPI -->
+                  <div class="grid grid-cols-12 px-3.5 py-3 items-center hover:bg-slate-50/70 transition-colors">
+                    <div class="col-span-5 flex flex-col min-w-0 pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 truncate leading-tight">FPI</div>
+                      <div class="text-[11px] text-slate-400 font-mono mt-0.5 leading-tight">4,000</div>
+                    </div>
+                    <div class="col-span-3 text-right font-mono pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 leading-tight">2.855</div>
+                      <div class="text-[11px] text-slate-400 mt-0.5 leading-tight">1.150</div>
+                    </div>
+                    <div class="col-span-4 text-right font-mono pl-1 realized-col-right"
+                         data-pnl-val="-MYR 6,820.00" data-pnl-pct="-59.72%" data-is-profit="false"
+                         data-buy-date="08/2022" data-sell-date="01/2026">
+                      <div class="font-extrabold text-xs leading-tight text-rose-600">-MYR 6,820.00</div>
+                      <div class="text-[11px] font-bold mt-0.5 leading-tight text-rose-600">-59.72%</div>
+                    </div>
+                  </div>
+
+                  <!-- Row 4: MAYBANK -->
+                  <div class="grid grid-cols-12 px-3.5 py-3 items-center hover:bg-slate-50/70 transition-colors">
+                    <div class="col-span-5 flex flex-col min-w-0 pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 truncate leading-tight">MAYBANK</div>
+                      <div class="text-[11px] text-slate-400 font-mono mt-0.5 leading-tight">1,500</div>
+                    </div>
+                    <div class="col-span-3 text-right font-mono pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 leading-tight">8.650</div>
+                      <div class="text-[11px] text-slate-400 mt-0.5 leading-tight">10.200</div>
+                    </div>
+                    <div class="col-span-4 text-right font-mono pl-1 realized-col-right"
+                         data-pnl-val="+MYR 2,325.00" data-pnl-pct="+17.92%" data-is-profit="true"
+                         data-buy-date="04/2023" data-sell-date="02/2026">
+                      <div class="font-extrabold text-xs leading-tight text-emerald-600">+MYR 2,325.00</div>
+                      <div class="text-[11px] font-bold mt-0.5 leading-tight text-emerald-600">+17.92%</div>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ========================================================================= -->
+          <!-- SUB-VIEW B: ACTIVE HOLDINGS COMPACT 3-COLUMN LAYOUT (Existing Reference) -->
+          <!-- ========================================================================= -->
+          <div id="subViewHoldings" class="space-y-5 hidden">
+            
+            <div class="max-w-[420px] mx-auto space-y-4">
+              <!-- Holdings 2x2 Summary Card -->
+              <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Active Portfolio Summary (Holdings)
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                  <div class="space-y-0.5 border-l-2 border-slate-300 pl-2.5">
+                    <span class="text-[10px] text-slate-400 font-medium block">Total Gross Investment</span>
+                    <span class="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                      RM 28,210.50
+                    </span>
+                  </div>
+
+                  <div class="space-y-0.5 border-l-2 border-blue-500 pl-2.5">
+                    <span class="text-[10px] text-slate-400 font-medium block">Total Portfolio Value</span>
+                    <span class="text-sm font-extrabold text-slate-900 font-mono block leading-tight">
+                      RM 34,420.00
+                    </span>
+                  </div>
+
+                  <div class="space-y-0.5 border-l-2 border-emerald-500 pl-2.5">
+                    <span class="text-[10px] text-slate-400 font-medium block">Unr. P&L ($)</span>
+                    <span class="text-sm font-extrabold text-emerald-600 font-mono block leading-tight">
+                      +RM 6,209.50
+                    </span>
+                  </div>
+
+                  <div class="space-y-0.5 border-l-2 border-emerald-500 pl-2.5">
+                    <span class="text-[10px] text-slate-400 font-medium block">Unr. P&L (%)</span>
+                    <span class="text-sm font-extrabold text-emerald-600 font-mono block leading-tight">
+                      +22.01%
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Holdings Compact Table -->
+              <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                <div class="grid grid-cols-12 bg-slate-50 border-b border-slate-200 px-3 py-2.5 text-[10px] font-bold text-slate-500 uppercase tracking-wider items-center select-none">
+                  <div class="col-span-5 flex flex-col justify-center">
+                    <span class="leading-tight text-slate-700 font-extrabold">STOCK NAME</span>
+                    <span class="text-[9px] text-slate-400 font-medium leading-tight">QUANTITY</span>
+                  </div>
+                  <div class="col-span-3 text-right flex flex-col justify-center pr-1">
+                    <span class="leading-tight text-slate-700 font-extrabold">LAST PRICE</span>
+                    <span class="text-[9px] text-slate-400 font-medium leading-tight">AVG PRICE</span>
+                  </div>
+                  <div class="col-span-4 flex items-center justify-end gap-1.5 pl-1">
+                    <div class="text-right flex flex-col justify-center">
+                      <span class="leading-tight text-slate-700 font-extrabold">MARKET VALUE</span>
+                      <span class="text-[9px] text-slate-400 font-medium leading-tight">TOTAL COST</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="divide-y divide-slate-100">
+                  <div class="grid grid-cols-12 px-3 py-3 items-center hover:bg-slate-50/70 transition-colors">
+                    <div class="col-span-5 flex flex-col min-w-0 pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 truncate leading-tight">MAYBANK</div>
+                      <div class="text-[10px] text-slate-500 font-mono mt-0.5 leading-tight">1,200</div>
+                    </div>
+                    <div class="col-span-3 text-right font-mono pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 leading-tight">10.420</div>
+                      <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">9.850</div>
+                    </div>
+                    <div class="col-span-4 text-right font-mono pl-1">
+                      <div class="font-extrabold text-xs text-slate-900 leading-tight">12,504.00</div>
+                      <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">11,820.00</div>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-12 px-3 py-3 items-center hover:bg-slate-50/70 transition-colors">
+                    <div class="col-span-5 flex flex-col min-w-0 pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 truncate leading-tight">TENAGA</div>
+                      <div class="text-[10px] text-slate-500 font-mono mt-0.5 leading-tight">600</div>
+                    </div>
+                    <div class="col-span-3 text-right font-mono pr-1">
+                      <div class="font-extrabold text-xs text-slate-900 leading-tight">14.100</div>
+                      <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">13.200</div>
+                    </div>
+                    <div class="col-span-4 text-right font-mono pl-1">
+                      <div class="font-extrabold text-xs text-slate-900 leading-tight">8,460.00</div>
+                      <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">7,920.00</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- TAB 3: CASH FLOW PLANNER VIEW -->
+        <div id="viewCashflow" class="space-y-6 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">Monthly Cash Flow Projections</h2>
+              <p class="text-xs sm:text-sm text-gray-500 font-normal">Income streams, recurring fixed commitments, and disposable savings rate.</p>
+            </div>
+          </div>
+          
+          <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-4">
+            <h3 class="text-xs font-bold text-gray-900 uppercase tracking-wider">Monthly Breakdown Form & Calculator</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="space-y-1.5">
+                <label class="text-xs font-medium text-gray-700">Gross Monthly Salary (RM)</label>
+                <input type="text" value="8,500.00" class="w-full text-xs font-mono px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-xs font-medium text-gray-700">Fixed Monthly Commitments (RM)</label>
+                <input type="text" value="3,850.00" class="w-full text-xs font-mono px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-xs font-medium text-gray-700">Target Monthly Savings Rate (%)</label>
+                <input type="text" value="35.00%" class="w-full text-xs font-mono px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- LIVE CHART SCRIPTS -->
+  <script>
+    let currentFont = 'google';
+    let currentDevice = 'desktop';
+
+    // Switch Font Mode
+    function setFontMode(mode) {
+      currentFont = mode;
+      const deviceFrame = document.getElementById('deviceFrame');
+      const sideBySide = document.getElementById('sideBySideContainer');
+      const appFrameWrapper = document.getElementById('appFrameWrapper');
+
+      const btnGoogle = document.getElementById('btnFontGoogle');
+      const btnOld = document.getElementById('btnFontOld');
+      const btnCompare = document.getElementById('btnFontCompare');
+
+      // Reset buttons
+      [btnGoogle, btnOld, btnCompare].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white flex items-center gap-1.5";
+      });
+
+      if (mode === 'google') {
+        btnGoogle.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-blue-600 text-white shadow-xs flex items-center gap-1.5";
+        sideBySide.classList.add('hidden');
+        sideBySide.classList.remove('grid');
+        appFrameWrapper.classList.remove('hidden');
+        deviceFrame.classList.remove('app-old-font');
+        deviceFrame.classList.add('app-google-font');
+      } else if (mode === 'old') {
+        btnOld.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-rose-600 text-white shadow-xs flex items-center gap-1.5";
+        sideBySide.classList.add('hidden');
+        sideBySide.classList.remove('grid');
+        appFrameWrapper.classList.remove('hidden');
+        deviceFrame.classList.remove('app-google-font');
+        deviceFrame.classList.add('app-old-font');
+      } else if (mode === 'compare') {
+        btnCompare.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-purple-600 text-white shadow-xs flex items-center gap-1.5";
+        sideBySide.classList.remove('hidden');
+        sideBySide.classList.add('grid');
+      }
+      
+      updateChartFonts();
+    }
+
+    // Switch Device View
+    function setDeviceMode(device) {
+      currentDevice = device;
+      const deviceFrame = document.getElementById('deviceFrame');
+      const btnDesktop = document.getElementById('btnDevDesktop');
+      const btnTablet = document.getElementById('btnDevTablet');
+      const btnMobile = document.getElementById('btnDevMobile');
+
+      [btnDesktop, btnTablet, btnMobile].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-400 hover:text-white flex items-center gap-1.5";
+      });
+
+      if (device === 'desktop') {
+        btnDesktop.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-700 text-white flex items-center gap-1.5";
+        deviceFrame.style.maxWidth = '100%';
+      } else if (device === 'tablet') {
+        btnTablet.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-700 text-white flex items-center gap-1.5";
+        deviceFrame.style.maxWidth = '768px';
+      } else if (device === 'mobile') {
+        btnMobile.className = "px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-700 text-white flex items-center gap-1.5";
+        deviceFrame.style.maxWidth = '412px';
+      }
+    }
+
+    // Switch Tabs inside preview
+    function switchAppTab(tab) {
+      const tabs = ['balance-sheet', 'portfolio', 'cashflow', 'dividend', 'credit-card'];
+      const vBalance = document.getElementById('viewBalanceSheet');
+      const vPort = document.getElementById('viewPortfolio');
+      const vCash = document.getElementById('viewCashflow');
+
+      vBalance.classList.add('hidden');
+      vPort.classList.add('hidden');
+      vCash.classList.add('hidden');
+
+      const btnBal = document.getElementById('navTabBalance');
+      const btnPort = document.getElementById('navTabPortfolio');
+      const btnCash = document.getElementById('navTabCashflow');
+
+      [btnBal, btnPort, btnCash].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-lg font-medium transition-all text-gray-600 hover:text-gray-900";
+      });
+
+      if (tab === 'balance-sheet') {
+        vBalance.classList.remove('hidden');
+        btnBal.className = "px-3 py-1.5 rounded-lg font-medium transition-all bg-white text-gray-900 shadow-2xs border border-gray-200/60";
+      } else if (tab === 'portfolio') {
+        vPort.classList.remove('hidden');
+        btnPort.className = "px-3 py-1.5 rounded-lg font-medium transition-all bg-white text-gray-900 shadow-2xs border border-gray-200/60";
+      } else if (tab === 'cashflow') {
+        vCash.classList.remove('hidden');
+        btnCash.className = "px-3 py-1.5 rounded-lg font-medium transition-all bg-white text-gray-900 shadow-2xs border border-gray-200/60";
+      }
+    }
+
+    // Sub-tab switcher inside Stocks preview (Active Holdings vs Realized P/L)
+    function switchStocksSubTab(subTab) {
+      const vHoldings = document.getElementById('subViewHoldings');
+      const vRealized = document.getElementById('subViewRealized');
+      const btnHoldings = document.getElementById('subTabHoldings');
+      const btnRealized = document.getElementById('subTabRealized');
+
+      if (subTab === 'realized') {
+        vRealized.classList.remove('hidden');
+        vHoldings.classList.add('hidden');
+        btnRealized.className = "px-3.5 py-1.5 rounded-lg transition-all bg-gray-900 text-white shadow-xs font-bold";
+        btnHoldings.className = "px-3.5 py-1.5 rounded-lg transition-all text-gray-600 hover:text-gray-900 font-medium";
+      } else {
+        vHoldings.classList.remove('hidden');
+        vRealized.classList.add('hidden');
+        btnHoldings.className = "px-3.5 py-1.5 rounded-lg transition-all bg-gray-900 text-white shadow-xs font-bold";
+        btnRealized.className = "px-3.5 py-1.5 rounded-lg transition-all text-gray-600 hover:text-gray-900 font-medium";
+      }
+    }
+
+    // Realized P/L Interactive Right Column State: 'pnl' | 'date'
+    let realizedRightColumnMode = 'pnl';
+
+    function toggleRealizedMode() {
+      realizedRightColumnMode = (realizedRightColumnMode === 'pnl') ? 'date' : 'pnl';
+      
+      const headerRight = document.getElementById('realizedHeaderRight');
+      const badge = document.getElementById('previewModeBadge');
+      
+      if (realizedRightColumnMode === 'pnl') {
+        headerRight.innerHTML = `
+          <span class="leading-tight text-slate-700 font-extrabold">REALIZED P&L ($)</span>
+          <span class="text-[9px] text-slate-400 font-medium leading-tight">REALIZED P&L (%)</span>
+        `;
+        if (badge) {
+          badge.innerHTML = `<span>Mode A: P&L ($ / %)</span><span class="text-[10px]">⇄</span>`;
+          badge.className = "px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold shadow-2xs hover:bg-blue-700 transition-all flex items-center gap-1.5 cursor-pointer";
+        }
+      } else {
+        headerRight.innerHTML = `
+          <span class="leading-tight text-slate-700 font-extrabold">PURCHASE DATE</span>
+          <span class="text-[9px] text-slate-400 font-medium leading-tight">DISPOSAL DATE</span>
+        `;
+        if (badge) {
+          badge.innerHTML = `<span>Mode B: Dates (MM/YYYY)</span><span class="text-[10px]">⇄</span>`;
+          badge.className = "px-3 py-1 bg-purple-600 text-white rounded-lg text-xs font-bold shadow-2xs hover:bg-purple-700 transition-all flex items-center gap-1.5 cursor-pointer";
+        }
+      }
+
+      // Update all rows simultaneously
+      const cols = document.querySelectorAll('.realized-col-right');
+      cols.forEach(col => {
+        if (realizedRightColumnMode === 'pnl') {
+          const val = col.getAttribute('data-pnl-val');
+          const pct = col.getAttribute('data-pnl-pct');
+          const isProfit = col.getAttribute('data-is-profit') === 'true';
+          const pnlColor = isProfit ? 'text-emerald-600' : 'text-rose-600';
+          
+          col.innerHTML = `
+            <div class="font-extrabold text-xs leading-tight ${pnlColor}">${val}</div>
+            <div class="text-[10px] font-bold mt-0.5 leading-tight ${pnlColor}">${pct}</div>
+          `;
+        } else {
+          const buyDate = col.getAttribute('data-buy-date');
+          const sellDate = col.getAttribute('data-sell-date');
+          
+          col.innerHTML = `
+            <div class="font-extrabold text-xs text-slate-900 leading-tight">${buyDate}</div>
+            <div class="text-[10px] text-slate-500 mt-0.5 leading-tight font-medium">${sellDate}</div>
+          `;
+        }
+      });
+    }
+
+    // Realized Market Filter Preview
+    function setRealizedMarket(mkt) {
+      const btnAll = document.getElementById('btnMktAll');
+      const btnMY = document.getElementById('btnMktMY');
+      const btnUS = document.getElementById('btnMktUS');
+      [btnAll, btnMY, btnUS].forEach(b => {
+        b.className = "px-2.5 py-1 text-xs font-bold rounded-lg transition-all text-slate-500 hover:text-slate-900";
+      });
+      if (mkt === 'ALL') btnAll.className = "px-2.5 py-1 text-xs font-bold rounded-lg transition-all bg-white text-slate-900 shadow-xs";
+      if (mkt === 'MY') btnMY.className = "px-2.5 py-1 text-xs font-bold rounded-lg transition-all bg-white text-slate-900 shadow-xs";
+      if (mkt === 'US') btnUS.className = "px-2.5 py-1 text-xs font-bold rounded-lg transition-all bg-white text-slate-900 shadow-xs";
+    }
+
+    // Initialize Charts with Google Sans Fonts
+    let chart1, chart2;
+    function initCharts() {
+      const ctx1 = document.getElementById('chartPreviewAssets').getContext('2d');
+      chart1 = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: ['2023', '2024', '2025', '2026'],
+          datasets: [
+            { label: 'ASNB', data: [102768, 120551.52, 127296.60, 133565.92], fill: true, backgroundColor: 'rgba(37, 99, 235, 0.55)', borderColor: '#2563EB', tension: 0.35, pointRadius: 3 },
+            { label: 'EPF', data: [149467, 171654.73, 199092.41, 301000.00], fill: true, backgroundColor: 'rgba(16, 185, 129, 0.55)', borderColor: '#10B981', tension: 0.35, pointRadius: 3 },
+            { label: 'Versa', data: [18858, 20124.14, 27659.16, 43223.22], fill: true, backgroundColor: 'rgba(245, 158, 11, 0.55)', borderColor: '#F59E0B', tension: 0.35, pointRadius: 3 },
+            { label: 'Shares', data: [6096, 34347.70, 22856.68, 24236.50], fill: true, backgroundColor: 'rgba(239, 68, 68, 0.55)', borderColor: '#EF4444', tension: 0.35, pointRadius: 3 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: { family: 'Google Sans Text', size: 11, weight: '500' } } }
+          },
+          scales: {
+            x: { ticks: { font: { family: 'Google Sans Text', size: 10, weight: '500' } } },
+            y: { stacked: true, ticks: { callback: (v) => `${(v/1000).toFixed(0)}k`, font: { family: 'Open Sans', size: 10, weight: '600' } } }
+          }
+        }
+      });
+
+      const ctx2 = document.getElementById('chartPreviewDebt').getContext('2d');
+      chart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: ['2023', '2024', '2025', '2026'],
+          datasets: [
+            { type: 'bar', label: 'Total Asset', data: [287127, 358617.12, 392642.14, 552168.64], backgroundColor: '#2563EB', borderRadius: 4, yAxisID: 'y' },
+            { type: 'bar', label: 'Total Liabilities', data: [354548, 370349, 336502, 328155], backgroundColor: '#EF4444', borderRadius: 4, yAxisID: 'y' },
+            { type: 'line', label: 'Debt Ratio', data: [1.23, 1.03, 0.86, 0.59], borderColor: '#10B981', backgroundColor: '#10B981', borderWidth: 2.5, pointRadius: 4, yAxisID: 'y1' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { font: { family: 'Google Sans Text', size: 11, weight: '500' } } }
+          },
+          scales: {
+            x: { ticks: { font: { family: 'Google Sans Text', size: 10, weight: '500' } } },
+            y: { position: 'left', ticks: { callback: (v) => `${(v/1000).toFixed(0)}k`, font: { family: 'Open Sans', size: 10, weight: '600' } } },
+            y1: { position: 'right', grid: { display: false }, min: 0, max: 1.5, ticks: { font: { family: 'Open Sans', size: 10, weight: '600' } } }
+          }
+        }
+      });
+    }
+
+    function updateChartFonts() {
+      const family = currentFont === 'google' ? 'Google Sans Text' : 'Plus Jakarta Sans';
+      const numFamily = currentFont === 'google' ? 'Open Sans' : 'JetBrains Mono';
+      
+      if (chart1) {
+        chart1.options.plugins.legend.labels.font.family = family;
+        chart1.options.scales.x.ticks.font.family = family;
+        chart1.options.scales.y.ticks.font.family = numFamily;
+        chart1.update();
+      }
+      if (chart2) {
+        chart2.options.plugins.legend.labels.font.family = family;
+        chart2.options.scales.x.ticks.font.family = family;
+        chart2.options.scales.y.ticks.font.family = numFamily;
+        chart2.options.scales.y1.ticks.font.family = numFamily;
+        chart2.update();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initCharts);
+  </script>
+</body>
+</html>

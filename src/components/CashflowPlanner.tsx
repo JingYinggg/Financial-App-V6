@@ -31,7 +31,6 @@ import {
 } from 'recharts';
 import { YearSelector } from './YearSelector';
 import { LedgerCalculatorModal } from './LedgerCalculatorModal';
-import { InfoTooltip } from './InfoTooltip';
 import { FormattedNumberInput } from './FormattedNumberInput';
 
 export const CashflowPlanner: React.FC = () => {
@@ -853,28 +852,28 @@ export const CashflowPlanner: React.FC = () => {
   return (
     <div id="cashflow-planner-section" className="space-y-5 max-w-7xl mx-auto pb-12">
       {/* Top Header & Sub-tabs */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#FAF8F5] p-3.5 rounded-2xl border border-[#EAE3D6] shadow-xs">
-        <div className="flex items-center gap-1 bg-[#F2ECE2] p-1 rounded-xl border border-[#E2DAD0] self-start md:self-auto">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-gray-200 shadow-xs">
+        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl border border-gray-200 self-start md:self-auto">
           <button
             onClick={() => setActiveTab('cashflow')}
             className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'cashflow'
-                ? 'bg-white text-[#2D2823] shadow-xs'
-                : 'text-[#6B635A] hover:text-[#2D2823]'
+                ? 'bg-white text-gray-900 shadow-xs'
+                : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <Wallet className="w-3.5 h-3.5 text-[#3D633C]" />
+            <Wallet className="w-3.5 h-3.5 text-emerald-600" />
             <span>Income Statement</span>
           </button>
           <button
             onClick={() => setActiveTab('passive')}
             className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'passive'
-                ? 'bg-white text-[#2D2823] shadow-xs'
-                : 'text-[#6B635A] hover:text-[#2D2823]'
+                ? 'bg-white text-gray-900 shadow-xs'
+                : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <Landmark className="w-3.5 h-3.5 text-[#8F4E1D]" />
+            <Landmark className="w-3.5 h-3.5 text-blue-600" />
             <span>Passive Income</span>
           </button>
         </div>
@@ -895,25 +894,25 @@ export const CashflowPlanner: React.FC = () => {
       {activeTab === 'cashflow' && (
         <div className="space-y-6">
           {/* Historical Cash Flow Comparison Chart & Table */}
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] shadow-xs overflow-hidden p-5 space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EAE3D6] pb-3.5">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden p-5 space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3.5">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-white rounded-xl border border-[#EAE3D6] text-[#B86B30]">
+                <div className="p-2 bg-blue-50 rounded-xl border border-blue-100 text-blue-600">
                   <TrendingUp className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-extrabold text-[#2D2823]">Historical Cash Flow Comparison</h3>
+                  <h3 className="text-sm font-extrabold text-gray-900">Historical Cash Flow Comparison</h3>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs font-medium text-[#7A7268]">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#3D633C]" /> Annual Revenue
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#B54838] ml-1" /> Annual Outflow
+              <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-600" /> Annual Revenue
+                <span className="inline-block w-2.5 h-2.5 rounded-full bg-rose-600 ml-1" /> Annual Outflow
               </div>
             </div>
 
             {/* Interactive Composed / Bar Chart */}
             <div className="space-y-1">
-              <div className="flex justify-between items-center text-[10px] font-mono text-[#7A7268] font-bold px-1">
+              <div className="flex justify-between items-center text-[10px] font-mono text-gray-500 font-bold px-1">
                 <span>(RM)</span>
               </div>
               <div className="h-72 w-full pt-1">
@@ -924,22 +923,23 @@ export const CashflowPlanner: React.FC = () => {
                     barCategoryGap="28%"
                     barGap={4}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAE3D6" />
-                    <XAxis dataKey="year" stroke="#7A7268" fontSize={11} tickLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                    <XAxis dataKey="year" stroke="#64748B" fontSize={11} tickLine={false} tick={{ fill: '#64748B' }} />
                     <YAxis
-                      stroke="#7A7268"
+                      stroke="#64748B"
                       fontSize={11}
                       tickLine={false}
+                      tick={{ fill: '#64748B' }}
                       tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v.toLocaleString())}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#2D2823',
-                        borderColor: '#4A423A',
+                        backgroundColor: '#FFFFFF',
+                        borderColor: '#E2E8F0',
                         borderRadius: '12px',
-                        color: '#FAF8F5',
+                        color: '#0F172A',
                         fontSize: '11px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                       }}
                       formatter={(value: any, name: any) => [formatRM(Number(value)), name]}
                     />
@@ -949,14 +949,14 @@ export const CashflowPlanner: React.FC = () => {
                     />
                     <Bar
                       dataKey="revenue"
-                      fill="#3D633C"
+                      fill="#10B981"
                       radius={[4, 4, 0, 0]}
                       maxBarSize={60}
                       name="Annual Revenue"
                     />
                     <Bar
                       dataKey="expense"
-                      fill="#B54838"
+                      fill="#F43F5E"
                       radius={[4, 4, 0, 0]}
                       maxBarSize={60}
                       name="Annual Outflow"
@@ -967,10 +967,10 @@ export const CashflowPlanner: React.FC = () => {
             </div>
 
             {/* Historical Data Comparison Table */}
-            <div className="overflow-x-auto rounded-xl border border-[#EAE3D6] overflow-hidden">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 overflow-hidden">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-[#F8F5EE] border-b border-[#E6E0D3] text-[#5C544C] font-bold uppercase text-[11px] tracking-wider">
+                  <tr className="bg-gray-50 border-b border-gray-200 text-gray-500 font-bold uppercase text-[11px] tracking-wider">
                     <th className="py-3 px-4">Year</th>
                     <th className="py-3 px-4 text-right">Annual Revenue</th>
                     <th className="py-3 px-4 text-right">Annual Outflow</th>
@@ -978,7 +978,7 @@ export const CashflowPlanner: React.FC = () => {
                     <th className="py-3 px-4 text-right">Savings Rate %</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F2ECE2] font-medium text-[#2D2823] bg-white">
+                <tbody className="divide-y divide-gray-100 font-medium text-gray-900 bg-white">
                   {multiYearSummary.map(row => {
                     const isSelected = row.year === selectedYear;
                     return (
@@ -986,28 +986,28 @@ export const CashflowPlanner: React.FC = () => {
                         key={row.year}
                         onClick={() => setSelectedYear(row.year)}
                         className={`transition-colors cursor-pointer ${
-                          isSelected ? 'bg-[#FAF5EE] font-semibold' : 'hover:bg-[#FAF8F5]'
+                          isSelected ? 'bg-blue-50/50 font-semibold' : 'hover:bg-gray-50'
                         }`}
                         title="Click to view this year in monthly breakdown below"
                       >
-                        <td className="py-3 px-4 font-bold text-[#2D2823] font-mono text-xs flex items-center gap-2">
+                        <td className="py-3 px-4 font-bold text-gray-900 font-mono text-xs flex items-center gap-2">
                           <span>{row.year}</span>
                           {isSelected && (
-                            <span className="text-[10px] px-1.5 py-0.2 bg-[#8F4E1D] text-white rounded font-sans font-bold">
+                            <span className="text-[10px] px-1.5 py-0.2 bg-blue-600 text-white rounded font-sans font-bold">
                               Active
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-right font-mono text-[#3D633C] font-bold">
+                        <td className="py-3 px-4 text-right font-mono text-emerald-600 font-bold">
                           {formatRM(row.revenue)}
                         </td>
-                        <td className="py-3 px-4 text-right font-mono text-[#B54838] font-bold">
+                        <td className="py-3 px-4 text-right font-mono text-rose-600 font-bold">
                           {formatRM(row.expense)}
                         </td>
-                        <td className={`py-3 px-4 text-right font-mono font-bold ${row.netProfit >= 0 ? 'text-[#8F4E1D]' : 'text-[#B54838]'}`}>
+                        <td className={`py-3 px-4 text-right font-mono font-bold ${row.netProfit >= 0 ? 'text-blue-600' : 'text-rose-600'}`}>
                           {formatRM(row.netProfit)}
                         </td>
-                        <td className="py-3 px-4 text-right font-mono font-extrabold text-[#2D2823]">
+                        <td className="py-3 px-4 text-right font-mono font-extrabold text-gray-900">
                           {row.savingsRate.toFixed(1)}%
                         </td>
                       </tr>
@@ -1019,12 +1019,12 @@ export const CashflowPlanner: React.FC = () => {
           </div>
 
           {/* Unified Income Statement Table (Revenue & Expenses Combined) */}
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] shadow-xs overflow-hidden">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
             {/* Top Toolbar */}
-            <div className="px-5 py-4 border-b border-[#EAE3D6] flex flex-wrap items-center justify-between gap-3 bg-[#F5F0E6]/50">
+            <div className="px-5 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3 bg-gray-50/50">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#8F4E1D]" />
-                <h2 className="text-sm font-extrabold text-[#2D2823] tracking-tight uppercase">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                <h2 className="text-sm font-extrabold text-gray-900 tracking-tight uppercase">
                   INCOME STATEMENT ({selectedYear})
                 </h2>
               </div>
@@ -1035,7 +1035,7 @@ export const CashflowPlanner: React.FC = () => {
                     setNewCatName('');
                     setShowAddCategoryModal(true);
                   }}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#8F4E1D] hover:bg-[#733E16] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Inflow / Outflow</span>
@@ -1046,9 +1046,9 @@ export const CashflowPlanner: React.FC = () => {
             {/* Combined Table Content */}
             <div className="overflow-x-auto overflow-y-auto max-h-[70vh] no-scrollbar touch-scroll relative">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="sticky top-0 z-20 bg-[#F8F5EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
-                  <tr className="border-b border-[#E6E0D3] text-[#5C544C] font-bold uppercase text-[11px] tracking-wider">
-                    <th className="py-3 px-4 min-w-[220px] max-w-[280px] select-none sticky left-0 top-0 z-30 bg-[#F8F5EE] border-r border-[#E6E0D3] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
+                <thead className="sticky top-0 z-20 bg-gray-50 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
+                  <tr className="border-b border-gray-200 text-gray-500 font-bold uppercase text-[11px] tracking-wider">
+                    <th className="py-3 px-4 min-w-[220px] max-w-[280px] select-none sticky left-0 top-0 z-30 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
                       <div className="flex items-center gap-1.5">
                         <span>Category</span>
                       </div>
@@ -1056,18 +1056,18 @@ export const CashflowPlanner: React.FC = () => {
                     {months.map(m => (
                       <th key={m} className="py-3 px-2 text-right min-w-[90px]">{m}</th>
                     ))}
-                    <th className="py-3 px-4 text-right min-w-[120px] whitespace-nowrap bg-[#F5F0E6] font-bold text-[#2D2823]">
+                    <th className="py-3 px-4 text-right min-w-[120px] whitespace-nowrap bg-gray-100/70 font-bold text-gray-900">
                       Total ({selectedYear})
                     </th>
                     <th className="py-3 px-2 text-center w-10"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F2ECE2] text-[#2D2823] font-medium bg-white">
+                <tbody className="divide-y divide-gray-100 text-gray-900 font-medium bg-white">
                   {/* --- SECTION 1: REVENUE (INFLOW) HEADER --- */}
-                  <tr className="bg-[#FAF8F5] border-b border-[#EAE3D6]">
-                    <td colSpan={months.length + 3} className="py-2.5 px-4 font-bold text-xs text-[#3D633C] uppercase tracking-wider sticky left-0 z-10 bg-[#FAF8F5]">
+                  <tr className="bg-gray-50/70 border-b border-gray-100">
+                    <td colSpan={months.length + 3} className="py-2.5 px-4 font-bold text-xs text-emerald-600 uppercase tracking-wider sticky left-0 z-10 bg-gray-50">
                       <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#3D633C]" />
+                        <span className="w-2 h-2 rounded-full bg-emerald-600" />
                         <span>REVENUE (INFLOW)</span>
                       </div>
                     </td>
@@ -1092,16 +1092,16 @@ export const CashflowPlanner: React.FC = () => {
                           setDragOverIncomeId(null);
                         }}
                         className={`transition-colors group ${
-                          isDragging ? 'opacity-40 bg-[#FAF7F2]' : isDragOver ? 'bg-[#EEF4EE]/60 border-t-2 border-[#3D633C]' : 'hover:bg-[#FAF8F5]'
+                          isDragging ? 'opacity-40 bg-gray-50' : isDragOver ? 'bg-emerald-50/60 border-t-2 border-emerald-500' : 'hover:bg-gray-50/60'
                         }`}
                       >
-                        <td className="py-2 px-4 font-semibold text-[#2D2823] min-w-[220px] max-w-[280px] whitespace-normal break-words sticky left-0 z-10 bg-white group-hover:bg-[#FAF8F5] border-r border-[#EAE3D6] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] pl-6">
+                        <td className="py-2 px-4 font-semibold text-gray-900 min-w-[220px] max-w-[280px] whitespace-normal break-words sticky left-0 z-10 bg-white group-hover:bg-gray-50/60 border-r border-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] pl-6">
                           <textarea
                             rows={inc.category.length > 24 ? 2 : 1}
                             value={inc.category}
                             onChange={e => updateIncomeCategoryName(inc.id, e.target.value)}
                             placeholder="Income stream name"
-                            className="w-full font-bold text-xs text-[#2D2823] bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-[#E2DAD0] focus:border-[#3D633C] rounded-lg px-2 py-1 focus:outline-none transition-all cursor-text resize-none whitespace-normal break-words leading-snug"
+                            className="w-full font-bold text-xs text-gray-900 bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-gray-200 focus:border-emerald-500 rounded-lg px-2 py-1 focus:outline-none transition-all cursor-text resize-none whitespace-normal break-words leading-snug"
                           />
                         </td>
                         {months.map(m => (
@@ -1109,17 +1109,17 @@ export const CashflowPlanner: React.FC = () => {
                             <FormattedNumberInput
                               value={vals[m] !== undefined && vals[m] !== null ? vals[m] : 0}
                               onChange={v => updateIncomeForYear(inc.id, selectedYear, m, v)}
-                              className="w-full text-right py-1 px-1.5 text-xs bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-[#E2DAD0] focus:border-[#3D633C] rounded-lg focus:outline-none transition-all font-mono tabular-nums text-[#2D2823]"
+                              className="w-full text-right py-1 px-1.5 text-xs bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-gray-200 focus:border-emerald-500 rounded-lg focus:outline-none transition-all font-mono tabular-nums text-gray-900"
                             />
                           </td>
                         ))}
-                        <td className="py-2 px-4 text-right font-mono font-bold text-[#3D633C] bg-[#EEF4EE]/40 whitespace-nowrap tabular-nums">
+                        <td className="py-2 px-4 text-right font-mono font-bold text-emerald-600 bg-emerald-50/30 whitespace-nowrap tabular-nums">
                           {formatRM(rowSum)}
                         </td>
                         <td className="py-2 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => deleteIncomeCategory(inc.id)}
-                            className="p-1 text-[#8C8379] hover:text-[#B54838] rounded transition-colors cursor-pointer"
+                            className="p-1 text-gray-400 hover:text-rose-600 rounded transition-colors cursor-pointer"
                             title="Delete category"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1130,26 +1130,26 @@ export const CashflowPlanner: React.FC = () => {
                   })}
 
                   {/* Revenue Subtotal Row */}
-                  <tr className="bg-[#F5F9F5] border-t border-b-2 border-[#D5E4D4] font-extrabold text-[#2D2823]">
-                    <td className="py-2.5 px-4 uppercase text-[11px] tracking-wider text-[#3D633C] sticky left-0 z-10 bg-[#F5F9F5] border-r border-[#D5E4D4] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[220px]">
+                  <tr className="bg-emerald-50/40 border-t border-b-2 border-emerald-200 font-extrabold text-gray-900">
+                    <td className="py-2.5 px-4 uppercase text-[11px] tracking-wider text-emerald-700 sticky left-0 z-10 bg-emerald-50/80 border-r border-emerald-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[220px]">
                       TOTAL REVENUE
                     </td>
                     {months.map(m => (
-                      <td key={m} className="py-2.5 px-2 text-right font-mono text-[#3D633C] whitespace-nowrap tabular-nums">
+                      <td key={m} className="py-2.5 px-2 text-right font-mono text-emerald-600 whitespace-nowrap tabular-nums">
                         {monthlyRevenue[m] ? formatRM(monthlyRevenue[m]) : '-'}
                       </td>
                     ))}
-                    <td className="py-2.5 px-4 text-right font-mono font-extrabold text-[#3D633C] bg-[#E2ECE2] text-xs whitespace-nowrap tabular-nums">
+                    <td className="py-2.5 px-4 text-right font-mono font-extrabold text-emerald-700 bg-emerald-100/60 text-xs whitespace-nowrap tabular-nums">
                       {formatRM(totalAnnualRevenue)}
                     </td>
                     <td></td>
                   </tr>
 
                   {/* --- SECTION 2: EXPENSES (OUTFLOW) HEADER --- */}
-                  <tr className="bg-[#FAF8F5] border-b border-[#EAE3D6]">
-                    <td colSpan={months.length + 3} className="py-2.5 px-4 font-bold text-xs text-[#B54838] uppercase tracking-wider sticky left-0 z-10 bg-[#FAF8F5] pt-4">
+                  <tr className="bg-gray-50/70 border-b border-gray-100">
+                    <td colSpan={months.length + 3} className="py-2.5 px-4 font-bold text-xs text-rose-600 uppercase tracking-wider sticky left-0 z-10 bg-gray-50 pt-4">
                       <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#B54838]" />
+                        <span className="w-2 h-2 rounded-full bg-rose-600" />
                         <span>EXPENSES (OUTFLOW)</span>
                       </div>
                     </td>
@@ -1174,16 +1174,16 @@ export const CashflowPlanner: React.FC = () => {
                           setDragOverExpenseId(null);
                         }}
                         className={`transition-colors group ${
-                          isDragging ? 'opacity-40 bg-[#FAF7F2]' : isDragOver ? 'bg-[#FDF2F0]/60 border-t-2 border-[#B54838]' : 'hover:bg-[#FAF8F5]'
+                          isDragging ? 'opacity-40 bg-gray-50' : isDragOver ? 'bg-rose-50/60 border-t-2 border-rose-500' : 'hover:bg-gray-50/60'
                         }`}
                       >
-                        <td className="py-2 px-4 font-semibold text-[#2D2823] min-w-[220px] max-w-[280px] whitespace-normal break-words sticky left-0 z-10 bg-white group-hover:bg-[#FAF8F5] border-r border-[#EAE3D6] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] pl-6">
+                        <td className="py-2 px-4 font-semibold text-gray-900 min-w-[220px] max-w-[280px] whitespace-normal break-words sticky left-0 z-10 bg-white group-hover:bg-gray-50/60 border-r border-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] pl-6">
                           <textarea
                             rows={exp.name.length > 24 ? 2 : 1}
                             value={exp.name}
                             onChange={e => updateExpenseCategoryName(exp.id, e.target.value)}
                             placeholder="Expense item name"
-                            className="w-full font-bold text-xs text-[#2D2823] bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-[#E2DAD0] focus:border-[#B54838] rounded-lg px-2 py-1 focus:outline-none transition-all cursor-text resize-none whitespace-normal break-words leading-snug"
+                            className="w-full font-bold text-xs text-gray-900 bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-gray-200 focus:border-rose-500 rounded-lg px-2 py-1 focus:outline-none transition-all cursor-text resize-none whitespace-normal break-words leading-snug"
                           />
                         </td>
                         {months.map(m => (
@@ -1191,17 +1191,17 @@ export const CashflowPlanner: React.FC = () => {
                             <FormattedNumberInput
                               value={vals[m] !== undefined && vals[m] !== null ? vals[m] : 0}
                               onChange={v => updateExpenseForYear(exp.id, selectedYear, m, v)}
-                              className="w-full text-right py-1 px-1.5 text-xs bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-[#E2DAD0] focus:border-[#B54838] rounded-lg focus:outline-none transition-all font-mono tabular-nums text-[#2D2823]"
+                              className="w-full text-right py-1 px-1.5 text-xs bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-gray-200 focus:border-rose-500 rounded-lg focus:outline-none transition-all font-mono tabular-nums text-gray-900"
                             />
                           </td>
                         ))}
-                        <td className="py-2 px-4 text-right font-mono font-bold text-[#B54838] bg-[#FDF2F0]/40 whitespace-nowrap tabular-nums">
+                        <td className="py-2 px-4 text-right font-mono font-bold text-rose-600 bg-rose-50/30 whitespace-nowrap tabular-nums">
                           {formatRM(rowSum)}
                         </td>
                         <td className="py-2 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
                             onClick={() => deleteExpenseCategory(exp.id)}
-                            className="p-1 text-[#8C8379] hover:text-[#B54838] rounded transition-colors cursor-pointer"
+                            className="p-1 text-gray-400 hover:text-rose-600 rounded transition-colors cursor-pointer"
                             title="Delete category"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1212,35 +1212,35 @@ export const CashflowPlanner: React.FC = () => {
                   })}
 
                   {/* Expenses Subtotal Row */}
-                  <tr className="bg-[#FDF6F5] border-t border-b-2 border-[#F5C2BC] font-extrabold text-[#2D2823]">
-                    <td className="py-2.5 px-4 uppercase text-[11px] tracking-wider text-[#B54838] sticky left-0 z-10 bg-[#FDF6F5] border-r border-[#F5C2BC] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[220px]">
+                  <tr className="bg-rose-50/40 border-t border-b-2 border-rose-200 font-extrabold text-gray-900">
+                    <td className="py-2.5 px-4 uppercase text-[11px] tracking-wider text-rose-700 sticky left-0 z-10 bg-rose-50/80 border-r border-rose-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[220px]">
                       TOTAL EXPENSES
                     </td>
                     {months.map(m => (
-                      <td key={m} className="py-2.5 px-2 text-right font-mono text-[#B54838] whitespace-nowrap tabular-nums">
+                      <td key={m} className="py-2.5 px-2 text-right font-mono text-rose-600 whitespace-nowrap tabular-nums">
                         {monthlyExpensesTotal[m] ? formatRM(monthlyExpensesTotal[m]) : '-'}
                       </td>
                     ))}
-                    <td className="py-2.5 px-4 text-right font-mono font-extrabold text-[#B54838] bg-[#F9DDD8] text-xs whitespace-nowrap tabular-nums">
+                    <td className="py-2.5 px-4 text-right font-mono font-extrabold text-rose-700 bg-rose-100/60 text-xs whitespace-nowrap tabular-nums">
                       {formatRM(totalAnnualExpenses)}
                     </td>
                     <td></td>
                   </tr>
 
                   {/* --- SECTION 3: NET SURPLUS / DEFICIT (GRAND TOTAL) --- */}
-                  <tr className="bg-[#FAF5EE] border-t-2 border-[#E2DAD0] font-extrabold text-[#2D2823]">
-                    <td className="py-3 px-4 uppercase text-[11px] tracking-wider text-[#8F4E1D] sticky left-0 z-10 bg-[#FAF5EE] border-r border-[#E2DAD0] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[220px]">
+                  <tr className="bg-gray-50 border-t-2 border-gray-200 font-extrabold text-gray-900">
+                    <td className="py-3 px-4 uppercase text-[11px] tracking-wider text-blue-700 sticky left-0 z-10 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[220px]">
                       NET CASH FLOW (SURPLUS / DEFICIT)
                     </td>
                     {months.map(m => {
                       const net = monthlyNetProfit[m] || 0;
                       return (
-                        <td key={m} className={`py-3 px-2 text-right min-w-[90px] font-mono whitespace-nowrap tabular-nums ${net >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'}`}>
+                        <td key={m} className={`py-3 px-2 text-right min-w-[90px] font-mono whitespace-nowrap tabular-nums ${net >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                           {formatRM(net)}
                         </td>
                       );
                     })}
-                    <td className={`py-3 px-4 text-right font-mono font-extrabold text-sm whitespace-nowrap tabular-nums bg-[#F3ECE0] ${totalAnnualNetProfit >= 0 ? 'text-[#8F4E1D]' : 'text-[#B54838]'}`}>
+                    <td className={`py-3 px-4 text-right font-mono font-extrabold text-sm whitespace-nowrap tabular-nums bg-gray-100 ${totalAnnualNetProfit >= 0 ? 'text-blue-600' : 'text-rose-600'}`}>
                       {formatRM(totalAnnualNetProfit)}
                     </td>
                     <td></td>
@@ -1256,9 +1256,9 @@ export const CashflowPlanner: React.FC = () => {
       {activeTab === 'passive' && (
         <div className="space-y-6">
           {/* FIRE Target Goal Banner */}
-          <div className="bg-[#2D2823] text-white p-5 rounded-2xl border border-[#4A423A] shadow-md space-y-4">
+          <div className="bg-gray-900 text-white p-5 rounded-2xl border border-gray-800 shadow-md space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-[#FAF8F5]/10 border border-[#FAF8F5]/20 rounded-xl text-[#E8A87C]">
+              <div className="p-2.5 bg-white/10 border border-white/20 rounded-xl text-blue-400">
                 <Target className="w-5 h-5" />
               </div>
               <div>
@@ -1269,25 +1269,25 @@ export const CashflowPlanner: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs flex-wrap gap-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[#C2B8AA]">Current Passive Income:</span>
+                  <span className="text-gray-400">Current Passive Income:</span>
                   <strong className="text-white font-mono text-sm">{formatRM(monthlyPassiveAvg)}</strong>
-                  <span className="text-[#8C8379] font-bold">/</span>
-                  <span className="text-[#E8A87C] font-mono font-bold">RM</span>
+                  <span className="text-gray-500 font-bold">/</span>
+                  <span className="text-blue-400 font-mono font-bold">RM</span>
                   <FormattedNumberInput
                     value={fireTargetMonthly || ''}
                     onChange={v => setFireTargetMonthly(v)}
-                    className="w-20 px-1 py-0.5 bg-transparent border-b border-[#E8A87C]/60 hover:border-[#E8A87C] focus:border-[#E8A87C] text-[#E8A87C] font-mono text-xs font-bold focus:outline-none transition-colors text-center"
+                    className="w-20 px-1 py-0.5 bg-transparent border-b border-blue-400/60 hover:border-blue-400 focus:border-blue-400 text-blue-400 font-mono text-xs font-bold focus:outline-none transition-colors text-center"
                     placeholder="2,000"
                   />
-                  <span className="text-[#C2B8AA]">per month</span>
+                  <span className="text-gray-400">per month</span>
                 </div>
-                <span className="font-bold text-[#E8A87C] font-mono">
+                <span className="font-bold text-blue-400 font-mono">
                   {passiveMilestonePercent.toFixed(1)}%
                 </span>
               </div>
-              <div className="w-full bg-[#1F1B17] rounded-full h-3 overflow-hidden p-0.5 border border-[#4A423A]">
+              <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden p-0.5 border border-gray-700">
                 <div
-                  className="bg-linear-to-r from-[#3D633C] to-[#B86B30] h-full rounded-full transition-all duration-700"
+                  className="bg-linear-to-r from-emerald-500 to-blue-500 h-full rounded-full transition-all duration-700"
                   style={{ width: `${passiveMilestonePercent}%` }}
                 />
               </div>
@@ -1301,21 +1301,21 @@ export const CashflowPlanner: React.FC = () => {
                 const isRed = percent < 60;
 
                 return (
-                  <div className="pt-2 flex items-center justify-between flex-wrap gap-2 text-xs border-t border-[#4A423A]/70">
+                  <div className="pt-2 flex items-center justify-between flex-wrap gap-2 text-xs border-t border-gray-800">
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-2">
                         {/* Traffic light indicator circle */}
                         <div
                           className={`w-3.5 h-3.5 rounded-full transition-all shrink-0 ${
                             isGreen
-                              ? 'bg-[#4E9B58] ring-2 ring-[#4E9B58]/40 shadow-[0_0_8px_rgba(78,155,88,0.7)]'
+                              ? 'bg-emerald-500 ring-2 ring-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.7)]'
                               : isYellow
-                              ? 'bg-[#E5A93C] ring-2 ring-[#E5A93C]/40 shadow-[0_0_8px_rgba(229,169,60,0.7)]'
-                              : 'bg-[#D9534F] ring-2 ring-[#D9534F]/40 shadow-[0_0_8px_rgba(217,83,79,0.7)]'
+                              ? 'bg-amber-500 ring-2 ring-amber-500/40 shadow-[0_0_8px_rgba(245,158,11,0.7)]'
+                              : 'bg-rose-500 ring-2 ring-rose-500/40 shadow-[0_0_8px_rgba(244,63,94,0.7)]'
                           }`}
                         />
                         <span className={`font-bold text-xs ${
-                          isGreen ? 'text-[#85DE91]' : isYellow ? 'text-[#FAD074]' : 'text-[#FF8F87]'
+                          isGreen ? 'text-emerald-400' : isYellow ? 'text-amber-400' : 'text-rose-400'
                         }`}>
                           {isGreen
                             ? 'Your Money On the Right Track'
@@ -1325,17 +1325,17 @@ export const CashflowPlanner: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="text-[11px] text-[#C2B8AA] font-mono">
+                    <div className="text-[11px] text-gray-400 font-mono">
                       {isGreen ? (
-                        <span className="text-[#85DE91]">
+                        <span className="text-emerald-400">
                           Annualized: {formatRM(monthlyPassiveAvg * 12)} / year ({percent.toFixed(1)}% of target)
                         </span>
                       ) : isYellow ? (
-                        <span className="text-[#FAD074]">
+                        <span className="text-amber-400">
                           Annualized: {formatRM(monthlyPassiveAvg * 12)} / yr · Gap: {formatRM(Math.max(0, (target - monthlyPassiveAvg) * 12))}/yr
                         </span>
                       ) : (
-                        <span className="text-[#FF8F87]">
+                        <span className="text-rose-400">
                           Annualized: {formatRM(monthlyPassiveAvg * 12)} / yr · Shortfall: {formatRM(Math.max(0, (target - monthlyPassiveAvg) * 12))}/yr
                         </span>
                       )}
@@ -1351,26 +1351,26 @@ export const CashflowPlanner: React.FC = () => {
             {passiveAccountMetrics.map(({ account, latestPrincipal, latestRate, monthlyEst }) => {
               const { isUs } = checkStockAccountType(account);
               return (
-                <div key={account.id} className="bg-white rounded-2xl border border-[#EAE3D6] p-4 shadow-xs space-y-3 relative group hover:border-[#D5CEBF] transition-all">
+                <div key={account.id} className="bg-white rounded-2xl border border-gray-200 p-4 shadow-xs space-y-3 relative group hover:border-gray-300 transition-all">
                   <div className="flex items-start justify-between gap-2">
                     <div className="space-y-0.5">
-                      <h4 className="text-sm font-bold text-[#2D2823]">{account.name}</h4>
+                      <h4 className="text-sm font-bold text-gray-900">{account.name}</h4>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-extrabold text-[#3D633C] font-mono bg-[#EEF4EE] px-2 py-1 rounded-lg border border-[#D5E3D5]">
+                      <span className="text-xs font-extrabold text-emerald-600 font-mono bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">
                         {latestRate.toFixed(2)}% p.a.
                       </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#F2ECE2] text-xs">
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100 text-xs">
                     <div>
-                      <span className="text-[10px] text-[#7A7268] block uppercase font-bold">Principal ({isUs ? 'USD' : 'RM'})</span>
-                      <span className="font-mono font-bold text-[#2D2823]">{isUs ? formatUSD(latestPrincipal) : formatRM(latestPrincipal)}</span>
+                      <span className="text-[10px] text-gray-500 block uppercase font-bold">Principal ({isUs ? 'USD' : 'RM'})</span>
+                      <span className="font-mono font-bold text-gray-900">{isUs ? formatUSD(latestPrincipal) : formatRM(latestPrincipal)}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-[#7A7268] block uppercase font-bold">Est. Monthly Return</span>
-                      <span className="font-mono font-bold text-[#3D633C]">{isUs ? formatUSD(monthlyEst) : formatRM(monthlyEst)}</span>
+                      <span className="text-[10px] text-gray-500 block uppercase font-bold">Est. Monthly Return</span>
+                      <span className="font-mono font-bold text-emerald-600">{isUs ? formatUSD(monthlyEst) : formatRM(monthlyEst)}</span>
                     </div>
                   </div>
                 </div>
@@ -1379,11 +1379,11 @@ export const CashflowPlanner: React.FC = () => {
           </div>
 
           {/* Monthly Passive Yield Detailed Matrix Ledger */}
-          <div className="bg-white rounded-2xl border border-[#EAE3D6] shadow-xs overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#F2ECE2] bg-[#FAF8F5] flex items-center justify-between gap-3">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#8F4E1D]" />
-                <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight uppercase">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight uppercase">
                   Passive Income Ledger ({selectedYear})
                 </h3>
               </div>
@@ -1391,7 +1391,7 @@ export const CashflowPlanner: React.FC = () => {
               <button
                 type="button"
                 onClick={handleAddDirectPassiveAccount}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#8F4E1D] hover:bg-[#783F16] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add Account</span>
@@ -1399,7 +1399,7 @@ export const CashflowPlanner: React.FC = () => {
             </div>
 
             <div className="overflow-x-auto no-scrollbar touch-scroll">
-              <div className="divide-y-2 divide-[#EAE3D6]">
+              <div className="divide-y divide-gray-200">
                 {passiveAccounts.map((account) => {
                   const rowSum = months.reduce((sum, m) => sum + getPassiveMonthData(account, selectedYear, m).returns, 0);
                   const { isMy, isUs } = checkStockAccountType(account);
@@ -1420,10 +1420,10 @@ export const CashflowPlanner: React.FC = () => {
                       }}
                       className={`p-3 space-y-2 transition-all group ${
                         isDragging
-                          ? 'opacity-40 bg-[#FAF7F2]'
+                          ? 'opacity-40 bg-gray-50'
                           : isDragOver
-                          ? 'bg-[#FAF2EC] border-t-2 border-[#8F4E1D]'
-                          : 'hover:bg-[#FAF8F5]'
+                          ? 'bg-blue-50/60 border-t-2 border-blue-600'
+                          : 'hover:bg-gray-50/40'
                       }`}
                     >
                       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -1431,7 +1431,7 @@ export const CashflowPlanner: React.FC = () => {
                           <div className="flex items-center gap-1.5 flex-wrap">
                             {/* Hidden/Subtle Drag Handle */}
                             <div
-                              className="cursor-grab active:cursor-grabbing p-1 -ml-1 text-[#C2B8AA] hover:text-[#8F4E1D] opacity-40 group-hover:opacity-100 transition-opacity"
+                              className="cursor-grab active:cursor-grabbing p-1 -ml-1 text-gray-400 hover:text-blue-600 opacity-40 group-hover:opacity-100 transition-opacity"
                               title="Click and drag to reorder"
                             >
                               <GripVertical className="w-4 h-4" />
@@ -1440,18 +1440,18 @@ export const CashflowPlanner: React.FC = () => {
                               type="text"
                               value={account.name}
                               onChange={e => updatePassiveAccount(account.id, { name: e.target.value })}
-                              className="font-bold text-sm text-[#2D2823] bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-[#E2DAD0] focus:border-[#8F4E1D] rounded-md px-2 py-0.5 focus:outline-none transition-all"
+                              className="font-bold text-sm text-gray-900 bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-gray-200 focus:border-blue-600 rounded-md px-2 py-0.5 focus:outline-none transition-all"
                             />
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className="text-xs font-bold text-[#3D633C] font-mono">
+                          <span className={`text-xs font-bold font-mono ${isMy || isUs ? 'text-indigo-600' : 'text-emerald-600'}`}>
                             Annual Dividend: {isUs ? formatUSD(rowSum) : formatRM(rowSum)}
                           </span>
                           <button
                             type="button"
                             onClick={() => deletePassiveAccount(account.id)}
-                            className="text-[#8C8379] hover:text-[#B54838] p-1.5 rounded-lg hover:bg-[#FDF2F0] transition-colors cursor-pointer"
+                            className="text-gray-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
                             title="Delete Account"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1461,33 +1461,20 @@ export const CashflowPlanner: React.FC = () => {
 
                       <div className="overflow-x-auto no-scrollbar touch-scroll relative">
                         <table className="w-full text-left text-xs border-collapse">
-                          <thead className="sticky top-0 z-20 bg-[#FAF8F5]">
-                            <tr className="text-[#7A7268] font-bold uppercase text-[9px] border-b border-[#F2ECE2]">
-                              <th className="py-1 px-2 w-32 min-w-[140px] sticky left-0 top-0 z-30 bg-[#FAF8F5] border-r border-[#F2ECE2] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Metric</th>
+                          <thead className="sticky top-0 z-20 bg-gray-50">
+                            <tr className="text-gray-500 font-bold uppercase text-[9px] border-b border-gray-200">
+                              <th className="py-1 px-2 w-32 min-w-[140px] sticky left-0 top-0 z-30 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Metric</th>
                               {months.map(m => (
                                 <th key={m} className="py-1 px-1.5 text-right min-w-[85px]">{m}</th>
                               ))}
-                              <th className="py-1 px-2 text-right min-w-[110px] whitespace-nowrap bg-[#FAF8F5]">Total / Dec</th>
+                              <th className="py-1 px-2 text-right min-w-[110px] whitespace-nowrap bg-gray-50">Total / Dec</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-[#F2ECE2]">
+                          <tbody className="divide-y divide-gray-100">
                             {/* Row 1: Principal */}
                             <tr>
-                              <td className="py-1 px-2 font-bold text-[#5C544C] whitespace-nowrap sticky left-0 z-10 bg-white border-r border-[#F2ECE2] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
-                                {isMy || isUs ? (
-                                  <InfoTooltip
-                                    type="synced"
-                                    align="left"
-                                    label={`Principal (${isUs ? 'USD' : 'RM'})`}
-                                    tooltip={
-                                      isUs
-                                        ? 'US Stock Portfolio (Valuation)'
-                                        : 'MY Stock Portfolio (Valuation)'
-                                    }
-                                  />
-                                ) : (
-                                  <span>Principal ({isUs ? 'USD' : 'RM'})</span>
-                                )}
+                              <td className="py-1 px-2 font-bold text-gray-700 whitespace-nowrap sticky left-0 z-10 bg-white border-r border-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
+                                <span>Principal ({isUs ? 'USD' : 'RM'})</span>
                               </td>
                               {months.map(m => {
                                 const val = getPassiveMonthData(account, selectedYear, m).principal;
@@ -1498,12 +1485,18 @@ export const CashflowPlanner: React.FC = () => {
                                       onChange={v => {
                                         updatePassiveAccountMonthData(account.id, selectedYear, m, 'principal', v);
                                       }}
-                                      className="w-full text-right py-1 px-1.5 text-xs bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-[#E2DAD0] focus:border-[#8F4E1D] rounded-lg focus:outline-none transition-all font-mono tabular-nums text-[#2D2823]"
+                                      className={`w-full text-right py-1 px-1.5 text-xs rounded-lg focus:outline-none transition-all font-mono tabular-nums ${
+                                        isMy || isUs
+                                          ? 'text-indigo-600 font-bold bg-transparent'
+                                          : 'text-gray-900 bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-gray-200 focus:border-blue-600'
+                                      }`}
                                     />
                                   </td>
                                 );
                               })}
-                              <td className="py-1 px-2 text-right font-mono font-bold text-[#2D2823] whitespace-nowrap tabular-nums">
+                              <td className={`py-1 px-2 text-right font-mono font-bold whitespace-nowrap tabular-nums ${
+                                isMy || isUs ? 'text-indigo-600' : 'text-gray-900'
+                              }`}>
                                 {isUs
                                   ? formatUSD(getPassiveMonthData(account, selectedYear, 'Dec').principal)
                                   : formatRM(getPassiveMonthData(account, selectedYear, 'Dec').principal)}
@@ -1511,17 +1504,8 @@ export const CashflowPlanner: React.FC = () => {
                             </tr>
                             {/* Row 2: Rate */}
                             <tr>
-                              <td className="py-1 px-2 font-bold text-[#5C544C] whitespace-nowrap sticky left-0 z-10 bg-white border-r border-[#F2ECE2] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
-                                {isMy || isUs ? (
-                                  <InfoTooltip
-                                    type="synced"
-                                    align="left"
-                                    label="Rate (% p.a.)"
-                                    tooltip="Calculated: (Dividend ÷ Principal) × 100"
-                                  />
-                                ) : (
-                                  <span>Rate (% p.a.)</span>
-                                )}
+                              <td className="py-1 px-2 font-bold text-gray-700 whitespace-nowrap sticky left-0 z-10 bg-white border-r border-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
+                                <span>Rate (% p.a.)</span>
                               </td>
                               {months.map(m => {
                                 const monthData = getPassiveMonthData(account, selectedYear, m);
@@ -1536,16 +1520,18 @@ export const CashflowPlanner: React.FC = () => {
                                         if (isAuto) return;
                                         updatePassiveAccountMonthData(account.id, selectedYear, m, 'rate', v);
                                       }}
-                                      className={`w-full text-right py-1 px-1.5 text-xs rounded-lg focus:outline-none transition-all font-mono font-bold tabular-nums text-[#3D633C] ${
+                                      className={`w-full text-right py-1 px-1.5 text-xs rounded-lg focus:outline-none transition-all font-mono font-bold tabular-nums ${
                                         isAuto
-                                          ? 'bg-transparent cursor-default select-all'
-                                          : 'bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-[#E2DAD0] focus:border-[#3D633C]'
+                                          ? 'bg-transparent cursor-default select-all text-indigo-600'
+                                          : 'bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-gray-200 focus:border-emerald-500 text-emerald-600'
                                       }`}
                                     />
                                   </td>
                                 );
                               })}
-                              <td className="py-1 px-2 text-right font-mono font-bold text-[#3D633C] whitespace-nowrap tabular-nums">
+                              <td className={`py-1 px-2 text-right font-mono font-bold whitespace-nowrap tabular-nums ${
+                                isMy || isUs ? 'text-indigo-600' : 'text-emerald-600'
+                              }`}>
                                 {(() => {
                                   const latestP = getPassiveMonthData(account, selectedYear, 'Dec').principal || account.principalAmount || 0;
                                   if ((isMy || isUs) && latestP > 0) {
@@ -1556,25 +1542,9 @@ export const CashflowPlanner: React.FC = () => {
                               </td>
                             </tr>
                             {/* Row 3: Dividend */}
-                            <tr className="bg-[#EEF4EE]/30">
-                              <td className="py-1 px-2 font-bold text-[#3D633C] whitespace-nowrap sticky left-0 z-10 bg-[#FAFDF9] border-r border-[#F2ECE2] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
-                                {isMy || isUs ? (
-                                  <InfoTooltip
-                                    type="synced"
-                                    align="left"
-                                    label={`Dividend (${isUs ? 'USD' : 'RM'})`}
-                                    tooltip="Dividend Tracker (Monthly payouts)"
-                                  />
-                                ) : isDigitalBankOrFreeCash ? (
-                                  <InfoTooltip
-                                    type="info"
-                                    align="left"
-                                    label={`Dividend (${isUs ? 'USD' : 'RM'})`}
-                                    tooltip="Detailed entries & calculations available in this row"
-                                  />
-                                ) : (
-                                  <span>Dividend ({isUs ? 'USD' : 'RM'})</span>
-                                )}
+                            <tr className="bg-emerald-50/20">
+                              <td className="py-1 px-2 font-bold text-emerald-700 whitespace-nowrap sticky left-0 z-10 bg-emerald-50/40 border-r border-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
+                                <span>Dividend ({isUs ? 'USD' : 'RM'})</span>
                               </td>
                               {months.map(m => {
                                 const monthData = getPassiveMonthData(account, selectedYear, m);
@@ -1588,7 +1558,7 @@ export const CashflowPlanner: React.FC = () => {
                                       <FormattedNumberInput
                                         value={monthData.returns || 0}
                                         readOnly
-                                        className="w-full text-right py-1 px-1.5 text-xs rounded-lg focus:outline-none transition-all font-mono font-bold tabular-nums text-[#3D633C] bg-transparent cursor-default select-all"
+                                        className="w-full text-right py-1 px-1.5 text-xs rounded-lg focus:outline-none transition-all font-mono font-bold tabular-nums text-indigo-600 bg-transparent cursor-default select-all"
                                       />
                                     </td>
                                   );
@@ -1616,7 +1586,7 @@ export const CashflowPlanner: React.FC = () => {
                                             ? `Breakdown:\n${monthData.calcNotes}\n\nTotal: ${isUs ? formatUSD(displayVal) : formatRM(displayVal)}\n(Click to open mini calculator)`
                                             : `Click to open mini calculator for ${m} ${selectedYear}`
                                         }
-                                        className="w-full text-right py-1 px-1.5 text-xs rounded-lg transition-all font-mono font-bold tabular-nums flex items-center justify-end cursor-pointer bg-transparent text-[#3D633C] hover:bg-white hover:border-[#D5E3D5] border border-transparent focus:border-[#3D633C]"
+                                        className="w-full text-right py-1 px-1.5 text-xs rounded-lg transition-all font-mono font-bold tabular-nums flex items-center justify-end cursor-pointer bg-transparent text-emerald-600 hover:bg-white hover:border-emerald-200 border border-transparent focus:border-emerald-500"
                                       >
                                         <span className="truncate">
                                           {displayVal !== 0 ? displayVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : 0}
@@ -1634,12 +1604,12 @@ export const CashflowPlanner: React.FC = () => {
                                       onChange={v => {
                                         updatePassiveAccountMonthData(account.id, selectedYear, m, 'returns', v);
                                       }}
-                                      className="w-full text-right py-1 px-1.5 text-xs rounded-lg focus:outline-none transition-all font-mono font-bold tabular-nums text-[#3D633C] bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-[#D5E3D5] focus:border-[#3D633C]"
+                                      className="w-full text-right py-1 px-1.5 text-xs rounded-lg focus:outline-none transition-all font-mono font-bold tabular-nums text-emerald-600 bg-transparent hover:bg-white focus:bg-white border border-transparent hover:border-emerald-200 focus:border-emerald-500"
                                     />
                                   </td>
                                 );
                               })}
-                              <td className="py-1 px-2 text-right font-mono font-extrabold text-[#3D633C] whitespace-nowrap tabular-nums">
+                              <td className="py-1 px-2 text-right font-mono font-extrabold text-emerald-600 whitespace-nowrap tabular-nums">
                                 {isUs ? formatUSD(rowSum) : formatRM(rowSum)}
                               </td>
                             </tr>
@@ -1652,19 +1622,19 @@ export const CashflowPlanner: React.FC = () => {
               </div>
 
               {/* Matrix Total Summary Footer */}
-              <div className="bg-[#EEF4EE]/70 border-t-2 border-[#D5E3D5] p-3">
+              <div className="bg-emerald-50/40 border-t-2 border-emerald-200 p-3">
                 <div className="overflow-x-auto no-scrollbar touch-scroll relative">
                   <table className="w-full text-left text-xs border-collapse font-bold">
                     <tbody>
                       {/* Total Portfolio Principal */}
-                      <tr className="text-[#2D2823]">
-                        <td className="py-2 px-2 w-36 min-w-[140px] uppercase text-[10px] text-[#5C544C] font-bold whitespace-nowrap sticky left-0 z-10 bg-[#EEF4EE] border-r border-[#D5E3D5] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
+                      <tr className="text-gray-900">
+                        <td className="py-2 px-2 w-36 min-w-[140px] uppercase text-[10px] text-gray-600 font-bold whitespace-nowrap sticky left-0 z-10 bg-emerald-50/60 border-r border-emerald-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
                           <div className="flex items-center gap-1.5">
                             <span>Total Principal</span>
                             <button
                               type="button"
                               onClick={() => setShowPrincipalSelectorModal(true)}
-                              className="inline-flex items-center justify-center text-[#2563EB] hover:text-[#1D4ED8] transition-colors cursor-pointer shrink-0"
+                              className="inline-flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors cursor-pointer shrink-0"
                               title="Click to select which accounts are included in Total Principal"
                               aria-label="Customize Total Principal accounts"
                             >
@@ -1677,12 +1647,12 @@ export const CashflowPlanner: React.FC = () => {
                             .filter(a => includedPrincipalAccountIds.includes(a.id))
                             .reduce((sum, a) => sum + getPassiveMonthData(a, selectedYear, m).principal, 0);
                           return (
-                            <td key={m} className="py-1.5 px-1.5 text-right font-mono text-[#2D2823] min-w-[85px] whitespace-nowrap tabular-nums">
+                            <td key={m} className="py-1.5 px-1.5 text-right font-mono text-gray-900 min-w-[85px] whitespace-nowrap tabular-nums">
                               {mSum > 0 ? formatRM(mSum) : '-'}
                             </td>
                           );
                         })}
-                        <td className="py-1.5 px-2 text-right font-mono text-[#2D2823] font-bold min-w-[110px] whitespace-nowrap tabular-nums">
+                        <td className="py-1.5 px-2 text-right font-mono text-gray-900 font-bold min-w-[110px] whitespace-nowrap tabular-nums">
                           {formatRM(
                             passiveAccounts
                               .filter(a => includedPrincipalAccountIds.includes(a.id))
@@ -1691,17 +1661,17 @@ export const CashflowPlanner: React.FC = () => {
                         </td>
                       </tr>
                       {/* Total Monthly Passive Income */}
-                      <tr className="text-[#3D633C]">
-                        <td className="py-1.5 px-2 w-32 min-w-[140px] uppercase text-[10px] text-[#3D633C] whitespace-nowrap sticky left-0 z-10 bg-[#EEF4EE] border-r border-[#D5E3D5] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Total Passive Income</td>
+                      <tr className="text-emerald-700">
+                        <td className="py-1.5 px-2 w-32 min-w-[140px] uppercase text-[10px] text-emerald-700 whitespace-nowrap sticky left-0 z-10 bg-emerald-50/60 border-r border-emerald-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Total Passive Income</td>
                         {months.map(m => {
                           const mSum = passiveAccounts.reduce((sum, a) => sum + getPassiveMonthData(a, selectedYear, m).returns, 0);
                           return (
-                            <td key={m} className="py-1.5 px-1.5 text-right font-mono text-[#3D633C] min-w-[85px] whitespace-nowrap tabular-nums">
+                            <td key={m} className="py-1.5 px-1.5 text-right font-mono text-emerald-600 min-w-[85px] whitespace-nowrap tabular-nums">
                               {mSum > 0 ? formatRM(mSum) : '-'}
                             </td>
                           );
                         })}
-                        <td className="py-1.5 px-2 text-right font-mono text-[#3D633C] font-extrabold text-sm min-w-[110px] whitespace-nowrap tabular-nums">
+                        <td className="py-1.5 px-2 text-right font-mono text-emerald-700 font-extrabold text-sm min-w-[110px] whitespace-nowrap tabular-nums">
                           {formatRM(
                             passiveAccounts.reduce((sum, a) => {
                               const rSum = months.reduce((acc, m) => acc + getPassiveMonthData(a, selectedYear, m).returns, 0);
@@ -1721,27 +1691,27 @@ export const CashflowPlanner: React.FC = () => {
 
       {/* ADD INFLOW / OUTFLOW UNIFIED MODAL */}
       {showAddCategoryModal && (
-        <div className="fixed inset-0 bg-[#2D2823]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] p-5 max-w-sm w-full shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 max-w-sm w-full shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#2D2823]">Add Inflow / Outflow</h3>
+              <h3 className="text-sm font-bold text-gray-900">Add Inflow / Outflow</h3>
               <button 
                 onClick={() => setShowAddCategoryModal(false)} 
-                className="text-[#8C8379] hover:text-[#2D2823] p-1 rounded-lg hover:bg-[#EFE8DD] transition-colors cursor-pointer"
+                className="text-gray-400 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Type selector toggle */}
-            <div className="flex items-center p-1 bg-[#EFE8DD] rounded-xl gap-1">
+            <div className="flex items-center p-1 bg-gray-100 rounded-xl gap-1">
               <button
                 type="button"
                 onClick={() => setAddCategoryType('income')}
                 className={`flex-1 py-1.5 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                   addCategoryType === 'income'
-                    ? 'bg-[#3D633C] text-white shadow-xs'
-                    : 'text-[#6B635A] hover:text-[#2D2823]'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-300"></span>
@@ -1752,18 +1722,18 @@ export const CashflowPlanner: React.FC = () => {
                 onClick={() => setAddCategoryType('expense')}
                 className={`flex-1 py-1.5 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                   addCategoryType === 'expense'
-                    ? 'bg-[#B54838] text-white shadow-xs'
-                    : 'text-[#6B635A] hover:text-[#2D2823]'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                <span className="w-2 h-2 rounded-full bg-red-300"></span>
+                <span className="w-2 h-2 rounded-full bg-rose-300"></span>
                 <span>Outflow Stream</span>
               </button>
             </div>
 
             <form onSubmit={handleAddCategorySubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-[#5C544C] mb-1">
+                <label className="block text-xs font-bold text-gray-700 mb-1">
                   {addCategoryType === 'income' ? 'Inflow Stream Name' : 'Outflow Stream Name'}
                 </label>
                 <input
@@ -1775,8 +1745,8 @@ export const CashflowPlanner: React.FC = () => {
                   }
                   value={newCatName}
                   onChange={e => setNewCatName(e.target.value)}
-                  className={`w-full px-3 py-2 text-xs bg-white border border-[#E2DAD0] rounded-xl focus:outline-none focus:ring-2 text-[#2D2823] ${
-                    addCategoryType === 'income' ? 'focus:ring-[#3D633C]' : 'focus:ring-[#B54838]'
+                  className={`w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 text-gray-900 ${
+                    addCategoryType === 'income' ? 'focus:ring-emerald-500' : 'focus:ring-rose-500'
                   }`}
                   autoFocus
                 />
@@ -1785,7 +1755,7 @@ export const CashflowPlanner: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddCategoryModal(false)}
-                  className="px-3 py-1.5 text-xs font-bold text-[#6B635A] hover:bg-[#EFE8DD] rounded-xl cursor-pointer"
+                  className="px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1794,8 +1764,8 @@ export const CashflowPlanner: React.FC = () => {
                   disabled={!newCatName.trim()}
                   className={`px-4 py-1.5 text-xs font-bold text-white rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50 ${
                     addCategoryType === 'income'
-                      ? 'bg-[#3D633C] hover:bg-[#315030]'
-                      : 'bg-[#B54838] hover:bg-[#9E3E30]'
+                      ? 'bg-emerald-600 hover:bg-emerald-700'
+                      : 'bg-rose-600 hover:bg-rose-700'
                   }`}
                 >
                   {addCategoryType === 'income' ? 'Add Inflow Stream' : 'Add Outflow Stream'}
@@ -1807,24 +1777,24 @@ export const CashflowPlanner: React.FC = () => {
       )}
       {/* TOTAL PRINCIPAL SELECTOR MODAL */}
       {showPrincipalSelectorModal && (
-        <div className="fixed inset-0 bg-[#2D2823]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] p-5 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
             {/* Modal Header */}
-            <div className="flex items-start justify-between gap-3 border-b border-[#EAE3D6] pb-3">
+            <div className="flex items-start justify-between gap-3 border-b border-gray-100 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-[#FAF0E6] text-[#8F4E1D] rounded-xl border border-[#EAD7C5]">
+                <div className="p-2 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
                   <SlidersHorizontal className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#2D2823]">Total Principal Inclusion</h3>
-                  <p className="text-[11px] text-[#7A7268]">
+                  <h3 className="text-sm font-bold text-gray-900">Total Principal Inclusion</h3>
+                  <p className="text-[11px] text-gray-500">
                     Select which accounts contribute to the Total Principal row for {selectedYear}.
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowPrincipalSelectorModal(false)}
-                className="text-[#8C8379] hover:text-[#2D2823] p-1.5 rounded-lg hover:bg-[#EFE8DD] transition-colors cursor-pointer"
+                className="text-gray-400 hover:text-gray-700 p-1.5 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                 title="Close"
               >
                 <X className="w-4 h-4" />
@@ -1833,28 +1803,28 @@ export const CashflowPlanner: React.FC = () => {
 
             {/* Selection Quick Actions */}
             <div className="flex items-center justify-between gap-2 text-xs pt-1">
-              <span className="text-[11px] font-bold text-[#7A7268]">
+              <span className="text-[11px] font-bold text-gray-500">
                 {includedPrincipalAccountIds.length} of {passiveAccounts.length} accounts included
               </span>
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={selectAllPrincipalAccounts}
-                  className="px-2.5 py-1 text-[11px] font-bold text-[#3D633C] bg-[#EEF4EE] hover:bg-[#D5E3D5] rounded-lg transition-colors cursor-pointer"
+                  className="px-2.5 py-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
                 >
                   Select All
                 </button>
                 <button
                   type="button"
                   onClick={deselectAllPrincipalAccounts}
-                  className="px-2.5 py-1 text-[11px] font-bold text-[#8C8379] hover:text-[#2D2823] hover:bg-[#EFE8DD] rounded-lg transition-colors cursor-pointer"
+                  className="px-2.5 py-1 text-[11px] font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
                 >
                   Deselect All
                 </button>
                 <button
                   type="button"
                   onClick={selectAllPrincipalAccounts}
-                  className="p-1 text-[#8C8379] hover:text-[#2D2823] hover:bg-[#EFE8DD] rounded-lg transition-colors cursor-pointer"
+                  className="p-1 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
                   title="Reset Default"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
@@ -1875,47 +1845,47 @@ export const CashflowPlanner: React.FC = () => {
                     onClick={() => toggleIncludeAccount(account.id)}
                     className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer select-none ${
                       isIncluded
-                        ? 'bg-white border-[#8F4E1D]/40 shadow-xs'
-                        : 'bg-[#F5F1EB]/60 border-[#E5DFD5] opacity-60 hover:opacity-100'
+                        ? 'bg-blue-50/30 border-blue-200 shadow-xs'
+                        : 'bg-gray-50/60 border-gray-200 opacity-60 hover:opacity-100'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0 pr-2">
                       <div
                         className={`w-4 h-4 rounded-md flex items-center justify-center border transition-all ${
                           isIncluded
-                            ? 'bg-[#8F4E1D] border-[#8F4E1D] text-white'
-                            : 'bg-white border-[#C2B8AA]'
+                            ? 'bg-blue-600 border-blue-600 text-white'
+                            : 'bg-white border-gray-300'
                         }`}
                       >
                         {isIncluded && <Check className="w-3 h-3 stroke-[3]" />}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="font-bold text-xs text-[#2D2823] truncate">
+                          <span className="font-bold text-xs text-gray-900 truncate">
                             {account.name}
                           </span>
                           {isMy && (
-                            <span className="text-[9px] font-bold text-[#8F4E1D] bg-[#FAF0E6] px-1.5 py-0.2 rounded border border-[#EAD7C5]">
+                            <span className="text-[9px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-100">
                               MY Stock
                             </span>
                           )}
                           {isUs && (
-                            <span className="text-[9px] font-bold text-[#3D633C] bg-[#EEF4EE] px-1.5 py-0.2 rounded border border-[#D5E3D5]">
+                            <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-100">
                               US Stock
                             </span>
                           )}
                         </div>
-                        <span className="text-[10px] text-[#8C8379] block">
+                        <span className="text-[10px] text-gray-500 block">
                           {account.category || 'Passive Yield'}
                         </span>
                       </div>
                     </div>
 
                     <div className="text-right whitespace-nowrap pl-2">
-                      <span className="font-mono font-bold text-xs text-[#2D2823] block">
+                      <span className="font-mono font-bold text-xs text-gray-900 block">
                         {isUs ? formatUSD(decPrincipal) : formatRM(decPrincipal)}
                       </span>
-                      <span className="text-[9px] text-[#8C8379] font-mono">Dec {selectedYear}</span>
+                      <span className="text-[9px] text-gray-500 font-mono">Dec {selectedYear}</span>
                     </div>
                   </div>
                 );
@@ -1923,12 +1893,12 @@ export const CashflowPlanner: React.FC = () => {
             </div>
 
             {/* Live Total Principal Footer */}
-            <div className="bg-[#FAF0E6] border border-[#EAD7C5] p-3 rounded-xl space-y-1">
+            <div className="bg-blue-50/60 border border-blue-100 p-3 rounded-xl space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-[#8F4E1D] font-bold uppercase text-[10px] tracking-wider">
+                <span className="text-blue-700 font-bold uppercase text-[10px] tracking-wider">
                   Combined Total Principal ({selectedYear} Dec)
                 </span>
-                <span className="font-mono font-extrabold text-sm text-[#8F4E1D] tabular-nums">
+                <span className="font-mono font-extrabold text-sm text-blue-700 tabular-nums">
                   {formatRM(
                     passiveAccounts
                       .filter(a => includedPrincipalAccountIds.includes(a.id))
@@ -1939,11 +1909,11 @@ export const CashflowPlanner: React.FC = () => {
             </div>
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-end gap-2 pt-1 border-t border-[#EAE3D6]">
+            <div className="flex items-center justify-end gap-2 pt-1 border-t border-gray-100">
               <button
                 type="button"
                 onClick={() => setShowPrincipalSelectorModal(false)}
-                className="w-full py-2 text-xs font-bold bg-[#8F4E1D] hover:bg-[#783F16] text-white rounded-xl transition-all shadow-xs cursor-pointer text-center"
+                className="w-full py-2 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all shadow-xs cursor-pointer text-center"
               >
                 Apply & Close
               </button>

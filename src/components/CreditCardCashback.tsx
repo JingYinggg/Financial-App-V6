@@ -28,7 +28,6 @@ import {
   ListPlus
 } from 'lucide-react';
 import { YearSelector } from './YearSelector';
-import { InfoTooltip } from './InfoTooltip';
 import { FormattedNumberInput } from './FormattedNumberInput';
 
 export const CreditCardCashback: React.FC = () => {
@@ -468,7 +467,7 @@ export const CreditCardCashback: React.FC = () => {
   return (
     <div id="credit-card-cashback-section" className="space-y-5 max-w-7xl mx-auto pb-12">
       {/* Top Header & Year Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-[#FAF7F2] p-3.5 rounded-2xl border border-[#EAE3D6] shadow-xs">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-gray-200 shadow-xs">
         <div className="flex flex-wrap items-center gap-2">
           <YearSelector
             years={allYears}
@@ -490,12 +489,11 @@ export const CreditCardCashback: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAddCardModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#B86B30] hover:bg-[#9E5720] text-white font-bold text-xs rounded-xl shadow-xs transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Card</span>
           </button>
-
         </div>
       </div>
 
@@ -508,19 +506,19 @@ export const CreditCardCashback: React.FC = () => {
             <button
               key={card.id}
               onClick={() => setSelectedCardId(card.id)}
-              className={`p-3.5 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-center min-h-[60px] ${
+              className={`p-3.5 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-center min-h-[60px] cursor-pointer ${
                 isSelected
-                  ? 'bg-white border-[#B86B30] shadow-xs ring-2 ring-[#B86B30]/20'
-                  : 'bg-white border-[#EAE3D6] hover:border-[#DFCFC0] hover:bg-[#FAF8F5]'
+                  ? 'bg-white border-blue-500 shadow-xs ring-2 ring-blue-500/20'
+                  : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50'
               }`}
             >
               <div className="flex items-center gap-2">
                 <span className={`text-sm font-bold truncate ${
-                  isSelected ? 'text-[#8F4E1D]' : 'text-[#2D2823]'
+                  isSelected ? 'text-blue-600' : 'text-gray-900'
                 }`}>
                   {card.bank}
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F5F0E6] text-[#5C544C] font-semibold border border-[#E2DAD0]">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 font-semibold border border-gray-200">
                   {card.accountNo}
                 </span>
               </div>
@@ -530,9 +528,9 @@ export const CreditCardCashback: React.FC = () => {
       </div>
 
       {/* Month Selector Bar */}
-      <div className="bg-white p-2.5 rounded-2xl border border-[#EAE3D6] shadow-xs flex items-center justify-between gap-2 overflow-x-auto">
+      <div className="bg-white p-2.5 rounded-2xl border border-gray-200 shadow-xs flex items-center justify-between gap-2 overflow-x-auto">
         <div className="flex items-center gap-1.5 pl-2">
-          <span className="text-xs font-bold text-[#5C544C] whitespace-nowrap">
+          <span className="text-xs font-bold text-gray-600 whitespace-nowrap">
             Month ({selectedYear}):
           </span>
         </div>
@@ -545,15 +543,15 @@ export const CreditCardCashback: React.FC = () => {
               <button
                 key={m}
                 onClick={() => setSelectedMonth(m)}
-                className={`px-3 py-1 text-xs font-bold rounded-xl transition-all relative ${
+                className={`px-3 py-1 text-xs font-bold rounded-xl transition-all relative cursor-pointer ${
                   selectedMonth === m
-                    ? 'bg-[#B86B30] text-white shadow-xs'
-                    : 'text-[#5C544C] hover:text-[#2D2823] hover:bg-[#F5F0E6]'
+                    ? 'bg-gray-900 text-white shadow-xs'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 {m}
                 {hasSpend && selectedMonth !== m && (
-                  <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#B86B30]" />
+                  <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-blue-600" />
                 )}
               </button>
             );
@@ -563,29 +561,29 @@ export const CreditCardCashback: React.FC = () => {
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-        <div className="bg-white border border-[#EAE3D6] rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block">
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
             Total Spend ({selectedMonth} {selectedYear})
           </span>
-          <div className="text-xl font-extrabold text-[#2D2823] font-mono mt-0.5">
+          <div className="text-xl font-extrabold text-gray-900 font-mono mt-0.5">
             RM {totalMonthlySpend.toFixed(2)}
           </div>
           <div className="mt-1.5 flex items-center justify-between gap-1 text-[11px]">
             {currentCard?.minMonthlySpend && currentCard.minMonthlySpend > 0 ? (
               totalMonthlySpend >= currentCard.minMonthlySpend ? (
-                <span className="text-[#3D633C] font-semibold flex items-center gap-1">
+                <span className="text-emerald-600 font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                   <span>Unlocked tier (Min RM {currentCard.minMonthlySpend.toFixed(2)})</span>
                 </span>
               ) : (
-                <span className="text-[#8F5A23] font-semibold flex items-center gap-1" title={`RM ${(currentCard.minMonthlySpend - totalMonthlySpend).toFixed(2)} needed to reach min spend of RM ${currentCard.minMonthlySpend.toFixed(2)}`}>
+                <span className="text-amber-600 font-semibold flex items-center gap-1" title={`RM ${(currentCard.minMonthlySpend - totalMonthlySpend).toFixed(2)} needed to reach min spend of RM ${currentCard.minMonthlySpend.toFixed(2)}`}>
                   <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                  <span>RM {(currentCard.minMonthlySpend - totalMonthlySpend).toFixed(2)} to reach min spend (RM {currentCard.minMonthlySpend.toFixed(2)})</span>
+                  <span>RM ${(currentCard.minMonthlySpend - totalMonthlySpend).toFixed(2)} to reach min spend (RM {currentCard.minMonthlySpend.toFixed(2)})</span>
                 </span>
               )
             ) : (
-              <span className="text-[#7A7268] font-medium flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#3D633C] shrink-0" />
+              <span className="text-gray-500 font-medium flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>No minimum spend required</span>
               </span>
             )}
@@ -601,7 +599,7 @@ export const CreditCardCashback: React.FC = () => {
                   setShowMinSpendModal(true);
                 }
               }}
-              className="p-1 rounded-lg text-[#8C8379] hover:text-[#8F4E1D] hover:bg-[#F5F0E6] transition-colors shrink-0"
+              className="p-1 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-gray-100 transition-colors shrink-0 cursor-pointer"
               title="Information & Configure Minimum Spend requirement"
               aria-label="Minimum spend requirement details & settings"
             >
@@ -610,16 +608,16 @@ export const CreditCardCashback: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white border border-[#EAE3D6] rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block">
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
             Total Statement Cashback ({selectedMonth} {selectedYear})
           </span>
-          <div className="text-xl font-extrabold text-[#3D633C] font-mono mt-0.5">
+          <div className="text-xl font-extrabold text-emerald-600 font-mono mt-0.5">
             RM {displayTotalCashback.toFixed(2)}
           </div>
-          <span className="text-[11px] text-[#7A7268] mt-1 block">
+          <span className="text-[11px] text-gray-500 mt-1 block">
             Effective Return Rate:{' '}
-            <strong className="text-[#2D2823]">
+            <strong className="text-gray-900">
               {totalMonthlySpend > 0
                 ? ((displayTotalCashback / totalMonthlySpend) * 100).toFixed(2)
                 : '0.00'}
@@ -628,19 +626,19 @@ export const CreditCardCashback: React.FC = () => {
           </span>
         </div>
 
-        <div className="bg-white border border-[#EAE3D6] rounded-2xl p-4 shadow-xs flex items-center justify-between">
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
               Annual Total Cashback ({selectedYear})
             </span>
-            <div className="text-xl font-extrabold text-[#8F4E1D] font-mono mt-0.5">
+            <div className="text-xl font-extrabold text-blue-600 font-mono mt-0.5">
               RM {annualStatsForYear.totalCashback.toFixed(2)}
             </div>
-            <span className="text-[10px] text-[#7A7268] mt-1 block">
+            <span className="text-[10px] text-gray-500 mt-1 block">
               Total Spend: RM {annualStatsForYear.totalSpend.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </span>
           </div>
-          <div className="p-2.5 bg-[#FAF7F2] text-[#8F4E1D] rounded-xl border border-[#E2DAD0]">
+          <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
             <TrendingUp className="w-5 h-5" />
           </div>
         </div>
@@ -648,9 +646,9 @@ export const CreditCardCashback: React.FC = () => {
 
       {/* Category Spend & Eligible Items Table */}
       {currentCard && (
-        <div className="bg-white border border-[#EAE3D6] rounded-2xl overflow-hidden shadow-xs">
-          <div className="px-4 py-3 border-b border-[#EAE3D6] bg-[#FAF7F2] flex items-center justify-between">
-            <h2 className="font-bold text-[#2D2823] text-xs">
+        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xs">
+          <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+            <h2 className="font-bold text-gray-900 text-xs">
               {currentCard.bank} ({currentCard.accountNo})
             </h2>
             <button
@@ -668,7 +666,7 @@ export const CreditCardCashback: React.FC = () => {
                 setNewCatExcludedInput('');
                 setShowAddCategoryModal(true);
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-semibold rounded-xl shadow-xs transition"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-xs transition cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Category</span>
@@ -676,20 +674,18 @@ export const CreditCardCashback: React.FC = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-[#2D2823]">
-              <thead className="bg-[#FAF8F5] text-[#5C544C] text-[10px] font-bold uppercase tracking-wider border-b border-[#EAE3D6]">
+            <table className="w-full text-left text-xs text-gray-900">
+              <thead className="bg-gray-50 text-gray-600 text-[10px] font-bold uppercase tracking-wider border-b border-gray-200">
                 <tr>
                   <th className="py-3 px-3 min-w-[170px]">Transaction Category</th>
                   <th className="py-3 px-2 text-center w-16">Rate (%)</th>
                   <th className="py-3 px-2 text-center w-28">Monthly Cap (RM)</th>
                   <th className="py-3 px-3 min-w-[140px]">Monthly Spend (RM)</th>
-                  <th className="py-3 px-3 text-right w-28">
-                    <InfoTooltip type="synced" align="right" label="Calculated" tooltip="Rate (%) × Spend (capped)" />
-                  </th>
+                  <th className="py-3 px-3 text-right w-28">Calculated</th>
                   <th className="py-3 px-3 text-right w-36">Final Amount (RM)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F2ECE2] font-medium">
+              <tbody className="divide-y divide-gray-100 font-medium">
                 {effectiveCategories.map(cat => {
                   const spend = categorySpends[cat.id] || 0;
                   const isFocused = focusedCatId === cat.id;
@@ -705,41 +701,40 @@ export const CreditCardCashback: React.FC = () => {
                   return (
                     <tr
                       key={cat.id}
-                      className="hover:bg-[#FAF8F5] transition group"
+                      className="hover:bg-gray-50/70 transition group"
                     >
                       <td className="py-2.5 px-3">
                         <div className="flex items-center gap-2">
-                          <div className="p-1.5 rounded-lg bg-[#F5F0E6] text-[#5C544C]">
+                          <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600">
                             {getCategoryIcon(cat.name)}
                           </div>
                           <div>
                             <button
                               onClick={() => handleOpenCategoryDetails(cat)}
-                              className="font-bold text-[#2D2823] hover:text-[#8F4E1D] transition text-left flex items-center gap-1"
+                              className="font-bold text-gray-900 hover:text-blue-600 transition text-left flex items-center gap-1 cursor-pointer"
                               title="Click to view full eligible criteria & rules"
                             >
                               <span>{cat.name}</span>
-                              <Info className="w-3 h-3 text-[#8C8379] group-hover:text-[#8F4E1D] shrink-0" />
                             </button>
                           </div>
                         </div>
                       </td>
 
                       <td className="py-2.5 px-2 text-center">
-                        <span className="px-2 py-0.5 rounded-md bg-[#FAF7F2] text-[#8F4E1D] font-bold border border-[#E2DAD0] text-[11px] inline-block">
+                        <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold border border-blue-200 text-[11px] inline-block">
                           {cat.ratePercent}%
                         </span>
                       </td>
 
                       <td className="py-2.5 px-2 text-center">
-                        <span className="font-semibold text-[#5C544C] font-mono text-xs">
+                        <span className="font-semibold text-gray-600 font-mono text-xs">
                           {cat.capRM !== undefined && cat.capRM > 0 ? `RM ${cat.capRM}` : 'No Cap'}
                         </span>
                       </td>
 
                       <td className="py-2.5 px-3">
                         <div className="flex items-center gap-1">
-                          <span className="text-[#8C8379] font-mono text-[10px]">RM</span>
+                          <span className="text-gray-400 font-mono text-[10px]">RM</span>
                           <input
                             type="text"
                             value={formulaVal}
@@ -753,18 +748,18 @@ export const CreditCardCashback: React.FC = () => {
                               }
                             }}
                             title={spendFormulas[cat.id] ? `Formula: ${spendFormulas[cat.id]} (Total: RM ${spend})` : 'Supports math formulas like 12+12+12'}
-                            className="w-full bg-[#FAF8F5] border border-[#E2DAD0] px-2 py-1 rounded-lg text-[#2D2823] font-semibold focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#B86B30] text-xs font-mono"
+                            className="w-full bg-gray-50 border border-gray-200 px-2 py-1 rounded-lg text-gray-900 font-semibold focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-mono"
                           />
                         </div>
                       </td>
 
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-[#7E22CE]">
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-indigo-600">
                         RM {cb.earned.toFixed(2)}
                       </td>
 
                       <td className="py-2.5 px-3 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <span className="text-[#8C8379] font-mono text-[10px]">RM</span>
+                          <span className="text-gray-400 font-mono text-[10px]">RM</span>
                           <FormattedNumberInput
                             value={actualVal === 0 ? '' : actualVal}
                             placeholder={cb.earned.toFixed(2)}
@@ -772,7 +767,7 @@ export const CreditCardCashback: React.FC = () => {
                             onChange={v => {
                               handleActualCashbackChange(cat.id, Math.round(v * 100) / 100);
                             }}
-                            className="w-24 text-right px-1.5 py-1 bg-[#EEF4EE] border border-[#D5E4D4] rounded-lg text-[#3D633C] font-bold focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#3D633C] text-xs font-mono"
+                            className="w-24 text-right px-1.5 py-1 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 font-bold focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600 text-xs font-mono"
                           />
                         </div>
                       </td>
@@ -780,27 +775,27 @@ export const CreditCardCashback: React.FC = () => {
                   );
                 })}
               </tbody>
-              <tfoot className="bg-[#FAF8F5] font-bold border-t border-[#EAE3D6] text-[#2D2823]">
+              <tfoot className="bg-gray-50 font-bold border-t border-gray-200 text-gray-900">
                 <tr>
-                  <td colSpan={3} className="py-3 px-3 text-[#5C544C] uppercase text-[10px] tracking-wider">
+                  <td colSpan={3} className="py-3 px-3 text-gray-600 uppercase text-[10px] tracking-wider">
                     Total Statement Summary ({selectedMonth} {selectedYear})
                   </td>
-                  <td className="py-3 px-3 font-mono text-[#2D2823] text-xs">
+                  <td className="py-3 px-3 font-mono text-gray-900 text-xs">
                     RM {totalMonthlySpend.toFixed(2)}
                   </td>
-                  <td className="py-3 px-3 text-right font-mono text-[#7E22CE] font-extrabold text-xs">
+                  <td className="py-3 px-3 text-right font-mono text-indigo-600 font-extrabold text-xs">
                     RM {totalMonthlyCalculatedCashback.toFixed(2)}
                   </td>
                   <td className="py-3 px-3 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <span className="text-[#8C8379] font-mono text-[10px]">RM</span>
+                      <span className="text-gray-400 font-mono text-[10px]">RM</span>
                       <FormattedNumberInput
                         value={currentSpendRecord?.finalTotalCashback !== undefined ? currentSpendRecord.finalTotalCashback : ''}
                         placeholder={totalMonthlyFinalCashback.toFixed(2)}
                         onChange={v => {
                           handleFinalTotalCashbackChange(Math.round(v * 100) / 100);
                         }}
-                        className="w-24 text-right px-2 py-1 bg-[#E2ECE0] border border-[#BACDBA] rounded-lg text-[#2E4F2D] font-extrabold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#3D633C] text-xs font-mono shadow-xs"
+                        className="w-24 text-right px-2 py-1 bg-emerald-100 border border-emerald-300 rounded-lg text-emerald-800 font-extrabold focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 text-xs font-mono shadow-xs"
                       />
                     </div>
                   </td>
@@ -813,23 +808,23 @@ export const CreditCardCashback: React.FC = () => {
 
       {/* MODAL: ADD TRANSACTION CATEGORY */}
       {showAddCategoryModal && (
-        <div className="fixed inset-0 z-50 bg-[#2D2823]/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-5 border border-[#EAE3D6] max-h-[90vh] overflow-y-auto space-y-4">
-            <div className="flex items-center justify-between pb-2.5 border-b border-[#EAE3D6]">
+        <div className="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-5 border border-gray-200 max-h-[90vh] overflow-y-auto space-y-4">
+            <div className="flex items-center justify-between pb-2.5 border-b border-gray-100">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-[#FAF7F2] text-[#8F4E1D] rounded-xl border border-[#E2DAD0]">
+                <div className="p-2 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
                   <ListPlus className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#2D2823]">Add Transaction Category</h3>
-                  <p className="text-[10px] text-[#7A7268]">
+                  <h3 className="text-sm font-bold text-gray-900">Add Transaction Category</h3>
+                  <p className="text-[10px] text-gray-500">
                     Define cashback criteria for {currentCard?.bank} ({currentCard?.accountNo})
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowAddCategoryModal(false)}
-                className="p-1 text-[#8C8379] hover:text-[#2D2823] rounded-lg"
+                className="p-1 text-gray-400 hover:text-gray-900 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -837,8 +832,8 @@ export const CreditCardCashback: React.FC = () => {
 
             <form onSubmit={handleAddNewCategory} className="space-y-3.5 pt-1">
               <div>
-                <label className="text-xs font-semibold text-[#5C544C] block mb-1">
-                  Category Name <span className="text-[#A25820]">*</span>
+                <label className="text-xs font-semibold text-gray-600 block mb-1">
+                  Category Name <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -846,14 +841,14 @@ export const CreditCardCashback: React.FC = () => {
                   value={newCategoryData.name}
                   onChange={e => setNewCategoryData({ ...newCategoryData, name: e.target.value })}
                   required
-                  className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-medium text-[#2D2823]"
+                  className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="text-xs font-semibold text-[#5C544C] block mb-1">
-                    Cashback Rate (%) <span className="text-[#A25820]">*</span>
+                  <label className="text-xs font-semibold text-gray-600 block mb-1">
+                    Cashback Rate (%) <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -864,13 +859,13 @@ export const CreditCardCashback: React.FC = () => {
                     value={newCategoryData.ratePercent}
                     onChange={e => setNewCategoryData({ ...newCategoryData, ratePercent: e.target.value })}
                     required
-                    className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-mono font-bold text-[#2D2823]"
+                    className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono font-bold text-gray-900"
                   />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-semibold text-[#5C544C]">Monthly Cap (RM)</label>
-                    <span className="text-[10px] text-[#7A7268]">Blank for no cap</span>
+                    <label className="text-xs font-semibold text-gray-600">Monthly Cap (RM)</label>
+                    <span className="text-[10px] text-gray-400">Blank for no cap</span>
                   </div>
                   <input
                     type="number"
@@ -879,13 +874,13 @@ export const CreditCardCashback: React.FC = () => {
                     placeholder="e.g. 30 (Optional)"
                     value={newCategoryData.capRM}
                     onChange={e => setNewCategoryData({ ...newCategoryData, capRM: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-mono font-bold text-[#2D2823]"
+                    className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono font-bold text-gray-900"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[#5C544C] block mb-1">
+                <label className="text-xs font-semibold text-gray-600 block mb-1">
                   Criteria / Qualification Rules (MCC & Terms)
                 </label>
                 <textarea
@@ -893,22 +888,22 @@ export const CreditCardCashback: React.FC = () => {
                   placeholder="e.g. Weekend retail dining only (MCC 5812). Min spend RM1000 required across card."
                   value={newCategoryData.conditions}
                   onChange={e => setNewCategoryData({ ...newCategoryData, conditions: e.target.value })}
-                  className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#B86B30] text-[#2D2823]"
+                  className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
               {/* Eligible Merchants Tagging */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#5C544C] block">
+                <label className="text-xs font-semibold text-gray-600 block">
                   Eligible Merchants / Keywords
                 </label>
-                <div className="flex flex-wrap gap-1.5 min-h-[28px] p-2 bg-[#FAF8F5] rounded-xl border border-[#E2DAD0]">
+                <div className="flex flex-wrap gap-1.5 min-h-[28px] p-2 bg-gray-50 rounded-xl border border-gray-200">
                   {newCategoryData.eligibleItems.map((item, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white border border-[#EAE3D6] text-xs font-medium text-[#2D2823]"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white border border-gray-200 text-xs font-medium text-gray-900"
                     >
-                      <Check className="w-3 h-3 text-[#3D633C]" />
+                      <Check className="w-3 h-3 text-emerald-600" />
                       <span>{item}</span>
                       <button
                         type="button"
@@ -918,14 +913,14 @@ export const CreditCardCashback: React.FC = () => {
                             eligibleItems: newCategoryData.eligibleItems.filter((_, i) => i !== idx),
                           });
                         }}
-                        className="text-[#8C8379] hover:text-[#A25820] ml-0.5"
+                        className="text-gray-400 hover:text-rose-600 ml-0.5 cursor-pointer"
                       >
                         &times;
                       </button>
                     </span>
                   ))}
                   {newCategoryData.eligibleItems.length === 0 && (
-                    <span className="text-[11px] text-[#7A7268]">No specific merchants added yet</span>
+                    <span className="text-[11px] text-gray-400">No specific merchants added yet</span>
                   )}
                 </div>
                 <div className="flex gap-2">
@@ -944,7 +939,7 @@ export const CreditCardCashback: React.FC = () => {
                         setNewCatEligibleInput('');
                       }
                     }}
-                    className="flex-1 px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#B86B30]"
+                    className="flex-1 px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                   <button
                     type="button"
@@ -956,7 +951,7 @@ export const CreditCardCashback: React.FC = () => {
                       });
                       setNewCatEligibleInput('');
                     }}
-                    className="px-3 py-1.5 bg-[#F5F0E6] hover:bg-[#EAE3D6] text-[#2D2823] rounded-xl text-xs font-semibold"
+                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-semibold cursor-pointer"
                   >
                     Add
                   </button>
@@ -965,16 +960,16 @@ export const CreditCardCashback: React.FC = () => {
 
               {/* Excluded Merchants Tagging */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#5C544C] block">
+                <label className="text-xs font-semibold text-gray-600 block">
                   Excluded Merchants / Categories (Optional)
                 </label>
-                <div className="flex flex-wrap gap-1.5 min-h-[28px] p-2 bg-[#FDF6ED] rounded-xl border border-[#F3E1CA]">
+                <div className="flex flex-wrap gap-1.5 min-h-[28px] p-2 bg-rose-50/50 rounded-xl border border-rose-100">
                   {newCategoryData.excludedItems.map((item, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white border border-[#F3E1CA] text-xs font-medium text-[#8F5A23]"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white border border-rose-200 text-xs font-medium text-rose-700"
                     >
-                      <Ban className="w-3 h-3 text-[#8F5A23]" />
+                      <Ban className="w-3 h-3 text-rose-500" />
                       <span>{item}</span>
                       <button
                         type="button"
@@ -984,14 +979,14 @@ export const CreditCardCashback: React.FC = () => {
                             excludedItems: newCategoryData.excludedItems.filter((_, i) => i !== idx),
                           });
                         }}
-                        className="text-[#8C8379] hover:text-[#8F4E1D] ml-0.5"
+                        className="text-gray-400 hover:text-rose-600 ml-0.5 cursor-pointer"
                       >
                         &times;
                       </button>
                     </span>
                   ))}
                   {newCategoryData.excludedItems.length === 0 && (
-                    <span className="text-[11px] text-[#7A7268]">No exclusions specified</span>
+                    <span className="text-[11px] text-gray-400">No exclusions specified</span>
                   )}
                 </div>
                 <div className="flex gap-2">
@@ -1010,7 +1005,7 @@ export const CreditCardCashback: React.FC = () => {
                         setNewCatExcludedInput('');
                       }
                     }}
-                    className="flex-1 px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#8F5A23]"
+                    className="flex-1 px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-rose-400"
                   />
                   <button
                     type="button"
@@ -1022,7 +1017,7 @@ export const CreditCardCashback: React.FC = () => {
                       });
                       setNewCatExcludedInput('');
                     }}
-                    className="px-3 py-1.5 bg-[#FDF6ED] hover:bg-[#F3E1CA] text-[#8F5A23] rounded-xl text-xs font-semibold"
+                    className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-semibold cursor-pointer"
                   >
                     Add
                   </button>
@@ -1030,43 +1025,43 @@ export const CreditCardCashback: React.FC = () => {
               </div>
 
               {/* Rule Scope */}
-              <div className="bg-[#FAF7F2] border border-[#EAE3D6] p-3 rounded-xl space-y-1.5 text-xs">
-                <span className="font-bold text-[#8F4E1D] block text-[11px]">Apply Category:</span>
+              <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl space-y-1.5 text-xs">
+                <span className="font-bold text-blue-700 block text-[11px]">Apply Category:</span>
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <label className="flex items-center gap-1.5 cursor-pointer text-[#2D2823] font-medium">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-gray-800 font-medium">
                     <input
                       type="radio"
                       name="addRuleScope"
                       checked={newCategoryData.ruleScope === 'forward'}
                       onChange={() => setNewCategoryData({ ...newCategoryData, ruleScope: 'forward' })}
-                      className="text-[#B86B30] focus:ring-[#B86B30]"
+                      className="text-blue-600 focus:ring-blue-500"
                     />
                     <span>From {selectedMonth} {selectedYear} onwards (flow to future months)</span>
                   </label>
-                  <label className="flex items-center gap-1.5 cursor-pointer text-[#2D2823] font-medium">
+                  <label className="flex items-center gap-1.5 cursor-pointer text-gray-800 font-medium">
                     <input
                       type="radio"
                       name="addRuleScope"
                       checked={newCategoryData.ruleScope === 'all'}
                       onChange={() => setNewCategoryData({ ...newCategoryData, ruleScope: 'all' })}
-                      className="text-[#B86B30] focus:ring-[#B86B30]"
+                      className="text-blue-600 focus:ring-blue-500"
                     />
                     <span>All months globally</span>
                   </label>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EAE3D6]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => setShowAddCategoryModal(false)}
-                  className="px-3 py-1.5 text-xs font-semibold text-[#5C544C] hover:text-[#2D2823]"
+                  className="px-3 py-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>Save Category</span>
@@ -1079,20 +1074,20 @@ export const CreditCardCashback: React.FC = () => {
 
       {/* MODAL: ELIGIBLE ITEMS & CASHBACK CONDITIONS DETAIL MODAL */}
       {showEligibleModal && activeCategoryDetail && (
-        <div className="fixed inset-0 z-50 bg-[#2D2823]/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-xl w-full p-5 border border-[#EAE3D6] max-h-[90vh] overflow-y-auto space-y-4">
+        <div className="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-xl w-full p-5 border border-gray-200 max-h-[90vh] overflow-y-auto space-y-4">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#EAE3D6]">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-[#FAF7F2] text-[#8F4E1D] border border-[#E2DAD0]">
+                <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
                   {getCategoryIcon(activeCategoryDetail.category.name)}
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#F5F0E6] text-[#5C544C] border border-[#E2DAD0]">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200">
                       {activeCategoryDetail.card.bank} ({activeCategoryDetail.card.accountNo})
                     </span>
-                    <span className="text-[10px] font-bold text-[#3D633C] bg-[#EEF4EE] px-1.5 py-0.5 rounded border border-[#D5E4D4]">
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
                       {activeCategoryDetail.category.ratePercent}% Cashback
                     </span>
                   </div>
@@ -1101,10 +1096,10 @@ export const CreditCardCashback: React.FC = () => {
                       type="text"
                       value={editedCategory?.name || ''}
                       onChange={e => setEditedCategory(prev => prev ? { ...prev, name: e.target.value } : prev)}
-                      className="text-sm font-bold text-[#2D2823] mt-0.5 border border-[#E2DAD0] rounded px-1.5 py-0.5 w-full max-w-[240px]"
+                      className="text-sm font-bold text-gray-900 mt-0.5 border border-gray-300 rounded px-1.5 py-0.5 w-full max-w-[240px]"
                     />
                   ) : (
-                    <h3 className="text-sm font-bold text-[#2D2823] mt-0.5">
+                    <h3 className="text-sm font-bold text-gray-900 mt-0.5">
                       {activeCategoryDetail.category.name}
                     </h3>
                   )}
@@ -1114,10 +1109,10 @@ export const CreditCardCashback: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsEditingCategory(!isEditingCategory)}
-                  className={`px-2.5 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1 transition ${
+                  className={`px-2.5 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1 transition cursor-pointer ${
                     isEditingCategory
-                      ? 'bg-[#B86B30] text-white border-[#8F4E1D]'
-                      : 'bg-[#F5F0E6] text-[#5C544C] hover:bg-[#EAE3D6] border-[#E2DAD0]'
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200'
                   }`}
                   title="Customize rules and eligible items"
                 >
@@ -1126,7 +1121,7 @@ export const CreditCardCashback: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setShowEligibleModal(false)}
-                  className="p-1 text-[#8C8379] hover:text-[#2D2823] rounded-lg"
+                  className="p-1 text-gray-400 hover:text-gray-900 rounded-lg cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1136,25 +1131,25 @@ export const CreditCardCashback: React.FC = () => {
             {/* Modal Body */}
             <div className="space-y-4">
               {/* Category Rules & Caps summary */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-[#FAF8F5] p-3 rounded-xl border border-[#EAE3D6] text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs">
                 <div>
-                  <span className="text-[#7A7268] block text-[10px] font-medium">Rebate Rate</span>
+                  <span className="text-gray-500 block text-[10px] font-medium">Rebate Rate</span>
                   {isEditingCategory && editedCategory ? (
                     <input
                       type="number"
                       step="0.1"
                       value={editedCategory.ratePercent}
                       onChange={e => setEditedCategory({ ...editedCategory, ratePercent: parseFloat(e.target.value) || 0 })}
-                      className="w-20 px-2 py-1 bg-white border border-[#E2DAD0] rounded text-xs font-bold font-mono text-[#2D2823]"
+                      className="w-20 px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold font-mono text-gray-900"
                     />
                   ) : (
-                    <span className="font-bold text-[#2D2823] text-sm">
+                    <span className="font-bold text-gray-900 text-sm">
                       {activeCategoryDetail.category.ratePercent}%
                     </span>
                   )}
                 </div>
                 <div>
-                  <span className="text-[#7A7268] block text-[10px] font-medium">Monthly Cap</span>
+                  <span className="text-gray-500 block text-[10px] font-medium">Monthly Cap</span>
                   {isEditingCategory && editedCategory ? (
                     <input
                       type="number"
@@ -1165,10 +1160,10 @@ export const CreditCardCashback: React.FC = () => {
                         const val = parseFloat(e.target.value);
                         setEditedCategory({ ...editedCategory, capRM: !isNaN(val) && val > 0 ? val : undefined });
                       }}
-                      className="w-20 px-2 py-1 bg-white border border-[#E2DAD0] rounded text-xs font-bold font-mono text-[#2D2823]"
+                      className="w-20 px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold font-mono text-gray-900"
                     />
                   ) : (
-                    <span className="font-bold text-[#2D2823] text-sm">
+                    <span className="font-bold text-gray-900 text-sm">
                       {activeCategoryDetail.category.capRM
                         ? `RM ${activeCategoryDetail.category.capRM.toFixed(2)}`
                         : 'No Cap'}
@@ -1176,8 +1171,8 @@ export const CreditCardCashback: React.FC = () => {
                   )}
                 </div>
                 <div>
-                  <span className="text-[#7A7268] block text-[10px] font-medium">Optimal Spend</span>
-                  <span className="font-bold text-[#8F4E1D] text-sm">
+                  <span className="text-gray-500 block text-[10px] font-medium">Optimal Spend</span>
+                  <span className="font-bold text-blue-600 text-sm">
                     {activeCategoryDetail.category.capRM
                       ? `RM ${(activeCategoryDetail.category.capRM / (activeCategoryDetail.category.ratePercent / 100)).toFixed(0)}`
                       : 'N/A'}
@@ -1187,26 +1182,26 @@ export const CreditCardCashback: React.FC = () => {
 
               {/* Forward Rule Scope Selection when Editing */}
               {isEditingCategory && (
-                <div className="bg-[#FAF7F2] border border-[#EAE3D6] p-3 rounded-xl space-y-1.5 text-xs">
-                  <span className="font-bold text-[#8F4E1D] block text-[11px]">Apply Rule Changes:</span>
+                <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl space-y-1.5 text-xs">
+                  <span className="font-bold text-blue-700 block text-[11px]">Apply Rule Changes:</span>
                   <div className="flex flex-col sm:flex-row gap-2">
-                    <label className="flex items-center gap-1.5 cursor-pointer text-[#2D2823] font-medium">
+                    <label className="flex items-center gap-1.5 cursor-pointer text-gray-800 font-medium">
                       <input
                         type="radio"
                         name="ruleScope"
                         checked={ruleScope === 'forward'}
                         onChange={() => setRuleScope('forward')}
-                        className="text-[#B86B30] focus:ring-[#B86B30]"
+                        className="text-blue-600 focus:ring-blue-500"
                       />
                       <span>From {selectedMonth} {selectedYear} onwards (flow to future months)</span>
                     </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer text-[#2D2823] font-medium">
+                    <label className="flex items-center gap-1.5 cursor-pointer text-gray-800 font-medium">
                       <input
                         type="radio"
                         name="ruleScope"
                         checked={ruleScope === 'all'}
                         onChange={() => setRuleScope('all')}
-                        className="text-[#B86B30] focus:ring-[#B86B30]"
+                        className="text-blue-600 focus:ring-blue-500"
                       />
                       <span>All months globally</span>
                     </label>
@@ -1216,8 +1211,8 @@ export const CreditCardCashback: React.FC = () => {
 
               {/* Conditions & Eligibility Details */}
               <div className="space-y-1.5">
-                <div className="flex items-center gap-1 text-xs font-bold text-[#2D2823] uppercase tracking-wider">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#3D633C]" />
+                <div className="flex items-center gap-1 text-xs font-bold text-gray-900 uppercase tracking-wider">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Terms & Qualification Rules</span>
                 </div>
                 {isEditingCategory && editedCategory ? (
@@ -1227,11 +1222,11 @@ export const CreditCardCashback: React.FC = () => {
                       setEditedCategory({ ...editedCategory, conditions: e.target.value })
                     }
                     rows={2}
-                    className="w-full text-xs p-2.5 bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B86B30] text-[#2D2823]"
+                    className="w-full text-xs p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="Enter qualifying rules, MCC codes..."
                   />
                 ) : (
-                  <p className="text-xs text-[#2D2823] bg-[#EEF4EE] p-2.5 rounded-xl border border-[#D5E4D4] leading-relaxed">
+                  <p className="text-xs text-gray-800 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-100 leading-relaxed">
                     {activeCategoryDetail.category.conditions ||
                       'Standard retail transactions eligible under bank campaign MCC classifications.'}
                   </p>
@@ -1240,22 +1235,22 @@ export const CreditCardCashback: React.FC = () => {
 
               {/* Explicit Eligible Items / Merchants */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs font-bold text-[#2D2823] uppercase tracking-wider">
+                <div className="flex items-center justify-between text-xs font-bold text-gray-900 uppercase tracking-wider">
                   <div className="flex items-center gap-1">
-                    <Tag className="w-3.5 h-3.5 text-[#8F4E1D]" />
+                    <Tag className="w-3.5 h-3.5 text-blue-600" />
                     <span>Eligible Merchants ({editedCategory?.eligibleItems?.length || 0})</span>
                   </div>
                 </div>
 
-                <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#EAE3D6] space-y-2">
+                <div className="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2">
                   <div className="flex flex-wrap gap-1.5">
                     {(isEditingCategory ? editedCategory?.eligibleItems : activeCategoryDetail.category.eligibleItems)?.map(
                       (item, idx) => (
                         <span
                           key={idx}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#E2DAD0] text-xs font-semibold text-[#2D2823]"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-gray-200 text-xs font-semibold text-gray-900"
                         >
-                          <Check className="w-3 h-3 text-[#3D633C]" />
+                          <Check className="w-3 h-3 text-emerald-600" />
                           <span>{item}</span>
                           {isEditingCategory && (
                             <button
@@ -1267,7 +1262,7 @@ export const CreditCardCashback: React.FC = () => {
                                 );
                                 setEditedCategory({ ...editedCategory, eligibleItems: updated });
                               }}
-                              className="text-[#8C8379] hover:text-[#8F4E1D] ml-1"
+                              className="text-gray-400 hover:text-rose-600 ml-1 cursor-pointer"
                             >
                               &times;
                             </button>
@@ -1279,7 +1274,7 @@ export const CreditCardCashback: React.FC = () => {
 
                   {/* Add new eligible item tag */}
                   {isEditingCategory && (
-                    <div className="flex items-center gap-2 pt-2 border-t border-[#EAE3D6]">
+                    <div className="flex items-center gap-2 pt-2 border-t border-gray-200">
                       <input
                         type="text"
                         placeholder="Add merchant (e.g. Jaya Grocer, Setel)..."
@@ -1297,7 +1292,7 @@ export const CreditCardCashback: React.FC = () => {
                             setNewEligibleItemInput('');
                           }
                         }}
-                        className="flex-1 px-2.5 py-1.5 text-xs bg-white border border-[#E2DAD0] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#B86B30]"
+                        className="flex-1 px-2.5 py-1.5 text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                       <button
                         type="button"
@@ -1310,7 +1305,7 @@ export const CreditCardCashback: React.FC = () => {
                           });
                           setNewEligibleItemInput('');
                         }}
-                        className="px-3 py-1.5 bg-[#B86B30] text-white rounded-lg text-xs font-semibold hover:bg-[#9E5720]"
+                        className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700 cursor-pointer"
                       >
                         Add
                       </button>
@@ -1322,22 +1317,22 @@ export const CreditCardCashback: React.FC = () => {
               {/* Excluded Merchants & Transactions */}
               {((isEditingCategory ? editedCategory?.excludedItems : activeCategoryDetail.category.excludedItems)?.length || isEditingCategory) && (
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs font-bold text-[#8F5A23] uppercase tracking-wider">
+                  <div className="flex items-center justify-between text-xs font-bold text-rose-700 uppercase tracking-wider">
                     <div className="flex items-center gap-1">
-                      <ShieldAlert className="w-3.5 h-3.5 text-[#8F5A23]" />
+                      <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
                       <span>Excluded Transactions ({editedCategory?.excludedItems?.length || activeCategoryDetail.category.excludedItems?.length || 0})</span>
                     </div>
                   </div>
 
-                  <div className="bg-[#FDF6ED] p-3 rounded-xl border border-[#F3E1CA] space-y-2">
+                  <div className="bg-rose-50/50 p-3 rounded-xl border border-rose-100 space-y-2">
                     <div className="flex flex-wrap gap-1.5">
                       {(isEditingCategory ? editedCategory?.excludedItems : activeCategoryDetail.category.excludedItems)?.map(
                         (item, idx) => (
                           <span
                             key={idx}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#F3E1CA] text-xs font-semibold text-[#8F5A23]"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-rose-200 text-xs font-semibold text-rose-700"
                           >
-                            <Ban className="w-3 h-3 text-[#8F5A23]" />
+                            <Ban className="w-3 h-3 text-rose-500" />
                             <span>{item}</span>
                             {isEditingCategory && (
                               <button
@@ -1349,7 +1344,7 @@ export const CreditCardCashback: React.FC = () => {
                                   );
                                   setEditedCategory({ ...editedCategory, excludedItems: updated });
                                 }}
-                                className="text-[#8C8379] hover:text-[#8F4E1D] ml-1"
+                                className="text-gray-400 hover:text-rose-600 ml-1 cursor-pointer"
                               >
                                 &times;
                               </button>
@@ -1360,7 +1355,7 @@ export const CreditCardCashback: React.FC = () => {
                     </div>
 
                     {isEditingCategory && (
-                      <div className="flex items-center gap-2 pt-2 border-t border-[#F3E1CA]">
+                      <div className="flex items-center gap-2 pt-2 border-t border-rose-100">
                         <input
                           type="text"
                           placeholder="Add excluded item (e.g. Government, JomPAY)..."
@@ -1378,7 +1373,7 @@ export const CreditCardCashback: React.FC = () => {
                               setNewExcludedItemInput('');
                             }
                           }}
-                          className="flex-1 px-2.5 py-1.5 text-xs bg-white border border-[#E2DAD0] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#8F5A23]"
+                          className="flex-1 px-2.5 py-1.5 text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-400"
                         />
                         <button
                           type="button"
@@ -1391,7 +1386,7 @@ export const CreditCardCashback: React.FC = () => {
                             });
                             setNewExcludedItemInput('');
                           }}
-                          className="px-3 py-1.5 bg-[#8F5A23] text-white rounded-lg text-xs font-semibold hover:bg-[#7A4B1A]"
+                          className="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-semibold hover:bg-rose-700 cursor-pointer"
                         >
                           Add
                         </button>
@@ -1403,11 +1398,11 @@ export const CreditCardCashback: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-between pt-2 border-t border-[#EAE3D6]">
+            <div className="flex items-center justify-between pt-2 border-t border-gray-100">
               <button
                 type="button"
                 onClick={() => handleDeleteCategory(activeCategoryDetail.category.id, ruleScope)}
-                className="px-2.5 py-1.5 text-xs font-semibold text-[#8F4E1D] hover:bg-[#FAF7F2] rounded-xl transition flex items-center gap-1"
+                className="px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl transition flex items-center gap-1 cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete Category</span>
@@ -1422,14 +1417,14 @@ export const CreditCardCashback: React.FC = () => {
                         setIsEditingCategory(false);
                         setEditedCategory({ ...activeCategoryDetail.category });
                       }}
-                      className="px-3 py-1.5 text-xs font-semibold text-[#5C544C] hover:text-[#2D2823]"
+                      className="px-3 py-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="button"
                       onClick={handleSaveCategoryChanges}
-                      className="px-4 py-1.5 bg-[#3D633C] hover:bg-[#2E4F2D] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                      className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>Save Changes</span>
@@ -1439,7 +1434,7 @@ export const CreditCardCashback: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowEligibleModal(false)}
-                    className="px-4 py-1.5 bg-[#2D2823] hover:bg-[#453E37] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                    className="px-4 py-1.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer"
                   >
                     Close
                   </button>
@@ -1451,13 +1446,13 @@ export const CreditCardCashback: React.FC = () => {
       )}
       {/* MODAL: ADD NEW CREDIT CARD */}
       {showAddCardModal && (
-        <div className="fixed inset-0 z-50 bg-[#2D2823]/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-5 border border-[#EAE3D6] space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-[#EAE3D6]">
-              <h3 className="text-sm font-bold text-[#2D2823]">Add Credit Card</h3>
+        <div className="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-5 border border-gray-200 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+              <h3 className="text-sm font-bold text-gray-900">Add Credit Card</h3>
               <button
                 onClick={() => setShowAddCardModal(false)}
-                className="p-1 text-[#8C8379] hover:text-[#2D2823]"
+                className="p-1 text-gray-400 hover:text-gray-900 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1513,42 +1508,42 @@ export const CreditCardCashback: React.FC = () => {
               className="space-y-3"
             >
               <div>
-                <label className="text-xs font-semibold text-[#5C544C] block mb-1">Card Name</label>
+                <label className="text-xs font-semibold text-gray-600 block mb-1">Card Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Maybank 2 Gold (1234)"
                   value={newCardForm.cardName}
                   onChange={e => setNewCardForm({ ...newCardForm, cardName: e.target.value })}
                   required
-                  className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B86B30] text-[#2D2823]"
+                  className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs font-semibold text-[#5C544C] block mb-1">Bank Name</label>
+                  <label className="text-xs font-semibold text-gray-600 block mb-1">Bank Name</label>
                   <input
                     type="text"
                     placeholder="e.g. Maybank"
                     value={newCardForm.bank}
                     onChange={e => setNewCardForm({ ...newCardForm, bank: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl text-[#2D2823]"
+                    className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#5C544C] block mb-1">Last 4 Digits</label>
+                  <label className="text-xs font-semibold text-gray-600 block mb-1">Last 4 Digits</label>
                   <input
                     type="text"
                     placeholder="e.g. 1234"
                     value={newCardForm.accountNo}
                     onChange={e => setNewCardForm({ ...newCardForm, accountNo: e.target.value })}
-                    className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl text-[#2D2823]"
+                    className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl text-gray-900"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[#5C544C] block mb-1">
+                <label className="text-xs font-semibold text-gray-600 block mb-1">
                   Min Monthly Spend for Max Tier (RM)
                 </label>
                 <input
@@ -1560,7 +1555,7 @@ export const CreditCardCashback: React.FC = () => {
                       minMonthlySpend: parseFloat(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl text-[#2D2823]"
+                  className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl text-gray-900"
                 />
               </div>
 
@@ -1568,13 +1563,13 @@ export const CreditCardCashback: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddCardModal(false)}
-                  className="px-3 py-1.5 text-xs font-semibold text-[#5C544C] hover:text-[#2D2823]"
+                  className="px-3 py-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                  className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer"
                 >
                   Create Card
                 </button>
@@ -1586,21 +1581,21 @@ export const CreditCardCashback: React.FC = () => {
 
       {/* MODAL: EDIT / CROSS-CHECK CREDIT CARD DETAILS */}
       {showEditCardModal && editingCard && (
-        <div className="fixed inset-0 z-50 bg-[#2D2823]/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-5 border border-[#EAE3D6] space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-[#EAE3D6]">
+        <div className="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-5 border border-gray-200 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-[#FAF7F2] text-[#8F4E1D] rounded-lg border border-[#E2DAD0]">
+                <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg border border-blue-100">
                   <CardIcon className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#2D2823]">Card Details & Rules</h3>
-                  <p className="text-[10px] text-[#7A7268]">Cross-check & amend card parameters</p>
+                  <h3 className="text-sm font-bold text-gray-900">Card Details & Rules</h3>
+                  <p className="text-[10px] text-gray-500">Cross-check & amend card parameters</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowEditCardModal(false)}
-                className="p-1 text-[#8C8379] hover:text-[#2D2823] rounded-lg hover:bg-[#F5F0E6]"
+                className="p-1 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1608,48 +1603,48 @@ export const CreditCardCashback: React.FC = () => {
 
             <form onSubmit={handleSaveEditCard} className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-[#5C544C] block mb-1">Card Name</label>
+                <label className="text-xs font-semibold text-gray-600 block mb-1">Card Name</label>
                 <input
                   type="text"
                   placeholder="e.g. HSBC (5458)"
                   value={editCardForm.cardName}
                   onChange={e => setEditCardForm({ ...editCardForm, cardName: e.target.value })}
                   required
-                  className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-medium text-[#2D2823]"
+                  className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs font-semibold text-[#5C544C] block mb-1">Bank Name</label>
+                  <label className="text-xs font-semibold text-gray-600 block mb-1">Bank Name</label>
                   <input
                     type="text"
                     placeholder="e.g. HSBC"
                     value={editCardForm.bank}
                     onChange={e => setEditCardForm({ ...editCardForm, bank: e.target.value })}
                     required
-                    className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-medium text-[#2D2823]"
+                    className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#5C544C] block mb-1">Last 4 Digits</label>
+                  <label className="text-xs font-semibold text-gray-600 block mb-1">Last 4 Digits</label>
                   <input
                     type="text"
                     placeholder="e.g. 5458"
                     value={editCardForm.accountNo}
                     onChange={e => setEditCardForm({ ...editCardForm, accountNo: e.target.value })}
                     required
-                    className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-medium text-[#2D2823]"
+                    className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-900"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-[#5C544C]">
+                  <label className="text-xs font-semibold text-gray-600">
                     Min Monthly Spend for Max Tier (RM)
                   </label>
-                  <span className="text-[10px] text-[#7A7268]">Set 0 if no minimum required</span>
+                  <span className="text-[10px] text-gray-400">Set 0 if no minimum required</span>
                 </div>
                 <input
                   type="number"
@@ -1661,26 +1656,26 @@ export const CreditCardCashback: React.FC = () => {
                       minMonthlySpend: parseFloat(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-mono font-bold text-[#2D2823]"
+                  className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono font-bold text-gray-900"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[#5C544C] block mb-1">Notes & Rules Info</label>
+                <label className="text-xs font-semibold text-gray-600 block mb-1">Notes & Rules Info</label>
                 <textarea
                   rows={2}
                   placeholder="Special conditions or tier requirements..."
                   value={editCardForm.notes}
                   onChange={e => setEditCardForm({ ...editCardForm, notes: e.target.value })}
-                  className="w-full px-3 py-1.5 text-xs bg-[#FAF8F5] border border-[#E2DAD0] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#B86B30] text-[#2D2823]"
+                  className="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
-              <div className="pt-2 border-t border-[#EAE3D6] flex items-center justify-between">
+              <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => handleDeleteCard(editingCard.id)}
-                  className="px-2.5 py-1.5 text-xs font-semibold text-[#8F4E1D] hover:bg-[#FAF7F2] rounded-xl transition flex items-center gap-1"
+                  className="px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl transition flex items-center gap-1 cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Delete Card</span>
@@ -1689,13 +1684,13 @@ export const CreditCardCashback: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowEditCardModal(false)}
-                    className="px-3 py-1.5 text-xs font-semibold text-[#5C544C] hover:text-[#2D2823]"
+                    className="px-3 py-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-1.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                    className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>Save Changes</span>
@@ -1709,18 +1704,18 @@ export const CreditCardCashback: React.FC = () => {
 
       {/* Minimum Spend Info & Configuration Modal (Opened directly from Info Icon) */}
       {showMinSpendModal && currentCard && (
-        <div className="fixed inset-0 bg-[#2D2823]/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div className="bg-white rounded-2xl border border-[#EAE3D6] p-5 max-w-md w-full shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#EAE3D6] pb-3">
+        <div className="fixed inset-0 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 max-w-md w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-[#FAF7F2] text-[#8F4E1D] rounded-xl border border-[#E2DAD0]">
+                <div className="p-2 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
                   <Info className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#2D2823]">
+                  <h3 className="text-sm font-bold text-gray-900">
                     Minimum Monthly Spend Requirement
                   </h3>
-                  <p className="text-[11px] text-[#7A7268]">
+                  <p className="text-[11px] text-gray-500">
                     {currentCard.bank} ({currentCard.accountNo})
                   </p>
                 </div>
@@ -1728,7 +1723,7 @@ export const CreditCardCashback: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowMinSpendModal(false)}
-                className="text-[#8C8379] hover:text-[#2D2823] p-1"
+                className="text-gray-400 hover:text-gray-900 p-1 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1737,28 +1732,28 @@ export const CreditCardCashback: React.FC = () => {
             <div className="space-y-3.5">
               {/* Set Min Spend Form */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#5C544C] block">
+                <label className="text-xs font-semibold text-gray-600 block">
                   Set Minimum Spend Threshold (RM)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#8C8379]">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">
                     RM
                   </span>
                   <FormattedNumberInput
                     value={minSpendInput}
                     onChange={v => setMinSpendInput(v)}
                     placeholder="e.g. 2,000"
-                    className="w-full pl-10 pr-3 py-2 text-sm bg-white border border-[#E2DAD0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-mono font-bold text-[#2D2823]"
+                    className="w-full pl-10 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono font-bold text-gray-900"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#EAE3D6] flex items-center justify-end gap-2">
+            <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowMinSpendModal(false)}
-                className="px-3.5 py-1.5 text-xs font-semibold text-[#5C544C] hover:text-[#2D2823] rounded-xl hover:bg-[#F5F0E6]"
+                className="px-3.5 py-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 rounded-xl hover:bg-gray-100 cursor-pointer"
               >
                 Cancel
               </button>
@@ -1771,7 +1766,7 @@ export const CreditCardCashback: React.FC = () => {
                   });
                   setShowMinSpendModal(false);
                 }}
-                className="px-4 py-1.5 bg-[#B86B30] hover:bg-[#9E5720] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 cursor-pointer"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>Save Minimum Spend</span>

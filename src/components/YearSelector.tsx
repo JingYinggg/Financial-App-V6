@@ -126,9 +126,9 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
   };
 
   return (
-    <div ref={containerRef} className="relative inline-flex items-center gap-1.5 bg-[#FAF7F2] p-1.5 rounded-xl border border-[#EAE3D6] shadow-xs flex-wrap">
+    <div ref={containerRef} className="relative inline-flex items-center gap-1.5 bg-white p-1.5 rounded-xl border border-gray-200 shadow-xs flex-wrap">
       {label && (
-        <span className="text-[10px] font-bold text-[#8C8379] uppercase tracking-wider px-2 shrink-0">
+        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider px-2 shrink-0">
           {label}:
         </span>
       )}
@@ -136,10 +136,10 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
       {showAllOption && (
         <button
           onClick={() => onSelectYear('ALL')}
-          className={`px-3 py-1 text-xs font-bold rounded-lg transition-all whitespace-nowrap shrink-0 ${
+          className={`px-3 py-1 text-xs font-bold rounded-lg transition-all whitespace-nowrap shrink-0 cursor-pointer ${
             selectedYear === 'ALL'
-              ? 'bg-[#B86B30] text-white shadow-xs'
-              : 'text-[#6B635A] hover:text-[#2D2823] hover:bg-[#EFE8DD]'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
           }`}
         >
           {allLabel}
@@ -154,10 +154,10 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
           onClick={() => onSelectYear(yr)}
           onContextMenu={e => handleContextMenu(e, yr)}
           title="Right-click to delete this year"
-          className={`px-3 py-1 text-xs font-bold rounded-lg transition-all whitespace-nowrap shrink-0 relative group ${
+          className={`px-3 py-1 text-xs font-bold rounded-lg transition-all whitespace-nowrap shrink-0 relative group cursor-pointer ${
             selectedYear === yr
-              ? 'bg-[#B86B30] text-white shadow-xs'
-              : 'text-[#6B635A] hover:text-[#2D2823] hover:bg-[#EFE8DD]'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
           }`}
         >
           {yr}
@@ -169,12 +169,12 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
         <button
           type="button"
           onClick={() => setIsExpanded(prev => !prev)}
-          className="px-2 py-1 text-[11px] font-bold text-[#8C8379] hover:text-[#8F4E1D] hover:bg-[#EFE8DD] rounded-lg transition-all flex items-center gap-1 shrink-0"
+          className="px-2 py-1 text-[11px] font-bold text-gray-500 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition-all flex items-center gap-1 shrink-0 cursor-pointer"
           title={isExpanded ? 'Show only latest 3 years' : `Show ${olderYears.length} older year${olderYears.length > 1 ? 's' : ''} (${olderYears.join(', ')})`}
         >
           <span>{isExpanded ? 'Less' : `+${olderYears.length} more`}</span>
           {isExpanded ? (
-            <ChevronUp className="w-3 h-3 text-[#8F4E1D]" />
+            <ChevronUp className="w-3 h-3 text-blue-600" />
           ) : (
             <ChevronDown className="w-3 h-3" />
           )}
@@ -184,7 +184,7 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
       {onAddYear && (
         <button
           onClick={() => setIsAddOpen(true)}
-          className="p-1 px-2 text-xs font-bold text-[#8F4E1D] hover:text-[#2D2823] hover:bg-[#EFE8DD] rounded-lg transition-all flex items-center gap-1 shrink-0"
+          className="p-1 px-2 text-xs font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all flex items-center gap-1 shrink-0 cursor-pointer"
           title="Add New Year"
         >
           <Plus className="w-3.5 h-3.5" />
@@ -201,10 +201,10 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
             left: Math.min(contextMenu.x, window.innerWidth - 180),
             zIndex: 9999
           }}
-          className="bg-[#FAF8F5] border border-[#EAE3D6] shadow-xl rounded-xl p-1.5 min-w-[160px] animate-in fade-in zoom-in-95 duration-100"
+          className="bg-white border border-gray-200 shadow-xl rounded-xl p-1.5 min-w-[160px] animate-in fade-in zoom-in-95 duration-100"
           onClick={e => e.stopPropagation()}
         >
-          <div className="px-2 py-1 text-[10px] font-bold text-[#8C8379] uppercase tracking-wider border-b border-[#EAE3D6] mb-1">
+          <div className="px-2 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 mb-1">
             Year {contextMenu.year}
           </div>
           <button
@@ -213,7 +213,7 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
               setContextMenu(null);
               setDeleteConfirmYear(yrToDelete);
             }}
-            className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-[#B54838] hover:bg-[#FDF0EE] rounded-lg transition-all text-left"
+            className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-all text-left cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>Delete Year {contextMenu.year}</span>
@@ -223,18 +223,18 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
 
       {/* Add Year Modal */}
       {isAddOpen && (
-        <div className="fixed inset-0 bg-[#2D2823]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] p-5 max-w-xs w-full shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 max-w-xs w-full shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-[#F1E9DC] text-[#854E20] rounded-xl border border-[#DFCFC0]">
+                <div className="p-2 bg-blue-50 text-blue-700 rounded-xl border border-blue-100">
                   <Calendar className="w-4 h-4" />
                 </div>
-                <h3 className="text-sm font-bold text-[#2D2823]">Add New Year</h3>
+                <h3 className="text-sm font-bold text-gray-900">Add New Year</h3>
               </div>
               <button
                 onClick={() => setIsAddOpen(false)}
-                className="text-[#8C8379] hover:text-[#2D2823] p-1"
+                className="text-gray-400 hover:text-gray-900 p-1 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -242,7 +242,7 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
 
             <form onSubmit={handleAddSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-[#5C544C] mb-1">
+                <label className="block text-xs font-bold text-gray-700 mb-1">
                   Enter Year (e.g. 2027)
                 </label>
                 <input
@@ -251,20 +251,20 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
                   max="2099"
                   value={newYearInput}
                   onChange={e => setNewYearInput(e.target.value)}
-                  className="w-full px-3 py-2 text-sm bg-white border border-[#E2DAD0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-mono font-bold text-[#2D2823]"
+                  className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono font-bold text-gray-900"
                   autoFocus
                 />
               </div>
 
               {years.length > 0 && (
                 <div>
-                  <label className="block text-xs font-bold text-[#5C544C] mb-1">
+                  <label className="block text-xs font-bold text-gray-700 mb-1">
                     Clone data from (Optional)
                   </label>
                   <select
                     value={cloneYearInput}
                     onChange={e => setCloneYearInput(e.target.value)}
-                    className="w-full px-3 py-2 text-sm bg-white border border-[#E2DAD0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B86B30] font-bold text-[#2D2823]"
+                    className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 font-bold text-gray-900"
                   >
                     <option value="none">-- Do not clone --</option>
                     {years.map(y => (
@@ -278,13 +278,13 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="px-3 py-1.5 text-xs font-bold text-[#6B635A] hover:bg-[#EFE8DD] rounded-xl"
+                  className="px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-bold bg-[#B86B30] text-white hover:bg-[#9E5720] rounded-xl shadow-xs"
+                  className="px-4 py-1.5 text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 rounded-xl shadow-xs cursor-pointer"
                 >
                   Add Year
                 </button>
@@ -296,15 +296,15 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmYear && (
-        <div className="fixed inset-0 bg-[#2D2823]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] p-5 max-w-sm w-full shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 max-w-sm w-full shadow-2xl space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-[#FDF0EE] text-[#B54838] rounded-xl">
+              <div className="p-2.5 bg-rose-50 text-rose-600 rounded-xl border border-rose-100">
                 <AlertCircle className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-[#2D2823]">Delete Year {deleteConfirmYear}?</h3>
-                <p className="text-xs text-[#7A7268] mt-0.5">
+                <h3 className="text-sm font-bold text-gray-900">Delete Year {deleteConfirmYear}?</h3>
+                <p className="text-xs text-gray-500 mt-0.5">
                   This will remove records for year {deleteConfirmYear}. This action cannot be undone.
                 </p>
               </div>
@@ -314,14 +314,14 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
               <button
                 type="button"
                 onClick={() => setDeleteConfirmYear(null)}
-                className="px-3.5 py-1.5 text-xs font-bold text-[#6B635A] hover:bg-[#EFE8DD] rounded-xl"
+                className="px-3.5 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmDelete}
-                className="px-4 py-1.5 text-xs font-bold bg-[#B54838] text-white hover:bg-[#9B3728] rounded-xl shadow-xs flex items-center gap-1.5"
+                className="px-4 py-1.5 text-xs font-bold bg-rose-600 text-white hover:bg-rose-700 rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete Year</span>

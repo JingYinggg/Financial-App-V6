@@ -5,7 +5,6 @@ import {
 } from 'recharts';
 import { Plus, TrendingUp, Trash2, Building2 } from 'lucide-react';
 import { YearSelector } from './YearSelector';
-import { InfoTooltip } from './InfoTooltip';
 import { FormattedNumberInput } from './FormattedNumberInput';
 
 export const DividendTracker: React.FC = () => {
@@ -195,7 +194,7 @@ export const DividendTracker: React.FC = () => {
   return (
     <div id="dividend-tracker-section" className="space-y-6">
       {/* Year Selection Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FAF8F5] p-3.5 rounded-2xl border border-[#EAE3D6] shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 sm:p-4 rounded-3xl border border-gray-200 shadow-xs">
         <div className="flex flex-wrap items-center gap-2">
           <YearSelector
             years={allYears}
@@ -217,72 +216,60 @@ export const DividendTracker: React.FC = () => {
 
       {/* Year Metric Summary Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border border-[#EAE3D6] rounded-2xl p-4 shadow-xs">
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
               Total Dividend Payout ({currentYearNum})
             </span>
-            <InfoTooltip
-              type="synced"
-              tooltip="Sum of all monthly payouts"
-            />
           </div>
-          <div className="text-xl font-extrabold text-[#7E22CE] font-mono">
+          <div className="text-xl font-extrabold text-indigo-600 font-mono">
             {formatRM(yearTotalDividend)}
           </div>
         </div>
 
-        <div className="bg-white border border-[#EAE3D6] rounded-2xl p-4 shadow-xs">
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
               Stock Portfolio Valuation ({currentYearNum})
             </span>
-            <InfoTooltip
-              type="synced"
-              tooltip="Stock Portfolio (Current year)"
-            />
           </div>
-          <div className="text-xl font-extrabold text-[#2D2823] font-mono">
+          <div className="text-xl font-extrabold text-indigo-600 font-mono">
             {formatRM(effectivePortfolioVal)}
           </div>
-          <div className="text-[10px] text-[#8C8379] mt-0.5 flex items-center gap-2 font-mono">
-            <span>Initial: {formatRM(portfolioValInitial)}</span>
+          <div className="text-[10px] text-gray-500 mt-0.5 flex items-center gap-2 font-mono">
+            <span>Initial: <span className="text-indigo-600 font-semibold">{formatRM(portfolioValInitial)}</span></span>
             <span>•</span>
-            <span>End: {formatRM(portfolioValEnd)}</span>
+            <span>End: <span className="text-indigo-600 font-semibold">{formatRM(portfolioValEnd)}</span></span>
           </div>
         </div>
 
-        <div className="bg-white border border-[#EAE3D6] rounded-2xl p-4 shadow-xs flex items-center justify-between">
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <div className="flex items-center gap-1.5 mb-1">
-              <span className="text-[10px] font-bold text-[#7A7268] uppercase tracking-wider block">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
                 Overall Dividend Yield (D/Y %)
               </span>
-              <InfoTooltip
-                type="synced"
-                tooltip="(Total Dividend ÷ Portfolio Value) × 100"
-              />
             </div>
-            <div className="text-xl font-extrabold text-[#3D633C] font-mono">
+            <div className="text-xl font-extrabold text-emerald-600 font-mono">
               {yearDividendYieldPercent.toFixed(2)}%
             </div>
-            <span className="text-[10px] text-[#8C8379] mt-0.5 block font-mono">
+            <span className="text-[10px] text-gray-500 mt-0.5 block font-mono">
               Init: {overallYieldInit.toFixed(2)}% | End: {overallYieldEnd.toFixed(2)}%
             </span>
           </div>
-          <div className="p-2.5 rounded-xl bg-[#EEF4EE] text-[#3D633C] border border-[#D5E3D5]">
+          <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200">
             <TrendingUp className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Historical Graph */}
-      <div className="bg-white border border-[#EAE3D6] rounded-2xl p-5 shadow-xs space-y-3">
+      <div className="bg-white border border-gray-200 rounded-3xl p-5 sm:p-7 shadow-xs space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight">
+          <h3 className="text-sm font-bold text-gray-900 tracking-tight">
             Dividend Yield
           </h3>
-          <div className="flex items-center gap-3 text-[10px] font-mono text-[#7A7268] font-bold">
+          <div className="flex items-center gap-3 text-[10px] font-mono text-gray-500 font-bold">
             <span>Left: (RM)</span>
             <span>Right: (%)</span>
           </div>
@@ -291,28 +278,31 @@ export const DividendTracker: React.FC = () => {
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={historicalChartData} margin={{ top: 10, right: 10, bottom: 20, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAE3D6" />
-              <XAxis dataKey="year" stroke="#7A7268" fontSize={11} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+              <XAxis dataKey="year" stroke="#94A3B8" fontSize={11} tick={{ fill: '#64748B' }} />
               <YAxis
                 yAxisId="left"
-                stroke="#8F4E1D"
+                stroke="#64748B"
                 fontSize={11}
+                tick={{ fill: '#64748B' }}
                 tickFormatter={v => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : Number(v).toLocaleString())}
               />
               <YAxis
                 yAxisId="right"
                 orientation="right"
-                stroke="#3D633C"
+                stroke="#10B981"
                 fontSize={11}
+                tick={{ fill: '#10B981' }}
                 tickFormatter={v => `${v}`}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#2D2823',
-                  borderColor: '#4A423A',
+                  backgroundColor: '#FFFFFF',
+                  borderColor: '#E2E8F0',
                   borderRadius: '12px',
-                  color: '#FAF8F5',
-                  fontSize: '11px'
+                  color: '#0F172A',
+                  fontSize: '11px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
                 formatter={(value: any, name: any) => [
                   name.includes('%') || name.includes('Yield') ? `${Number(value).toFixed(2)}%` : formatRM(Number(value)),
@@ -320,22 +310,22 @@ export const DividendTracker: React.FC = () => {
                 ]}
               />
               <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '10px', fontSize: '11px' }} />
-              <Bar yAxisId="left" dataKey="DIVIDEND" fill="#B86B30" radius={[4, 4, 0, 0]} name="Dividend Payout (RM)" />
-              <Line yAxisId="right" type="monotone" dataKey="D/Y %" stroke="#3D633C" strokeWidth={2.5} name="Dividend Yield (%)" />
+              <Bar yAxisId="left" dataKey="DIVIDEND" fill="#2563EB" radius={[4, 4, 0, 0]} name="Dividend Payout (RM)" />
+              <Line yAxisId="right" type="monotone" dataKey="D/Y %" stroke="#10B981" strokeWidth={2.5} name="Dividend Yield (%)" />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Monthly Dividend Payout Matrix Table */}
-      <div className="bg-white border border-[#EAE3D6] rounded-2xl overflow-hidden shadow-xs">
-        <div className="px-5 py-3.5 border-b border-[#F2ECE2] flex items-center justify-between bg-[#FAF8F5]">
-          <h3 className="font-extrabold text-[#2D2823] text-xs tracking-tight">
+      <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-xs">
+        <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between bg-gray-50/70">
+          <h3 className="font-bold text-gray-900 text-sm tracking-tight">
             Monthly Dividend Breakdown ({currentYearNum})
           </h3>
           <button
             onClick={handleOpenAddModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#8F4E1D] hover:bg-[#733E16] text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Stock Payout</span>
@@ -343,29 +333,29 @@ export const DividendTracker: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto overflow-y-auto max-h-[65vh] no-scrollbar touch-scroll relative">
-          <table className="w-full text-left text-xs text-[#2D2823] border-collapse">
-            <thead className="sticky top-0 z-20 bg-[#F8F5EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
-              <tr className="text-[#5C544C] uppercase text-[10px] font-bold border-b border-[#E6E0D3] tracking-wider">
-                <th className="py-3 px-3 min-w-[140px] sticky left-0 top-0 z-30 bg-[#F8F5EE] border-r border-[#E6E0D3] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Stock</th>
+          <table className="w-full text-left text-xs text-gray-900 border-collapse">
+            <thead className="sticky top-0 z-20 bg-gray-50/90 shadow-[0_1px_3px_rgba(0,0,0,0.05)] backdrop-blur-xs">
+              <tr className="text-gray-600 uppercase text-[10px] font-bold border-b border-gray-200 tracking-wider">
+                <th className="py-3 px-3 min-w-[140px] sticky left-0 top-0 z-30 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Stock</th>
                 {monthKeys.map(m => (
                   <th key={m} className="py-3 px-2 text-center min-w-[65px]">{m}</th>
                 ))}
-                <th className="py-3 px-3 text-right font-bold text-[#2D2823] min-w-[90px] bg-[#F8F5EE]">
-                  <InfoTooltip type="synced" align="right" label="Annual Total" tooltip="Sum of Jan - Dec payouts" />
+                <th className="py-3 px-3 text-right font-bold text-gray-900 min-w-[90px] bg-gray-50">
+                  Annual Total
                 </th>
-                <th className="py-3 px-3 text-right min-w-[75px] bg-[#F8F5EE]">
-                  <InfoTooltip type="synced" align="right" label="Yield (Init)" tooltip="(Dividend ÷ Initial Price) × 100" />
+                <th className="py-3 px-3 text-right min-w-[75px] bg-gray-50">
+                  Yield (Init)
                 </th>
-                <th className="py-3 px-3 text-right min-w-[75px] bg-[#F8F5EE]">
-                  <InfoTooltip type="synced" align="right" label="Yield (End)" tooltip="(Dividend ÷ End Price) × 100" />
+                <th className="py-3 px-3 text-right min-w-[75px] bg-gray-50">
+                  Yield (End)
                 </th>
-                <th className="py-3 px-2 text-center w-10 bg-[#F8F5EE]"></th>
+                <th className="py-3 px-2 text-center w-10 bg-gray-50"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F2ECE2] font-medium">
+            <tbody className="divide-y divide-gray-100 font-medium">
               {yearDividends.length === 0 ? (
                 <tr>
-                  <td colSpan={15} className="py-8 text-center text-[#8C8379]">
+                  <td colSpan={15} className="py-8 text-center text-gray-400">
                     No dividend records for {currentYearNum}. Click "Add Stock Payout" to add a stock.
                   </td>
                 </tr>
@@ -378,10 +368,10 @@ export const DividendTracker: React.FC = () => {
                   const yieldEnd = endVal > 0 ? (stockSum / endVal) * 100 : 0;
 
                   return (
-                    <tr key={row.id} className="hover:bg-[#FAF8F5] transition-colors group">
-                      <td className="py-2.5 px-3 font-bold text-[#8F4E1D] sticky left-0 z-10 bg-white group-hover:bg-[#FAF8F5] border-r border-[#EAE3D6] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
+                    <tr key={row.id} className="hover:bg-gray-50 transition-colors group">
+                      <td className="py-2.5 px-3 font-bold text-gray-900 sticky left-0 z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
                         <div>{row.stockName}</div>
-                        {row.code && <div className="text-[10px] font-mono text-[#8C8379]">{row.code}</div>}
+                        {row.code && <div className="text-[10px] font-mono text-gray-400">{row.code}</div>}
                       </td>
                       {monthKeys.map(m => {
                         const val = row.monthlyPayouts[m] || 0;
@@ -392,26 +382,26 @@ export const DividendTracker: React.FC = () => {
                               placeholder="-"
                               showZeroAsBlank={true}
                               onChange={v => updateDividendPayout(row.id, m, v)}
-                              className={`w-full text-center bg-transparent py-1 rounded text-xs focus:bg-[#FAF7F2] focus:outline-none focus:ring-1 focus:ring-[#B86B30] transition-colors font-mono ${
-                                val > 0 ? 'text-[#8F4E1D] font-bold' : 'text-[#8C8379]'
+                              className={`w-full text-center bg-transparent py-1 rounded-lg text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors font-mono ${
+                                val > 0 ? 'text-gray-900 font-bold' : 'text-gray-400'
                               }`}
                             />
                           </td>
                         );
                       })}
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-[#7E22CE]" title="Auto-flowing annual total">
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-indigo-600" title="Auto-flowing annual total">
                         {formatRM(stockSum)}
                       </td>
-                      <td className="py-2.5 px-3 text-right font-mono text-[11px] text-[#5C544C]" title={`Initial Portfolio Valuation: ${formatRM(initialVal)}`}>
+                      <td className="py-2.5 px-3 text-right font-mono text-[11px] text-gray-600" title={`Initial Portfolio Valuation: ${formatRM(initialVal)}`}>
                         {yieldInit > 0 ? `${yieldInit.toFixed(2)}%` : '-'}
                       </td>
-                      <td className="py-2.5 px-3 text-right font-mono text-[11px] text-[#5C544C]" title={`End Portfolio Valuation: ${formatRM(endVal)}`}>
+                      <td className="py-2.5 px-3 text-right font-mono text-[11px] text-gray-600" title={`End Portfolio Valuation: ${formatRM(endVal)}`}>
                         {yieldEnd > 0 ? `${yieldEnd.toFixed(2)}%` : '-'}
                       </td>
                       <td className="py-2.5 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => deleteDividendRecord(row.id)}
-                          className="p-1 text-[#8C8379] hover:text-[#B54838] rounded transition-colors"
+                          className="p-1 text-gray-400 hover:text-rose-600 rounded transition-colors cursor-pointer"
                           title="Delete stock payout record"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -424,20 +414,20 @@ export const DividendTracker: React.FC = () => {
 
               {/* Monthly Totals Footer Row */}
               {yearDividends.length > 0 && (
-                <tr className="bg-[#FAF8F5] font-bold border-t-2 border-[#EAE3D6]">
-                  <td className="py-3 px-3 text-[#2D2823] uppercase text-[10px] tracking-wider sticky left-0 z-10 bg-[#FAF8F5] border-r border-[#EAE3D6] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Total ({currentYearNum})</td>
+                <tr className="bg-gray-50 font-bold border-t-2 border-gray-200">
+                  <td className="py-3 px-3 text-gray-900 uppercase text-[10px] tracking-wider sticky left-0 z-10 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">Total ({currentYearNum})</td>
                   {monthKeys.map(m => (
-                    <td key={m} className="py-3 px-2 text-center font-mono text-[#8F4E1D] font-bold">
+                    <td key={m} className="py-3 px-2 text-center font-mono text-gray-900 font-bold">
                       {monthlyTotals[m] > 0 ? monthlyTotals[m].toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
                     </td>
                   ))}
-                  <td className="py-3 px-3 text-right font-mono text-[#3D633C] font-extrabold">
+                  <td className="py-3 px-3 text-right font-mono text-emerald-600 font-extrabold">
                     {formatRM(yearTotalDividend)}
                   </td>
-                  <td className="py-3 px-3 text-right text-[11px] font-mono text-[#5C544C] font-semibold">
+                  <td className="py-3 px-3 text-right text-[11px] font-mono text-gray-700 font-semibold">
                     {overallYieldInit > 0 ? `${overallYieldInit.toFixed(2)}%` : '-'}
                   </td>
-                  <td className="py-3 px-3 text-right text-[11px] font-mono text-[#5C544C] font-semibold">
+                  <td className="py-3 px-3 text-right text-[11px] font-mono text-gray-700 font-semibold">
                     {overallYieldEnd > 0 ? `${overallYieldEnd.toFixed(2)}%` : '-'}
                   </td>
                   <td></td>
@@ -450,12 +440,12 @@ export const DividendTracker: React.FC = () => {
 
       {/* Add Stock Dividend Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-[#2D2823]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] max-w-sm w-full p-5 shadow-xl space-y-4">
-            <h3 className="text-sm font-bold text-[#2D2823]">Add Stock for Dividend Tracking ({currentYearNum})</h3>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white rounded-3xl border border-gray-200 max-w-sm w-full p-5 sm:p-6 shadow-2xl space-y-4">
+            <h3 className="text-sm font-bold text-gray-900">Add Stock for Dividend Tracking ({currentYearNum})</h3>
             <form onSubmit={handleCreateRecord} className="space-y-4 text-xs">
               <div>
-                <label className="font-semibold text-[#5C544C] block mb-1.5">
+                <label className="font-semibold text-gray-700 block mb-1.5">
                   Select from Stock Portfolio
                 </label>
                 {availablePortfolioStocks.length > 0 ? (
@@ -463,7 +453,7 @@ export const DividendTracker: React.FC = () => {
                     value={selectedStockKey}
                     onChange={e => setSelectedStockKey(e.target.value)}
                     required
-                    className="w-full px-3.5 py-2.5 bg-white border border-[#E2DAD0] rounded-xl text-[#2D2823] font-medium focus:ring-2 focus:ring-[#B86B30] focus:outline-none text-xs"
+                    className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-900 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-xs"
                   >
                     <option value="" disabled>-- Choose a stock from portfolio --</option>
                     {availablePortfolioStocks.map(s => {
@@ -485,8 +475,8 @@ export const DividendTracker: React.FC = () => {
                 )}
               </div>
 
-              <div className="bg-[#FAF7F2] p-2.5 rounded-xl border border-[#E2DAD0] flex items-center gap-2 text-[11px] text-[#5C544C]">
-                <Building2 className="w-4 h-4 text-[#8F4E1D] shrink-0" />
+              <div className="bg-blue-50/60 p-2.5 rounded-xl border border-blue-100 flex items-center gap-2 text-[11px] text-blue-800">
+                <Building2 className="w-4 h-4 text-blue-600 shrink-0" />
                 <span>Valuation & dividend yield will automatically sync from your Stock Portfolio ledger.</span>
               </div>
 
@@ -494,14 +484,14 @@ export const DividendTracker: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl text-[#6B635A] hover:bg-[#EFE8DD] font-bold"
+                  className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 font-bold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!selectedStockKey || availablePortfolioStocks.length === 0}
-                  className="px-4 py-2 rounded-xl bg-[#8F4E1D] text-white font-bold shadow-xs hover:bg-[#733E16] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold shadow-xs hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
                 >
                   Add Record
                 </button>

@@ -33,7 +33,6 @@ import {
   Area
 } from 'recharts';
 import { YearSelector } from './YearSelector';
-import { InfoTooltip } from './InfoTooltip';
 
 export const BalanceSheetView: React.FC = () => {
   const {
@@ -666,8 +665,8 @@ export const BalanceSheetView: React.FC = () => {
       });
   }, [balanceSheet.years, assetItems]);
 
-  // Colors for Asset Distribution lines (Muji earthy palette: Cedar, Matcha, Terracotta, Plum, Slate, Ochre, Charcoal)
-  const assetColors = ['#B86B30', '#567A54', '#C45444', '#7E5285', '#6B7A88', '#D49E3D', '#4A433D'];
+  // Colors for Asset Distribution lines (Google AI Studio clean palette)
+  const assetColors = ['#2563EB', '#10B981', '#F59E0B', '#6366F1', '#EC4899', '#06B6D4', '#64748B'];
 
   // Handle cell save
   const handleSaveCell = (itemId: string, year: string) => {
@@ -694,8 +693,8 @@ export const BalanceSheetView: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Controls: Year Selector & Actions */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-[#FAF8F5] p-3.5 rounded-2xl border border-[#EAE3D6] shadow-xs">
+      {/* Top Controls: Year Selector & Actions (Visible on md+ desktop, hidden on mobile for clean charts-first layout) */}
+      <div className="hidden md:flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-gray-200 shadow-xs">
         <div className="flex flex-wrap items-center gap-2">
           <YearSelector
             years={[...balanceSheet.years].sort((a, b) => a - b)}
@@ -720,13 +719,13 @@ export const BalanceSheetView: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex bg-[#EFE8DD] p-1 rounded-xl border border-[#E2DAD0]">
+          <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200">
             <button
               onClick={() => setActiveTab('tables')}
               className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'tables'
-                  ? 'bg-[#FAF8F5] text-[#8F4E1D] shadow-xs'
-                  : 'text-[#6B635A] hover:text-[#2D2823]'
+                  ? 'bg-white text-blue-700 shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Summary Tables
@@ -735,8 +734,8 @@ export const BalanceSheetView: React.FC = () => {
               onClick={() => setActiveTab('charts')}
               className={`px-3 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 activeTab === 'charts'
-                  ? 'bg-[#FAF8F5] text-[#8F4E1D] shadow-xs'
-                  : 'text-[#6B635A] hover:text-[#2D2823]'
+                  ? 'bg-white text-blue-700 shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               Visual Charts
@@ -747,9 +746,9 @@ export const BalanceSheetView: React.FC = () => {
 
       {/* Sync Status Banner */}
       {syncStatus && (
-        <div className="bg-[#EEF4EE] border border-[#D5E4D4] text-[#3D633C] text-xs font-semibold px-4 py-2 rounded-xl flex items-center justify-between animate-fadeIn">
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold px-4 py-2 rounded-xl flex items-center justify-between animate-fadeIn">
           <span>{syncStatus}</span>
-          <button onClick={() => setSyncStatus(null)} className="text-[#3D633C] hover:text-[#233F23]">
+          <button onClick={() => setSyncStatus(null)} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -757,30 +756,30 @@ export const BalanceSheetView: React.FC = () => {
 
       {/* Add Item Modal */}
       {isAddCategoryOpen && (
-        <div className="fixed inset-0 bg-[#2D2823]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] p-5 max-w-sm w-full shadow-xl space-y-4">
-            <h3 className="text-sm font-bold text-[#2D2823]">Add Asset / Liability</h3>
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 max-w-sm w-full shadow-xl space-y-4">
+            <h3 className="text-sm font-bold text-gray-900">Add Asset / Liability</h3>
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-[#5C544C] block mb-1">Item Name</label>
+                <label className="text-xs font-medium text-gray-700 block mb-1">Item Name</label>
                 <input
                   type="text"
                   value={newCatName}
                   onChange={e => setNewCatName(e.target.value)}
                   placeholder="e.g., Fixed Deposit, PRS, Property Loan"
-                  className="w-full px-3 py-2 text-sm bg-white border border-[#E2DAD0] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#8F4E1D] text-[#2D2823]"
+                  className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 text-gray-900"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-[#5C544C] block mb-1">Classification</label>
+                <label className="text-xs font-medium text-gray-700 block mb-1">Classification</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setNewCatType('asset')}
                     className={`py-2 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
                       newCatType === 'asset'
-                        ? 'bg-[#EEF4EE] text-[#3D633C] border-[#B9D5B8] ring-2 ring-[#567A54]/20'
-                        : 'bg-white border-[#E2DAD0] text-[#6B635A]'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-300 ring-2 ring-emerald-500/20'
+                        : 'bg-white border-gray-200 text-gray-600'
                     }`}
                   >
                     Asset
@@ -790,8 +789,8 @@ export const BalanceSheetView: React.FC = () => {
                     onClick={() => setNewCatType('liability')}
                     className={`py-2 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
                       newCatType === 'liability'
-                        ? 'bg-[#FDF0EE] text-[#B54838] border-[#F5C2BC] ring-2 ring-[#B54838]/20'
-                        : 'bg-white border-[#E2DAD0] text-[#6B635A]'
+                        ? 'bg-rose-50 text-rose-700 border-rose-300 ring-2 ring-rose-500/20'
+                        : 'bg-white border-gray-200 text-gray-600'
                     }`}
                   >
                     Liability
@@ -802,13 +801,13 @@ export const BalanceSheetView: React.FC = () => {
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setIsAddCategoryOpen(false)}
-                className="px-4 py-2 text-xs font-bold text-[#6B635A] hover:bg-[#EFE8DD] rounded-xl cursor-pointer"
+                className="px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAddCategory}
-                className="px-4 py-2 text-xs font-bold bg-[#8F4E1D] text-white rounded-xl hover:bg-[#783F16] cursor-pointer shadow-xs"
+                className="px-4 py-2 text-xs font-bold bg-blue-600 text-white rounded-xl hover:bg-blue-700 cursor-pointer shadow-xs"
               >
                 Save
               </button>
@@ -819,21 +818,22 @@ export const BalanceSheetView: React.FC = () => {
 
 
       {/* MAIN VIEW CONTENT */}
-      {activeTab === 'tables' ? (
-        <div className="space-y-6">
+      {/* On desktop: conditionally shown if activeTab === 'tables'. On mobile: hidden so charts are the primary view. */}
+      {activeTab === 'tables' && (
+        <div className="hidden md:block space-y-6">
           {/* 1. BALANCE SHEET Table */}
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] shadow-xs overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#EAE3D6] flex items-center justify-between bg-[#F5F0E6]/50">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-gray-200 flex items-center justify-between bg-gray-50/80">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#8F4E1D]" />
-                <h2 className="text-sm font-extrabold text-[#2D2823] tracking-tight uppercase">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                <h2 className="text-sm font-extrabold text-gray-900 tracking-tight uppercase">
                   BALANCE SHEET
                 </h2>
               </div>
               <button
                 type="button"
                 onClick={() => setIsAddCategoryOpen(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#8F4E1D] hover:bg-[#783F16] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Asset / Liability</span>
@@ -842,9 +842,9 @@ export const BalanceSheetView: React.FC = () => {
 
             <div className="overflow-x-auto overflow-y-auto max-h-[75vh] no-scrollbar touch-scroll relative">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="sticky top-0 z-20 bg-[#F8F5EE] shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
-                  <tr className="border-b border-[#E6E0D3] text-[#5C544C] font-bold uppercase text-[11px] tracking-wider">
-                    <th className="py-3 px-4 w-72 min-w-[200px] sticky left-0 top-0 z-30 bg-[#F8F5EE] border-r border-[#E6E0D3] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
+                <thead className="sticky top-0 z-20 bg-gray-50 shadow-xs">
+                  <tr className="border-b border-gray-200 text-gray-600 font-bold uppercase text-[11px] tracking-wider">
+                    <th className="py-3 px-4 w-72 min-w-[200px] sticky left-0 top-0 z-30 bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)]">
                       <div className="flex items-center gap-1.5">
                         <span>Asset (Exclude PPE)</span>
                       </div>
@@ -857,30 +857,17 @@ export const BalanceSheetView: React.FC = () => {
                     <th className="py-3 px-2 w-10 text-center"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F2ECE2] text-[#2D2823] font-medium bg-white">
+                <tbody className="divide-y divide-gray-100 text-gray-900 font-medium bg-white">
                   {/* Asset Rows */}
                   {assetItems.map(item => {
                     const isLinked = (item as any).isPortfolioLinked || (item as any).isAsnbLinked;
 
                     return (
-                      <tr key={item.id} className="hover:bg-[#FAF8F5] transition-colors group">
-                        <td className="py-2.5 px-4 font-semibold text-[#2D2823] sticky left-0 z-10 bg-white group-hover:bg-[#FAF8F5] border-r border-[#EAE3D6] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
-                          {isLinked ? (
-                            <InfoTooltip
-                              type="synced"
-                              label={item.name}
-                              align="left"
-                              tooltip={
-                                (item as any).isPortfolioLinked
-                                  ? 'Stock Portfolio (Market Value)'
-                                  : 'Cash Flow (ASNB Dec Principal)'
-                              }
-                            />
-                          ) : (
-                            <div className="flex items-center gap-1.5">
-                              <span>{item.name}</span>
-                            </div>
-                          )}
+                      <tr key={item.id} className="hover:bg-gray-50 transition-colors group">
+                        <td className="py-2.5 px-4 font-semibold text-gray-900 sticky left-0 z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
+                          <div className="flex items-center gap-1.5">
+                            <span>{item.name}</span>
+                          </div>
                         </td>
                         {displayedYears.map(yr => {
                           const yrKey = yr.toString();
@@ -909,11 +896,11 @@ export const BalanceSheetView: React.FC = () => {
                                     if (e.key === 'Enter') handleSaveCell(item.id, yrKey);
                                     if (e.key === 'Escape') setEditingCell(null);
                                   }}
-                                  className={`w-28 px-2 py-1 text-right text-xs bg-white border-2 ${isLinked ? 'border-[#7E22CE]' : 'border-[#B86B30]'} rounded-lg focus:outline-none shadow-xs font-mono font-bold text-[#2D2823]`}
+                                  className={`w-28 px-2 py-1 text-right text-xs bg-white border-2 ${isLinked ? 'border-indigo-600' : 'border-blue-600'} rounded-lg focus:outline-none shadow-xs font-mono font-bold text-gray-900`}
                                 />
                               ) : (
                                 <div className="flex items-center justify-end">
-                                  <span className={`font-mono font-bold ${isLinked ? 'text-[#7E22CE]' : 'text-[#2D2823] hover:text-[#B86B30] hover:underline'}`}>
+                                  <span className={`font-mono font-bold ${isLinked ? 'text-indigo-600' : 'text-gray-900 hover:text-blue-600 hover:underline'}`}>
                                     {val > 0 ? Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
                                   </span>
                                 </div>
@@ -924,7 +911,7 @@ export const BalanceSheetView: React.FC = () => {
                       <td className="py-2 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => deleteBalanceSheetCategory(item.id)}
-                          className="text-[#8C8379] hover:text-[#B54838] p-1"
+                          className="text-gray-400 hover:text-rose-600 p-1 cursor-pointer"
                           title="Delete Item"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -935,15 +922,15 @@ export const BalanceSheetView: React.FC = () => {
                   })}
 
                   {/* Total Assets Row */}
-                  <tr className="bg-[#F5F0E6] font-bold text-[#2D2823] border-t-2 border-b-2 border-[#E0D7C9]">
-                    <td className="py-3 px-4 uppercase text-[11px] tracking-wider text-[#2D2823] sticky left-0 z-10 bg-[#F5F0E6] border-r border-[#E0D7C9] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
+                  <tr className="bg-slate-100 font-bold text-gray-900 border-t-2 border-b-2 border-slate-200">
+                    <td className="py-3 px-4 uppercase text-[11px] tracking-wider text-gray-900 sticky left-0 z-10 bg-slate-100 border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
                       Total Assets
                     </td>
                     {displayedYears.map(yr => {
                       const yrKey = yr.toString();
                       const tot = totalsByYear[yrKey]?.totalAssets || 0;
                       return (
-                        <td key={yr} className="py-3 px-4 text-right font-mono text-xs font-extrabold text-[#2D2823] min-w-[105px]">
+                        <td key={yr} className="py-3 px-4 text-right font-mono text-xs font-extrabold text-gray-900 min-w-[105px]">
                           {tot.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
                       );
@@ -952,16 +939,16 @@ export const BalanceSheetView: React.FC = () => {
                   </tr>
 
                   {/* Liabilities Subheader */}
-                  <tr className="bg-[#FAF8F5] text-[#7A7268] font-bold uppercase text-[10px] tracking-wider">
-                    <td colSpan={displayedYears.length + 2} className="py-2 px-4 sticky left-0 z-10 bg-[#FAF8F5] border-r border-[#EAE3D6]">
+                  <tr className="bg-gray-50 text-gray-500 font-bold uppercase text-[10px] tracking-wider">
+                    <td colSpan={displayedYears.length + 2} className="py-2 px-4 sticky left-0 z-10 bg-gray-50 border-r border-gray-200">
                       Liabilities
                     </td>
                   </tr>
 
                   {/* Liability Rows */}
                   {liabilityItems.map(item => (
-                    <tr key={item.id} className="hover:bg-[#FAF8F5] transition-colors group">
-                      <td className="py-2.5 px-4 font-semibold text-[#2D2823] sticky left-0 z-10 bg-white group-hover:bg-[#FAF8F5] border-r border-[#EAE3D6] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
+                    <tr key={item.id} className="hover:bg-gray-50 transition-colors group">
+                      <td className="py-2.5 px-4 font-semibold text-gray-900 sticky left-0 z-10 bg-white group-hover:bg-gray-50 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
                         {item.name}
                       </td>
                       {displayedYears.map(yr => {
@@ -991,10 +978,10 @@ export const BalanceSheetView: React.FC = () => {
                                   if (e.key === 'Enter') handleSaveCell(item.id, yrKey);
                                   if (e.key === 'Escape') setEditingCell(null);
                                 }}
-                                className="w-28 px-2 py-1 text-right text-xs bg-white border-2 border-[#B86B30] rounded-lg focus:outline-none shadow-xs font-mono font-bold text-[#2D2823]"
+                                className="w-28 px-2 py-1 text-right text-xs bg-white border-2 border-blue-600 rounded-lg focus:outline-none shadow-xs font-mono font-bold text-gray-900"
                               />
                             ) : (
-                              <span className="font-mono text-[#2D2823] hover:text-[#B86B30] hover:underline">
+                              <span className="font-mono text-gray-900 hover:text-blue-600 hover:underline">
                                 {val > 0 ? Number(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
                               </span>
                             )}
@@ -1004,7 +991,7 @@ export const BalanceSheetView: React.FC = () => {
                       <td className="py-2 px-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => deleteBalanceSheetCategory(item.id)}
-                          className="text-[#8C8379] hover:text-[#B54838] p-1"
+                          className="text-gray-400 hover:text-rose-600 p-1 cursor-pointer"
                           title="Delete Item"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1014,15 +1001,15 @@ export const BalanceSheetView: React.FC = () => {
                   ))}
 
                   {/* Total Liabilities Row */}
-                  <tr className="bg-[#F5F0E6] font-bold text-[#2D2823] border-t-2 border-b-2 border-[#E0D7C9]">
-                    <td className="py-3 px-4 uppercase text-[11px] tracking-wider text-[#2D2823] sticky left-0 z-10 bg-[#F5F0E6] border-r border-[#E0D7C9] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
+                  <tr className="bg-slate-100 font-bold text-gray-900 border-t-2 border-b-2 border-slate-200">
+                    <td className="py-3 px-4 uppercase text-[11px] tracking-wider text-gray-900 sticky left-0 z-10 bg-slate-100 border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
                       Total Liabilities
                     </td>
                     {displayedYears.map(yr => {
                       const yrKey = yr.toString();
                       const tot = totalsByYear[yrKey]?.totalLiabilities || 0;
                       return (
-                        <td key={yr} className="py-3 px-4 text-right font-mono text-xs font-extrabold text-[#2D2823] min-w-[105px]">
+                        <td key={yr} className="py-3 px-4 text-right font-mono text-xs font-extrabold text-gray-900 min-w-[105px]">
                           {tot.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
                       );
@@ -1031,8 +1018,8 @@ export const BalanceSheetView: React.FC = () => {
                   </tr>
 
                   {/* Net Worth Row */}
-                  <tr className="bg-[#EFE8DD] font-extrabold text-[#2D2823] border-t-2 border-b-2 border-[#D8CFC0]">
-                    <td className="py-3.5 px-4 uppercase text-xs tracking-wider text-[#2D2823] sticky left-0 z-10 bg-[#EFE8DD] border-r border-[#D8CFC0] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
+                  <tr className="bg-blue-50/70 font-extrabold text-gray-900 border-t-2 border-b-2 border-blue-200">
+                    <td className="py-3.5 px-4 uppercase text-xs tracking-wider text-gray-900 sticky left-0 z-10 bg-blue-50/70 border-r border-blue-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.06)] min-w-[200px]">
                       Net Worth
                     </td>
                     {displayedYears.map(yr => {
@@ -1041,11 +1028,11 @@ export const BalanceSheetView: React.FC = () => {
                       return (
                         <td key={yr} className="py-3.5 px-4 text-right font-mono text-xs font-black min-w-[105px]">
                           {nw < 0 ? (
-                            <span className="text-[#B54838]">
+                            <span className="text-rose-600">
                               ({Math.abs(nw).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})
                             </span>
                           ) : (
-                            <span className="text-[#3D633C]">
+                            <span className="text-emerald-700">
                               {nw.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </span>
                           )}
@@ -1062,33 +1049,29 @@ export const BalanceSheetView: React.FC = () => {
           {/* Grid of Remaining 3 Tables */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 2. DEBT RATIO Table */}
-            <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] shadow-xs overflow-hidden flex flex-col">
-              <div className="px-5 py-3.5 border-b border-[#EAE3D6] bg-[#F5F0E6]/50">
-                <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden flex flex-col">
+              <div className="px-5 py-3.5 border-b border-gray-200 bg-gray-50/80">
+                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
                   DEBT RATIO
                 </h3>
               </div>
               <div className="overflow-x-auto no-scrollbar touch-scroll grow bg-white">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="bg-[#F8F5EE] border-b border-[#E6E0D3] text-[#5C544C] font-bold uppercase text-[10px]">
+                    <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-bold uppercase text-[10px]">
                       <th className="py-2.5 px-4">YEAR</th>
-                      <th className="py-2.5 px-4 text-right">
-                        <InfoTooltip type="synced" label="Total Asset" align="right" tooltip="Balance Sheet (Total Assets)" />
-                      </th>
-                      <th className="py-2.5 px-4 text-right">
-                        <InfoTooltip type="synced" label="Total Liabilities" align="right" tooltip="Balance Sheet (Total Liabilities)" />
-                      </th>
+                      <th className="py-2.5 px-4 text-right">Total Asset</th>
+                      <th className="py-2.5 px-4 text-right">Total Liabilities</th>
                       <th className="py-2.5 px-4 text-right">Debt Ratio</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#F2ECE2] font-medium text-[#2D2823]">
+                  <tbody className="divide-y divide-gray-100 font-medium text-gray-900">
                     {debtRatioRows.map(row => (
-                      <tr key={row.year} className="hover:bg-[#FAF8F5]">
-                        <td className="py-2.5 px-4 font-bold text-[#2D2823]">{row.year}</td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-[#8F4E1D]">{formatUSD(row.totalAsset)}</td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-[#8F4E1D]">{formatUSD(row.totalLiabilities)}</td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-[#8F4E1D]">
+                      <tr key={row.year} className="hover:bg-gray-50">
+                        <td className="py-2.5 px-4 font-bold text-gray-900">{row.year}</td>
+                        <td className="py-2.5 px-4 text-right font-mono font-bold text-indigo-600">{formatUSD(row.totalAsset)}</td>
+                        <td className="py-2.5 px-4 text-right font-mono font-bold text-indigo-600">{formatUSD(row.totalLiabilities)}</td>
+                        <td className="py-2.5 px-4 text-right font-mono font-bold text-blue-700">
                           {row.debtRatio.toFixed(2)}
                         </td>
                       </tr>
@@ -1099,30 +1082,28 @@ export const BalanceSheetView: React.FC = () => {
             </div>
 
             {/* 4. INVESTMENT PERFORMANCE Table */}
-            <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] shadow-xs overflow-hidden flex flex-col">
-              <div className="px-5 py-3.5 border-b border-[#EAE3D6] bg-[#F5F0E6]/50">
-                <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden flex flex-col">
+              <div className="px-5 py-3.5 border-b border-gray-200 bg-gray-50/80">
+                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
                   INVESTMENT PERFORMANCE
                 </h3>
               </div>
               <div className="overflow-x-auto no-scrollbar touch-scroll grow bg-white">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="bg-[#F8F5EE] border-b border-[#E6E0D3] text-[#5C544C] font-bold uppercase text-[10px]">
+                    <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-bold uppercase text-[10px]">
                       <th className="py-2.5 px-4">YEAR</th>
-                      <th className="py-2.5 px-4 text-right">
-                        <InfoTooltip type="synced" label="Investment" align="right" tooltip="Stock Portfolio (Valuation)" />
-                      </th>
+                      <th className="py-2.5 px-4 text-right">Investment</th>
                       <th className="py-2.5 px-4 text-right">P/L</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#F2ECE2] font-medium text-[#2D2823]">
+                  <tbody className="divide-y divide-gray-100 font-medium text-gray-900">
                     {sortedInvestmentReports.map(row => (
-                      <tr key={row.year} className="hover:bg-[#FAF8F5]">
-                        <td className="py-2.5 px-4 font-bold text-[#2D2823]">{row.year}</td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-[#2D2823]">{formatRM(row.investmentAmount)}</td>
+                      <tr key={row.year} className="hover:bg-gray-50">
+                        <td className="py-2.5 px-4 font-bold text-gray-900">{row.year}</td>
+                        <td className="py-2.5 px-4 text-right font-mono font-bold text-indigo-600">{formatRM(row.investmentAmount)}</td>
                         <td className={`py-2.5 px-4 text-right font-mono font-bold ${
-                          row.plPercent >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'
+                          row.plPercent >= 0 ? 'text-emerald-600' : 'text-rose-600'
                         }`}>
                           {formatPercent(row.plPercent)}
                         </td>
@@ -1135,46 +1116,42 @@ export const BalanceSheetView: React.FC = () => {
           </div>
 
           {/* 3. RETURN ON INVESTMENT & PORTFOLIO GROWTH Table */}
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] shadow-xs overflow-hidden">
-            <div className="px-5 py-3.5 border-b border-[#EAE3D6] bg-[#F5F0E6]/50">
-              <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+            <div className="px-5 py-3.5 border-b border-gray-200 bg-gray-50/80">
+              <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
                 RETURN ON INVESTMENT & PORTFOLIO GROWTH
               </h3>
             </div>
             <div className="overflow-x-auto no-scrollbar touch-scroll bg-white">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-[#F8F5EE] border-b border-[#E6E0D3] text-[#5C544C] font-bold uppercase text-[10px]">
+                  <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-bold uppercase text-[10px]">
                     <th className="py-2.5 px-4">YEAR</th>
-                    <th className="py-2.5 px-4 text-right">
-                      <InfoTooltip type="synced" label="PRINCIPAL" align="right" tooltip="Cash Flow (Dec Total Principal)" />
-                    </th>
-                    <th className="py-2.5 px-4 text-right">
-                      <InfoTooltip type="synced" label="PASSIVE" align="right" tooltip="Cash Flow (Annual Passive Returns)" />
-                    </th>
+                    <th className="py-2.5 px-4 text-right">PRINCIPAL</th>
+                    <th className="py-2.5 px-4 text-right">PASSIVE</th>
                     <th className="py-2.5 px-4 text-right">Annual Yield</th>
                     <th className="py-2.5 px-4 text-right">GROWTH (P)</th>
                     <th className="py-2.5 px-4 text-right">GROWTH (PI)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F2ECE2] font-medium text-[#2D2823]">
+                <tbody className="divide-y divide-gray-100 font-medium text-gray-900">
                   {sortedAnnualReports.map(row => {
                     const yieldPct = row.principal > 0 ? (row.passiveIncome / row.principal) * 100 : 0;
                     return (
-                      <tr key={row.year} className="hover:bg-[#FAF8F5]">
-                        <td className="py-2.5 px-4 font-bold text-[#2D2823]">{row.year}</td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-[#2D2823]">{formatRM(row.principal)}</td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-[#2D6A4F]">{formatRM(row.passiveIncome)}</td>
-                        <td className="py-2.5 px-4 text-right font-mono font-bold text-[#8F4E1D]">
+                      <tr key={row.year} className="hover:bg-gray-50">
+                        <td className="py-2.5 px-4 font-bold text-gray-900">{row.year}</td>
+                        <td className="py-2.5 px-4 text-right font-mono font-bold text-indigo-600">{formatRM(row.principal)}</td>
+                        <td className="py-2.5 px-4 text-right font-mono font-bold text-indigo-600">{formatRM(row.passiveIncome)}</td>
+                        <td className="py-2.5 px-4 text-right font-mono font-bold text-blue-700">
                           {yieldPct.toFixed(2)}%
                         </td>
                         <td className={`py-2.5 px-4 text-right font-mono font-bold ${
-                          row.growthPPercent >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'
+                          row.growthPPercent >= 0 ? 'text-emerald-600' : 'text-rose-600'
                         }`}>
                           {formatPercent(row.growthPPercent)}
                         </td>
                         <td className={`py-2.5 px-4 text-right font-mono font-bold ${
-                          row.growthPIPercent >= 0 ? 'text-[#3D633C]' : 'text-[#B54838]'
+                          row.growthPIPercent >= 0 ? 'text-emerald-600' : 'text-rose-600'
                         }`}>
                           {formatPercent(row.growthPIPercent)}
                         </td>
@@ -1186,34 +1163,35 @@ export const BalanceSheetView: React.FC = () => {
             </div>
           </div>
         </div>
-      ) : (
-        /* VISUAL CHARTS (Aligned with Summary Tables) */
-        <div className="space-y-6">
-          {/* Chart 1: Balance Sheet Assets Distribution */}
-          <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#EAE3D6] shadow-xs space-y-3">
+      )}
+
+      {/* Visual Charts: ALWAYS visible on mobile (<md). On desktop (md+), visible when activeTab === 'charts' */}
+      <div className={`${activeTab === 'charts' ? 'block' : 'hidden md:hidden'} space-y-6`}>
+        {/* Chart 1: Balance Sheet Assets Distribution */}
+          <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight">
+              <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
                 Balance Sheet: Assets Distribution
               </h3>
-              <div className="text-[10px] font-mono text-[#7A7268] font-bold">
+              <div className="text-[10px] font-mono text-gray-500 font-bold">
                 <span>(RM)</span>
               </div>
             </div>
             <div className="h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={assetsDistributionData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EBE4D8" />
-                  <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#DFD7CA' }} tick={{ fontSize: 11, fill: '#6B635A' }} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                  <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
                   <YAxis
                     tickLine={false}
                     axisLine={false}
                     width={42}
                     tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
-                    tick={{ fontSize: 11, fill: '#6B635A' }}
+                    tick={{ fontSize: 11, fill: '#64748B' }}
                   />
                   <Tooltip
                     formatter={(val: any) => [`RM ${Number(val).toLocaleString()}`, '']}
-                    contentStyle={{ borderRadius: '12px', border: '1px solid #E5DEC6', backgroundColor: '#FAF8F5', color: '#2D2823', fontSize: '11px' }}
+                    contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   />
                   <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
                   {assetItems.map((item, idx) => (
@@ -1235,12 +1213,12 @@ export const BalanceSheetView: React.FC = () => {
           {/* Row 2: Debt Ratio & Annual Yield */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Chart 2: Debt Ratio */}
-            <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#EAE3D6] shadow-xs space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight">
+                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
                   Debt Ratio
                 </h3>
-                <div className="flex items-center gap-3 text-[10px] font-mono text-[#7A7268] font-bold">
+                <div className="flex items-center gap-3 text-[10px] font-mono text-gray-500 font-bold">
                   <span>Left: (RM)</span>
                   <span>Right: (Ratio)</span>
                 </div>
@@ -1248,15 +1226,15 @@ export const BalanceSheetView: React.FC = () => {
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={debtRatioRows} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EBE4D8" />
-                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#DFD7CA' }} tick={{ fontSize: 11, fill: '#6B635A' }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
                     <YAxis
                       yAxisId="left"
                       tickLine={false}
                       axisLine={false}
                       width={42}
                       tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
-                      tick={{ fontSize: 11, fill: '#6B635A' }}
+                      tick={{ fontSize: 11, fill: '#64748B' }}
                     />
                     <YAxis
                       yAxisId="right"
@@ -1265,31 +1243,31 @@ export const BalanceSheetView: React.FC = () => {
                       width={32}
                       tickLine={false}
                       axisLine={false}
-                      tick={{ fontSize: 11, fill: '#6B635A' }}
+                      tick={{ fontSize: 11, fill: '#64748B' }}
                     />
                     <Tooltip
                       formatter={(val: any, name: string) => [
                         name === 'Debt Ratio' ? Number(val).toFixed(2) : `RM ${Number(val).toLocaleString()}`,
                         name
                       ]}
-                      contentStyle={{ borderRadius: '12px', border: '1px solid #E5DEC6', backgroundColor: '#FAF8F5', color: '#2D2823', fontSize: '11px' }}
+                      contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                     />
                     <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                    <Bar yAxisId="left" dataKey="totalAsset" name="Total Asset" fill="#B86B30" radius={[4, 4, 0, 0]} />
-                    <Bar yAxisId="left" dataKey="totalLiabilities" name="Total Liabilities" fill="#C45444" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="right" type="monotone" dataKey="debtRatio" name="Debt Ratio" stroke="#567A54" strokeWidth={2.5} dot={{ r: 4 }} />
+                    <Bar yAxisId="left" dataKey="totalAsset" name="Total Asset" fill="#2563EB" radius={[4, 4, 0, 0]} />
+                    <Bar yAxisId="left" dataKey="totalLiabilities" name="Total Liabilities" fill="#EF4444" radius={[4, 4, 0, 0]} />
+                    <Line yAxisId="right" type="monotone" dataKey="debtRatio" name="Debt Ratio" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* Chart 3: Return on Investment */}
-            <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#EAE3D6] shadow-xs space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight">
+                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
                   Return on Investment
                 </h3>
-                <div className="text-[10px] font-mono text-[#7A7268] font-bold">
+                <div className="text-[10px] font-mono text-gray-500 font-bold">
                   <span>(RM)</span>
                 </div>
               </div>
@@ -1303,25 +1281,25 @@ export const BalanceSheetView: React.FC = () => {
                     }))}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EBE4D8" />
-                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#DFD7CA' }} tick={{ fontSize: 11, fill: '#6B635A' }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
                     <YAxis
                       tickLine={false}
                       axisLine={false}
                       width={42}
                       tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
-                      tick={{ fontSize: 11, fill: '#6B635A' }}
+                      tick={{ fontSize: 11, fill: '#64748B' }}
                     />
                     <Tooltip
                       formatter={(val: any, name: string) => [
                         `RM ${Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                         name
                       ]}
-                      contentStyle={{ borderRadius: '12px', border: '1px solid #E5DEC6', backgroundColor: '#FAF8F5', color: '#2D2823', fontSize: '11px' }}
+                      contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                     />
                     <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                    <Bar dataKey="Principal" name="Principal (RM)" fill="#4A433D" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Passive Amount" name="Passive Amount (RM)" fill="#567A54" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Principal" name="Principal (RM)" fill="#334155" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Passive Amount" name="Passive Amount (RM)" fill="#10B981" radius={[4, 4, 0, 0]} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -1331,12 +1309,12 @@ export const BalanceSheetView: React.FC = () => {
           {/* Row 3: Portfolio Growth Metrics & Investment Performance */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Chart 4: Portfolio Growth Metrics (Line Chart for Passive Growth, Principal Growth, and Dividend Yield) */}
-            <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#EAE3D6] shadow-xs space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight">
+                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
                   Portfolio Growth Metrics
                 </h3>
-                <div className="text-[10px] font-mono text-[#7A7268] font-bold">
+                <div className="text-[10px] font-mono text-gray-500 font-bold">
                   <span>(%)</span>
                 </div>
               </div>
@@ -1351,38 +1329,38 @@ export const BalanceSheetView: React.FC = () => {
                     }))}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EBE4D8" />
-                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#DFD7CA' }} tick={{ fontSize: 11, fill: '#6B635A' }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
                     <YAxis
                       tickLine={false}
                       axisLine={false}
                       width={38}
                       tickFormatter={v => `${v}`}
-                      tick={{ fontSize: 11, fill: '#6B635A' }}
+                      tick={{ fontSize: 11, fill: '#64748B' }}
                     />
                     <Tooltip
                       formatter={(val: any, name: string) => [
                         `${Number(val).toFixed(2)}%`,
                         name
                       ]}
-                      contentStyle={{ borderRadius: '12px', border: '1px solid #E5DEC6', backgroundColor: '#FAF8F5', color: '#2D2823', fontSize: '11px' }}
+                      contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                     />
                     <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                    <Line type="monotone" dataKey="GROWTH (P) %" name="Principal Growth %" stroke="#7E5285" strokeWidth={2.5} dot={{ r: 4 }} />
-                    <Line type="monotone" dataKey="GROWTH (PI) %" name="Passive Growth %" stroke="#C45444" strokeWidth={2.5} dot={{ r: 4 }} />
-                    <Line type="monotone" dataKey="Dividend Yield %" name="Dividend Yield %" stroke="#D49E3D" strokeWidth={2.5} dot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="GROWTH (P) %" name="Principal Growth %" stroke="#6366F1" strokeWidth={2.5} dot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="GROWTH (PI) %" name="Passive Growth %" stroke="#EF4444" strokeWidth={2.5} dot={{ r: 4 }} />
+                    <Line type="monotone" dataKey="Dividend Yield %" name="Dividend Yield %" stroke="#F59E0B" strokeWidth={2.5} dot={{ r: 4 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             {/* Chart 5: Investment Performance */}
-            <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#EAE3D6] shadow-xs space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-[#2D2823] tracking-tight">
+                <h3 className="text-xs font-extrabold text-gray-900 tracking-tight">
                   Investment Performance
                 </h3>
-                <div className="flex items-center gap-3 text-[10px] font-mono text-[#7A7268] font-bold">
+                <div className="flex items-center gap-3 text-[10px] font-mono text-gray-500 font-bold">
                   <span>Left: (RM)</span>
                   <span>Right: (%)</span>
                 </div>
@@ -1397,15 +1375,15 @@ export const BalanceSheetView: React.FC = () => {
                     }))}
                     margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EBE4D8" />
-                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#DFD7CA' }} tick={{ fontSize: 11, fill: '#6B635A' }} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                    <XAxis dataKey="year" tickLine={false} axisLine={{ stroke: '#E2E8F0' }} tick={{ fontSize: 11, fill: '#64748B' }} />
                     <YAxis
                       yAxisId="left"
                       tickLine={false}
                       axisLine={false}
                       width={42}
                       tickFormatter={v => `${(v / 1000).toFixed(0)}k`}
-                      tick={{ fontSize: 11, fill: '#6B635A' }}
+                      tick={{ fontSize: 11, fill: '#64748B' }}
                     />
                     <YAxis
                       yAxisId="right"
@@ -1414,60 +1392,59 @@ export const BalanceSheetView: React.FC = () => {
                       axisLine={false}
                       width={38}
                       tickFormatter={v => `${v}`}
-                      tick={{ fontSize: 11, fill: '#6B635A' }}
+                      tick={{ fontSize: 11, fill: '#64748B' }}
                     />
                     <Tooltip
                       formatter={(val: any, name: string) => [
                         name.includes('%') ? `${Number(val).toFixed(2)}%` : `RM ${Number(val).toLocaleString()}`,
                         name
                       ]}
-                      contentStyle={{ borderRadius: '12px', border: '1px solid #E5DEC6', backgroundColor: '#FAF8F5', color: '#2D2823', fontSize: '11px' }}
+                      contentStyle={{ borderRadius: '12px', border: '1px solid #E2E8F0', backgroundColor: '#FFFFFF', color: '#0F172A', fontSize: '11px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                     />
                     <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                    <Bar yAxisId="left" dataKey="Investment" fill="#B86B30" radius={[4, 4, 0, 0]} />
-                    <Line yAxisId="right" type="monotone" dataKey="P/L %" stroke="#567A54" strokeWidth={2.5} dot={{ r: 4 }} />
+                    <Bar yAxisId="left" dataKey="Investment" fill="#2563EB" radius={[4, 4, 0, 0]} />
+                    <Line yAxisId="right" type="monotone" dataKey="P/L %" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             </div>
           </div>
         </div>
-      )}
 
       {/* Share Investment Details Breakdown Modal (Flows directly from Stock Portfolio) */}
       {shareBreakdownYear !== null && (
-        <div className="fixed inset-0 bg-[#2D2823]/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div className="bg-[#FAF8F5] rounded-2xl border border-[#EAE3D6] p-5 max-w-xl w-full shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#EAE3D6] pb-3">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-2xl border border-gray-200 p-5 max-w-xl w-full shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-[#F1E9DC] text-[#854E20] rounded-xl">
+                <div className="p-2 bg-blue-50 text-blue-700 rounded-xl">
                   <TrendingUp className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#2D2823] flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                     <span>Share Investment Breakdown</span>
-                    <span className="text-xs bg-[#EFE8DD] text-[#8F4E1D] font-bold px-2 py-0.5 rounded-md border border-[#E2DAD0]">
+                    <span className="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-md border border-blue-200">
                       {shareBreakdownYear}
                     </span>
                   </h3>
-                  <p className="text-[11px] text-[#7A7268] flex items-center gap-1 mt-0.5">
-                    <Check className="w-3 h-3 text-[#3D633C]" />
-                    <span>Flows directly from your Stock Portfolio tab</span>
+                  <p className="text-[11px] text-gray-500 flex items-center gap-1 mt-0.5">
+                    <Check className="w-3 h-3 text-emerald-600" />
+                    <span>Flows directly from your Stocks tab</span>
                   </p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShareBreakdownYear(null)}
-                className="text-[#8C8379] hover:text-[#2D2823] p-1"
+                className="text-gray-400 hover:text-gray-900 p-1 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Year Selector Tabs inside modal */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-[#EAE3D6]">
-              <span className="text-[10px] font-bold text-[#8C8379] uppercase tracking-wider mr-1">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-gray-200">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mr-1">
                 Year:
               </span>
               {displayedYears.map(yr => (
@@ -1475,10 +1452,10 @@ export const BalanceSheetView: React.FC = () => {
                   key={yr}
                   type="button"
                   onClick={() => setShareBreakdownYear(yr)}
-                  className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
+                  className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                     shareBreakdownYear === yr
-                      ? 'bg-[#B86B30] text-white shadow-xs'
-                      : 'bg-[#EFE8DD] text-[#5C544C] hover:bg-[#E5DCD0]'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
                   {yr}
@@ -1488,9 +1465,9 @@ export const BalanceSheetView: React.FC = () => {
 
             {/* Content Table */}
             <div className="space-y-3">
-              <div className="max-h-64 overflow-y-auto rounded-xl border border-[#EAE3D6] bg-white">
+              <div className="max-h-64 overflow-y-auto rounded-xl border border-gray-200 bg-white">
                 <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-[#F8F5EE] text-[11px] text-[#5C544C] uppercase tracking-wider font-bold border-b border-[#E6E0D3] sticky top-0">
+                  <thead className="bg-gray-50 text-[11px] text-gray-600 uppercase tracking-wider font-bold border-b border-gray-200 sticky top-0">
                     <tr>
                       <th className="py-2.5 px-3">Stock / Asset</th>
                       <th className="py-2.5 px-2 text-center">Market</th>
@@ -1498,36 +1475,36 @@ export const BalanceSheetView: React.FC = () => {
                       <th className="py-2.5 px-3 text-right">MYR Equivalent</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#F2ECE2] font-medium">
+                  <tbody className="divide-y divide-gray-100 font-medium">
                     {(stockPortfolioValuesByYear[shareBreakdownYear.toString()]?.stocks || []).length > 0 ? (
                       stockPortfolioValuesByYear[shareBreakdownYear.toString()].stocks.map((stk, idx) => {
                         const isUSD = stk.currency === 'USD' || stk.market === 'US';
                         const myrVal = isUSD ? stk.value * 4.45 : stk.value;
 
                         return (
-                          <tr key={idx} className="hover:bg-[#FAF8F5]">
+                          <tr key={idx} className="hover:bg-gray-50">
                             <td className="py-2 px-3">
-                              <div className="font-bold text-[#2D2823]">{stk.name}</div>
-                              <div className="text-[10px] text-[#7A7268] font-mono">{stk.code}</div>
+                              <div className="font-bold text-gray-900">{stk.name}</div>
+                              <div className="text-[10px] text-gray-400 font-mono">{stk.code}</div>
                             </td>
                             <td className="py-2 px-2 text-center">
                               <span
                                 className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
                                   stk.market === 'MY'
-                                    ? 'bg-[#EEF4EE] text-[#3D633C] border border-[#D5E4D4]'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                     : stk.market === 'US'
-                                    ? 'bg-[#EEF2F6] text-[#33557A] border border-[#D0DDEB]'
-                                    : 'bg-[#FDF6ED] text-[#8F5A23] border border-[#F3E1CA]'
+                                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                    : 'bg-amber-50 text-amber-700 border border-amber-200'
                                 }`}
                               >
                                 {stk.market}
                               </span>
                             </td>
-                            <td className="py-2 px-3 text-right font-mono text-[#2D2823] font-bold">
+                            <td className="py-2 px-3 text-right font-mono text-gray-900 font-bold">
                               {stk.currency === 'USD' ? '$' : 'RM '}
                               {stk.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </td>
-                            <td className="py-2 px-3 text-right font-mono text-[#8F4E1D] font-extrabold">
+                            <td className="py-2 px-3 text-right font-mono text-blue-700 font-extrabold">
                               RM {myrVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </td>
                           </tr>
@@ -1535,7 +1512,7 @@ export const BalanceSheetView: React.FC = () => {
                       })
                     ) : (
                       <tr>
-                        <td colSpan={4} className="py-6 text-center text-[#9E958C] text-xs">
+                        <td colSpan={4} className="py-6 text-center text-gray-400 text-xs">
                           No specific stock records logged for {shareBreakdownYear}.
                         </td>
                       </tr>
@@ -1545,28 +1522,28 @@ export const BalanceSheetView: React.FC = () => {
               </div>
 
               {/* Total Summary Row */}
-              <div className="p-3 bg-[#F5F0E6] border border-[#E2DAD0] rounded-xl flex items-center justify-between">
+              <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#8F4E1D] block">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 block">
                     Total Share Investment ({shareBreakdownYear})
                   </span>
-                  <span className="text-[11px] text-[#6B635A]">
+                  <span className="text-[11px] text-gray-500">
                     Reflected directly in Balance Sheet Total Assets & Net Worth
                   </span>
                 </div>
                 <div className="text-right">
-                  <div className="text-base font-mono font-extrabold text-[#2D2823]">
+                  <div className="text-base font-mono font-extrabold text-gray-900">
                     RM {(stockPortfolioValuesByYear[shareBreakdownYear.toString()]?.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-[#EAE3D6] flex items-center justify-end">
+            <div className="pt-2 border-t border-gray-200 flex items-center justify-end">
               <button
                 type="button"
                 onClick={() => setShareBreakdownYear(null)}
-                className="px-4 py-1.5 bg-[#3D3731] hover:bg-[#2A2520] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                className="px-4 py-1.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer"
               >
                 Close
               </button>

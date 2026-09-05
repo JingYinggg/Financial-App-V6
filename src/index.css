@@ -1,18 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --bg-cream: #FAF8F5;
-  --bg-parchment: #F3EFE6;
-  --text-primary: #2D2823;
-  --text-secondary: #686158;
+  --font-heading: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-financial: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --bg-main: #F8F9FA;
+  --bg-surface: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
 }
 
 body {
-  font-family: var(--font-sans);
-  background-color: #FAF8F5;
-  color: #2D2823;
+  font-family: var(--font-body);
+  background-color: #F8F9FA;
+  color: #0F172A;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings and Page Titles */
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.012em;
+}
+
+/* Financial Figures, Tables, Numbers & Data */
+.font-mono,
+.financial-num,
+.font-financial,
+table,
+th,
+td,
+input[type="number"],
+.tabular-nums {
+  font-family: var(--font-financial);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Ensure SVG text in charts uses clean typography */
+svg text {
+  font-family: var(--font-financial);
 }
 
 @layer utilities {
@@ -42,7 +71,7 @@ html, body {
   overflow-x: hidden;
   max-width: 100vw;
   -webkit-tap-highlight-color: transparent;
-  background-color: #FAF8F5;
+  background-color: #F8F9FA;
 }
 
 

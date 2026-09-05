@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mobile Preview — Annual Report (Charts Only)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for smooth interactive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="p-3 sm:p-6 flex flex-col items-center min-h-screen bg-slate-100">
+
+  <!-- Preview Info Bar -->
+  <div class="w-full max-w-md mb-3 flex items-center justify-between bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-xs">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+      <span class="text-xs font-bold text-slate-800">Mobile Annual Report Preview</span>
+    </div>
+    <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-md">
+      Charts Only
+    </span>
+  </div>
+
+  <!-- Mobile Frame Container (Simulating 390px Mobile Device) -->
+  <div class="w-full max-w-md bg-white border border-slate-200 rounded-[32px] shadow-xl overflow-hidden flex flex-col min-h-[780px]">
+    
+    <!-- Top Mobile App Header -->
+    <div class="bg-white border-b border-slate-100 px-4 py-3.5 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-xs">
+          MY
+        </div>
+        <div>
+          <h1 class="text-sm font-black tracking-tight text-slate-900 leading-tight">Annual Report</h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Scrollable Content Area: Clean Charts Only -->
+    <div class="p-3.5 space-y-4 grow overflow-y-auto bg-slate-50/60">
+
+      <!-- CHART 1: Balance Sheet: Assets Distribution -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-extrabold text-slate-900 tracking-tight">
+            Balance Sheet: Assets Distribution
+          </h3>
+          <span class="text-[10px] font-mono text-slate-500 font-bold">(RM)</span>
+        </div>
+        <div class="relative h-60 w-full pt-1">
+          <canvas id="assetsChart"></canvas>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 pt-1 text-[10px] text-slate-600 font-semibold">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-blue-600"></span> ASNB</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span> EPF</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-indigo-500"></span> PRS</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span> Versa</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-rose-500"></span> Shares</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-teal-500"></span> High Interest</span>
+        </div>
+      </div>
+
+      <!-- CHART 2: Debt Ratio -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-extrabold text-slate-900 tracking-tight">
+            Debt Ratio
+          </h3>
+          <div class="flex items-center gap-2 text-[10px] font-mono text-slate-500 font-bold">
+            <span>Left: (RM)</span>
+            <span>Right: (Ratio)</span>
+          </div>
+        </div>
+        <div class="relative h-56 w-full pt-1">
+          <canvas id="debtChart"></canvas>
+        </div>
+        <div class="flex items-center justify-center gap-4 pt-1 text-[10px] text-slate-600 font-semibold">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-blue-600"></span> Total Asset</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-rose-500"></span> Total Liabilities</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2 rounded-full bg-emerald-500"></span> Debt Ratio</span>
+        </div>
+      </div>
+
+      <!-- CHART 3: Return on Investment -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-extrabold text-slate-900 tracking-tight">
+            Return on Investment
+          </h3>
+          <span class="text-[10px] font-mono text-slate-500 font-bold">(RM)</span>
+        </div>
+        <div class="relative h-56 w-full pt-1">
+          <canvas id="roiChart"></canvas>
+        </div>
+        <div class="flex items-center justify-center gap-4 pt-1 text-[10px] text-slate-600 font-semibold">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-slate-700"></span> Principal (RM)</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span> Passive Amount (RM)</span>
+        </div>
+      </div>
+
+      <!-- CHART 4: Portfolio Growth Metrics -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-extrabold text-slate-900 tracking-tight">
+            Portfolio Growth Metrics
+          </h3>
+          <span class="text-[10px] font-mono text-slate-500 font-bold">(%)</span>
+        </div>
+        <div class="relative h-56 w-full pt-1">
+          <canvas id="growthChart"></canvas>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-1 text-[10px] text-slate-600 font-semibold">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Principal Growth %</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Passive Growth %</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Dividend Yield %</span>
+        </div>
+      </div>
+
+      <!-- CHART 5: Investment Performance -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-extrabold text-slate-900 tracking-tight">
+            Investment Performance
+          </h3>
+          <div class="flex items-center gap-2 text-[10px] font-mono text-slate-500 font-bold">
+            <span>Left: (RM)</span>
+            <span>Right: (%)</span>
+          </div>
+        </div>
+        <div class="relative h-56 w-full pt-1">
+          <canvas id="performanceChart"></canvas>
+        </div>
+        <div class="flex items-center justify-center gap-4 pt-1 text-[10px] text-slate-600 font-semibold">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-blue-600"></span> Investment</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> P/L %</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Exact data sets
+    const years = ['2023', '2024', '2025', '2026'];
+
+    // 1. Assets Distribution Chart
+    const ctxAssets = document.getElementById('assetsChart').getContext('2d');
+    new Chart(ctxAssets, {
+      type: 'line',
+      data: {
+        labels: years,
+        datasets: [
+          {
+            label: 'ASNB',
+            data: [102768, 120551.52, 127296.60, 133565.92],
+            fill: true,
+            backgroundColor: 'rgba(37, 99, 235, 0.65)',
+            borderColor: '#2563EB',
+            tension: 0.35,
+            pointRadius: 3
+          },
+          {
+            label: 'EPF',
+            data: [149467, 171654.73, 199092.41, 301000.00],
+            fill: true,
+            backgroundColor: 'rgba(16, 185, 129, 0.65)',
+            borderColor: '#10B981',
+            tension: 0.35,
+            pointRadius: 3
+          },
+          {
+            label: 'PRS (Inc Versa)',
+            data: [8300, 11939.03, 15737.29, 20143.00],
+            fill: true,
+            backgroundColor: 'rgba(99, 102, 241, 0.65)',
+            borderColor: '#6366F1',
+            tension: 0.35,
+            pointRadius: 3
+          },
+          {
+            label: 'Versa',
+            data: [18858, 20124.14, 27659.16, 43223.22],
+            fill: true,
+            backgroundColor: 'rgba(245, 158, 11, 0.65)',
+            borderColor: '#F59E0B',
+            tension: 0.35,
+            pointRadius: 3
+          },
+          {
+            label: 'Share Investment',
+            data: [6096, 34347.70, 22856.68, 24236.50],
+            fill: true,
+            backgroundColor: 'rgba(239, 68, 68, 0.65)',
+            borderColor: '#EF4444',
+            tension: 0.35,
+            pointRadius: 3
+          },
+          {
+            label: 'High Interest Portfolio',
+            data: [1638, 0, 0, 30000.00],
+            fill: true,
+            backgroundColor: 'rgba(20, 184, 166, 0.65)',
+            borderColor: '#14B8A6',
+            tension: 0.35,
+            pointRadius: 3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: RM ${context.raw.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
+          y: {
+            stacked: true,
+            ticks: {
+              callback: (v) => `${(v/1000).toFixed(0)}k`,
+              font: { size: 10, family: 'JetBrains Mono' }
+            }
+          }
+        }
+      }
+    });
+
+    // 2. Debt Ratio Chart
+    const ctxDebt = document.getElementById('debtChart').getContext('2d');
+    new Chart(ctxDebt, {
+      type: 'bar',
+      data: {
+        labels: years,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Total Asset',
+            data: [287127, 358617.12, 392642.14, 552168.64],
+            backgroundColor: '#2563EB',
+            borderRadius: 4,
+            yAxisID: 'y'
+          },
+          {
+            type: 'bar',
+            label: 'Total Liabilities',
+            data: [354548, 370349, 336502, 328155],
+            backgroundColor: '#EF4444',
+            borderRadius: 4,
+            yAxisID: 'y'
+          },
+          {
+            type: 'line',
+            label: 'Debt Ratio',
+            data: [1.23, 1.03, 0.86, 0.59],
+            borderColor: '#10B981',
+            backgroundColor: '#10B981',
+            borderWidth: 2.5,
+            pointRadius: 4,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                if (context.dataset.label === 'Debt Ratio') {
+                  return `Debt Ratio: ${context.raw.toFixed(2)}`;
+                }
+                return `${context.dataset.label}: RM ${context.raw.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
+          y: {
+            position: 'left',
+            ticks: {
+              callback: (v) => `${(v/1000).toFixed(0)}k`,
+              font: { size: 10, family: 'JetBrains Mono' }
+            }
+          },
+          y1: {
+            position: 'right',
+            grid: { display: false },
+            min: 0,
+            max: 1.5,
+            ticks: { font: { size: 10, family: 'JetBrains Mono' } }
+          }
+        }
+      }
+    });
+
+    // 3. ROI Chart
+    const ctxRoi = document.getElementById('roiChart').getContext('2d');
+    new Chart(ctxRoi, {
+      type: 'bar',
+      data: {
+        labels: ['2022', '2023', '2024', '2025', '2026'],
+        datasets: [
+          {
+            label: 'Principal (RM)',
+            data: [90984.90, 127721.51, 164046.66, 139849.60, 157802.42],
+            backgroundColor: '#334155',
+            borderRadius: 4
+          },
+          {
+            label: 'Passive Amount (RM)',
+            data: [4069.17, 5487.44, 8533.56, 8761.32, 11629.75],
+            backgroundColor: '#10B981',
+            borderRadius: 4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.dataset.label}: RM ${context.raw.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
+          y: {
+            ticks: {
+              callback: (v) => `${(v/1000).toFixed(0)}k`,
+              font: { size: 10, family: 'JetBrains Mono' }
+            }
+          }
+        }
+      }
+    });
+
+    // 4. Portfolio Growth Metrics
+    const ctxGrowth = document.getElementById('growthChart').getContext('2d');
+    new Chart(ctxGrowth, {
+      type: 'line',
+      data: {
+        labels: ['2022', '2023', '2024', '2025', '2026'],
+        datasets: [
+          {
+            label: 'Principal Growth %',
+            data: [0.00, 40.38, 28.44, -14.75, 12.84],
+            borderColor: '#6366F1',
+            backgroundColor: '#6366F1',
+            borderWidth: 2.5,
+            pointRadius: 4,
+            tension: 0.2
+          },
+          {
+            label: 'Passive Growth %',
+            data: [0.00, 34.85, 55.51, 2.67, 32.74],
+            borderColor: '#EF4444',
+            backgroundColor: '#EF4444',
+            borderWidth: 2.5,
+            pointRadius: 4,
+            tension: 0.2
+          },
+          {
+            label: 'Dividend Yield %',
+            data: [4.47, 4.30, 5.20, 6.26, 7.37],
+            borderColor: '#F59E0B',
+            backgroundColor: '#F59E0B',
+            borderWidth: 2.5,
+            pointRadius: 4,
+            tension: 0.2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.dataset.label}: ${context.raw.toFixed(2)}%`
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
+          y: {
+            ticks: {
+              callback: (v) => `${v}%`,
+              font: { size: 10, family: 'JetBrains Mono' }
+            }
+          }
+        }
+      }
+    });
+
+    // 5. Investment Performance Chart
+    const ctxPerf = document.getElementById('performanceChart').getContext('2d');
+    new Chart(ctxPerf, {
+      type: 'bar',
+      data: {
+        labels: ['2022', '2023', '2024', '2025', '2026'],
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Investment',
+            data: [20220.06, 18320.00, 26603.70, 22856.68, 23601.50],
+            backgroundColor: '#2563EB',
+            borderRadius: 4,
+            yAxisID: 'y'
+          },
+          {
+            type: 'line',
+            label: 'P/L %',
+            data: [0.00, -9.40, 45.22, -14.08, 3.26],
+            borderColor: '#10B981',
+            backgroundColor: '#10B981',
+            borderWidth: 2.5,
+            pointRadius: 4,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                if (context.dataset.label === 'P/L %') {
+                  return `P/L: ${context.raw.toFixed(2)}%`;
+                }
+                return `Investment: RM ${context.raw.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' } } },
+          y: {
+            position: 'left',
+            ticks: {
+              callback: (v) => `${(v/1000).toFixed(0)}k`,
+              font: { size: 10, family: 'JetBrains Mono' }
+            }
+          },
+          y1: {
+            position: 'right',
+            grid: { display: false },
+            ticks: {
+              callback: (v) => `${v}%`,
+              font: { size: 10, family: 'JetBrains Mono' }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

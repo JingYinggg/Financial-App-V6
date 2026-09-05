@@ -17,7 +17,7 @@ export default function App() {
 
   return (
     <WealthProvider>
-      <div className="min-h-screen bg-[#FAF8F5] text-[#2D2823] font-sans antialiased selection:bg-[#B86B30] selection:text-white">
+      <div className="min-h-screen bg-[#F8F9FA] text-[#0F172A] font-sans antialiased selection:bg-[#2563EB] selection:text-white">
         <Navbar
           activeTab={activeTab}
           setActiveTab={setActiveTab}

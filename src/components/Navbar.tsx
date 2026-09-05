@@ -32,11 +32,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const tabs = [
     { id: 'dashboard', label: 'Report', fullLabel: 'Annual Report', icon: LayoutDashboard },
-    { id: 'stocks', label: 'Stocks', fullLabel: 'Stock Portfolio', icon: TrendingUp },
-    { id: 'dividends', label: 'Dividends', fullLabel: 'Dividend Yield', icon: DollarSign },
+    { id: 'stocks', label: 'Stocks', fullLabel: 'Stocks', icon: TrendingUp },
+    { id: 'dividends', label: 'Dividend', fullLabel: 'Dividend', icon: DollarSign },
     { id: 'cashback', label: 'Cards', fullLabel: 'Cards', icon: CreditCard },
     { id: 'cashflow', label: 'Cash Flow', fullLabel: 'Cash Flow', icon: PieChart },
-    { id: 'calculator', label: 'Calculator', fullLabel: 'Yield Calculator', icon: Calculator },
+    { id: 'calculator', label: 'Planner', fullLabel: 'Planner', icon: Calculator },
   ];
 
   const currentTabObj = tabs.find(t => t.id === activeTab) || tabs[0];
@@ -46,7 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Sleek, tablet-friendly & mobile-friendly top bar */}
       <header
         id="main-header"
-        className="sticky top-0 z-40 bg-[#FDFBF7]/90 backdrop-blur-md border-b border-[#EBE4D8] text-[#2D2823] shadow-[0_2px_12px_rgba(45,40,35,0.03)]"
+        className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 text-gray-900 shadow-xs"
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
@@ -56,15 +56,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="flex items-center space-x-2.5 cursor-pointer py-1 select-none shrink-0"
               onClick={() => setActiveTab('dashboard')}
             >
-              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-[#B86B30] rounded-xl flex items-center justify-center text-white font-black shadow-xs shrink-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black shadow-xs shrink-0">
                 <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-sm sm:text-base tracking-tight text-[#2D2823]">
+                  <span className="font-bold text-sm sm:text-base tracking-tight text-gray-900">
                     MY Fortune
                   </span>
-                  <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-[#F1E9DC] text-[#854E20] font-bold uppercase tracking-wider border border-[#DFCFC0]">
+                  <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold uppercase tracking-wider border border-blue-200">
                     Wealth
                   </span>
                 </div>
@@ -81,13 +81,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                     key={tab.id}
                     id={`nav-tab-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center space-x-1.5 px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-semibold tracking-tight transition-all duration-200 ${
+                    className={`flex items-center space-x-1.5 px-2.5 lg:px-3 py-1.5 rounded-xl text-xs font-semibold tracking-tight transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? 'bg-[#EFE8DD] text-[#2D2823] font-bold shadow-xs border border-[#E0D5C3]'
-                        : 'text-[#6B635A] hover:text-[#2D2823] hover:bg-[#F4EEE4]'
+                        ? 'bg-blue-50 text-blue-700 font-bold shadow-xs border border-blue-200'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#B86B30]' : 'text-[#8C8379]'}`} />
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
                     <span className="hidden lg:inline">{tab.fullLabel}</span>
                     <span className="lg:hidden">{tab.label}</span>
                   </button>
@@ -102,10 +102,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 id="btn-open-quick-actions"
                 type="button"
                 onClick={() => setShowQuickActionsModal(true)}
-                className="flex md:hidden items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-[#F4EEE4] hover:bg-[#EBE4D8] text-[#3D3730] hover:text-[#2D2823] border border-[#E2DAD0] text-xs font-bold transition-all shadow-xs active:scale-95 min-h-[36px]"
+                className="flex md:hidden items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 text-xs font-bold transition-all shadow-xs active:scale-95 min-h-[36px] cursor-pointer"
                 title="Open Quick Actions Hub"
               >
-                <Grid className="w-4 h-4 text-[#B86B30]" />
+                <Grid className="w-4 h-4 text-blue-600" />
                 <span className="text-xs">Quick Actions</span>
               </button>
 
@@ -114,11 +114,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 id="btn-open-ai"
                 type="button"
                 onClick={onOpenAi}
-                className="flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#3D3731] hover:bg-[#2A2520] text-[#FAF8F5] text-xs font-bold transition-all shadow-xs active:scale-95 min-h-[36px]"
+                className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold transition-all shadow-xs active:scale-95 min-h-[36px] cursor-pointer"
               >
-                <Bot className="w-3.5 h-3.5 text-[#E6DCCE]" />
+                <Bot className="w-3.5 h-3.5 text-blue-400" />
                 <span className="hidden sm:inline text-xs">AI Advisor</span>
-                <Sparkles className="w-3 h-3 text-[#D4984F] animate-pulse hidden sm:inline" />
+                <Sparkles className="w-3 h-3 text-blue-400 animate-pulse hidden sm:inline" />
               </button>
 
               {/* Settings Icon */}
@@ -126,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 id="btn-open-settings"
                 type="button"
                 onClick={onOpenSettings}
-                className="p-2 rounded-xl text-[#6B635A] hover:text-[#2D2823] hover:bg-[#F4EEE4] transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center border border-transparent hover:border-[#E2DAD0]"
+                className="p-2 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center border border-transparent hover:border-gray-200 cursor-pointer"
                 title="Settings & Data Export"
                 aria-label="Settings"
               >
@@ -139,25 +139,25 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Quick Actions Modal / Drawer (Matches the sample 4-column quick action grid) */}
       {showQuickActionsModal && (
-        <div className="fixed inset-0 z-50 bg-[#2D2823]/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn">
           <div
-            className="w-full max-w-lg bg-[#FAF8F5] text-[#2D2823] rounded-t-3xl sm:rounded-3xl border border-[#EAE3D6] p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-lg bg-white text-gray-900 rounded-t-3xl sm:rounded-3xl border border-gray-200 p-5 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-[#EBE4D8] pb-3">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-[#F1E9DC] text-[#854E20] rounded-xl border border-[#DFCFC0]">
+                <div className="p-2 bg-blue-50 text-blue-700 rounded-xl border border-blue-100">
                   <Grid className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[#2D2823] tracking-tight">Quick Actions</h3>
+                  <h3 className="text-base font-bold text-gray-900 tracking-tight">Quick Actions</h3>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowQuickActionsModal(false)}
-                className="p-1.5 rounded-xl text-[#8C8379] hover:text-[#2D2823] hover:bg-[#EFE8DD] transition"
+                className="p-1.5 rounded-xl text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>

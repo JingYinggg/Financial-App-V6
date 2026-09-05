@@ -53,7 +53,7 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
     },
     {
       id: 'stocks',
-      title: 'Stock Portfolio',
+      title: 'Stocks',
       icon: TrendingUp,
       isActive: activeTab === 'stocks',
       onClick: () => {
@@ -63,7 +63,7 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
     },
     {
       id: 'dividends',
-      title: 'Dividend Yield',
+      title: 'Dividend',
       icon: DollarSign,
       isActive: activeTab === 'dividends',
       onClick: () => {
@@ -95,7 +95,7 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
     },
     {
       id: 'calculator',
-      title: 'Yield Calc',
+      title: 'Planner',
       icon: Calculator,
       isActive: activeTab === 'calculator',
       onClick: () => {
@@ -145,12 +145,12 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
               <div className="relative mb-1.5 sm:mb-2">
                 {action.badge && (
                   <span
-                    className={`absolute -top-2 -right-2 z-10 px-1.5 py-0.2 rounded-full text-[9px] font-black uppercase tracking-tight shadow-xs ${
+                    className={`absolute -top-2 -right-2 z-10 px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tight shadow-xs ${
                       action.badgeColor === 'promo'
-                        ? 'bg-[#C45444] text-white'
+                        ? 'bg-rose-500 text-white'
                         : action.badgeColor === 'ai'
-                        ? 'bg-[#3D3731] text-[#FAF8F5]'
-                        : 'bg-[#B86B30] text-white'
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-blue-600 text-white'
                     }`}
                   >
                     {action.badge}
@@ -159,18 +159,18 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
                 <div
                   className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center transition-all duration-200 shadow-xs ${
                     isCurrent
-                      ? 'bg-[#B86B30] text-white ring-2 ring-[#B86B30] ring-offset-2 ring-offset-[#FAF8F5]'
-                      : 'bg-[#F3EDE3] text-[#4A423B] border border-[#E4DCCF] group-hover:bg-[#EAE2D2] group-hover:border-[#D9CFC0] group-hover:text-[#2D2823]'
+                      ? 'bg-blue-600 text-white ring-2 ring-blue-600 ring-offset-2 ring-offset-white'
+                      : 'bg-gray-100 text-gray-700 border border-gray-200 group-hover:bg-gray-200 group-hover:border-gray-300 group-hover:text-gray-900'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${isCurrent ? 'text-white' : 'text-[#5C544C] group-hover:scale-110 transition-transform'}`} />
+                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${isCurrent ? 'text-white' : 'text-gray-600 group-hover:scale-110 transition-transform'}`} />
                 </div>
               </div>
 
               {/* Title label */}
               <span
                 className={`text-[11px] sm:text-xs font-semibold leading-tight max-w-[76px] sm:max-w-[84px] text-center ${
-                  isCurrent ? 'text-[#8F4E1D] font-bold' : 'text-[#5C544C] group-hover:text-[#2D2823]'
+                  isCurrent ? 'text-blue-700 font-bold' : 'text-gray-600 group-hover:text-gray-900'
                 }`}
               >
                 {action.title}
