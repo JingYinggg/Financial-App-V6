@@ -74,8 +74,6 @@ export const QuickActionsGrid: React.FC<QuickActionsGridProps> = ({
     {
       id: 'cashback',
       title: 'Cards',
-      badge: 'PROMO',
-      badgeColor: 'promo',
       icon: CreditCard,
       isActive: activeTab === 'cashback',
       onClick: () => {

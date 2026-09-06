@@ -112,7 +112,7 @@
   <div id="phone-frame" class="w-full max-w-md bg-white border border-slate-300 rounded-[38px] shadow-2xl overflow-hidden flex flex-col min-h-[850px] relative">
     
     <!-- Mobile App Top Bar -->
-    <div class="bg-white border-b border-slate-100 px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
+    <div class="bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs shadow-xs">
           MY
@@ -121,29 +121,6 @@
           <h1 class="text-xs font-black tracking-tight text-slate-900 leading-tight">MY Fortune</h1>
           <span class="text-[10px] text-slate-400 font-medium leading-none">Cards & Cashback</span>
         </div>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <!-- Year Dropdown in Top Bar -->
-        <div class="relative flex items-center">
-          <select
-            id="select-year-top"
-            onchange="selectYear(parseInt(this.value, 10))"
-            class="appearance-none bg-slate-100 hover:bg-slate-200/80 text-slate-800 text-[11px] font-bold font-mono pl-2 pr-5 py-1 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer"
-          >
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026" selected>2026</option>
-            <option value="2027">2027</option>
-          </select>
-          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400 absolute right-1.5 pointer-events-none"></i>
-        </div>
-        <button
-          onclick="alert('Add Card modal trigger — preserved in app logic.')"
-          class="flex items-center gap-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] rounded-lg shadow-xs transition cursor-pointer"
-        >
-          <i data-lucide="plus" class="w-3 h-3"></i>
-          <span>Add Card</span>
-        </button>
       </div>
     </div>
 
@@ -164,7 +141,7 @@
               <select
                 id="select-year"
                 onchange="selectYear(parseInt(this.value, 10))"
-                class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 text-slate-800 text-xs font-bold font-mono px-2.5 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+                class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 text-slate-800 text-xs font-bold px-2.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
               >
                 <option value="2024">2024</option>
                 <option value="2025">2025</option>
@@ -184,7 +161,7 @@
               <select
                 id="select-month"
                 onchange="selectMonth(this.value)"
-                class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 text-slate-800 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+                class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 text-slate-800 text-xs font-bold px-2.5 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
               >
                 <!-- Populated by JS -->
               </select>
@@ -215,6 +192,22 @@
       <!-- 3. KPI SUMMARY CARDS (Stock Portfolio / Dividend Design Language)     -->
       <!-- ===================================================================== -->
       <section class="space-y-2.5">
+        <!-- Annual Overview KPI Pill Card -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs flex items-center justify-between">
+          <div>
+            <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 block">
+              Annual Total Cashback (<span id="annual-overview-year">2026</span>)
+            </span>
+            <div class="text-sm font-extrabold text-blue-600 font-mono" id="kpi-annual-cashback">
+              RM 1,245.00
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] font-bold text-slate-400 block">Year Total Spend</span>
+            <span class="text-xs font-bold text-slate-700 font-mono" id="kpi-annual-spend">RM 24,500.00</span>
+          </div>
+        </div>
+
         <!-- Main Spend & Cashback 2x2 Grid -->
         <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs space-y-3">
           
@@ -255,22 +248,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Annual Overview KPI Pill Card -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs flex items-center justify-between">
-          <div>
-            <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-400 block">
-              Annual Total Cashback (<span id="annual-overview-year">2026</span>)
-            </span>
-            <div class="text-sm font-extrabold text-blue-600 font-mono" id="kpi-annual-cashback">
-              RM 1,245.00
-            </div>
-          </div>
-          <div class="text-right">
-            <span class="text-[9px] font-bold text-slate-400 block">Year Total Spend</span>
-            <span class="text-xs font-bold text-slate-700 font-mono" id="kpi-annual-spend">RM 24,500.00</span>
-          </div>
-        </div>
       </section>
 
       <!-- ===================================================================== -->
@@ -287,25 +264,29 @@
         <!-- Dynamically rendered according to chosen style -->
       </div>
 
-      <!-- Card Notes / Min Spend Rules Card -->
-      <div class="bg-blue-50/60 border border-blue-100 rounded-2xl p-3 text-[11px] text-blue-800 space-y-1">
-        <div class="flex items-center justify-between font-bold">
-          <span class="flex items-center gap-1">
-            <i data-lucide="info" class="w-3.5 h-3.5 text-blue-600"></i>
-            <span>Card Rule Notes</span>
-          </span>
-          <button
-            onclick="openMinSpendInfoModal()"
-            class="text-[10px] text-blue-600 underline font-semibold cursor-pointer"
-          >
-            Configure
-          </button>
-        </div>
-        <p id="card-rules-notes" class="text-blue-700 text-[10px] leading-relaxed">
-          Requires min RM1,000 monthly total spend to trigger 7.8% tier rate (otherwise 0.2% base rate applies).
-        </p>
-      </div>
+    </div>
 
+    <!-- ===================================================================== -->
+    <!-- FOOTER CASHBACK SUMMARY & MANUAL OVERRIDE                             -->
+    <!-- ===================================================================== -->
+    <div class="bg-white border-t border-slate-200 px-4 py-3.5 flex items-center justify-between sticky bottom-0 z-30 shadow-md">
+      <div>
+        <span class="text-xs font-bold text-slate-800 tracking-tight">Total Cashback</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <span class="font-mono text-xs font-bold text-slate-400">RM</span>
+        <input
+          id="footer-cashback-input"
+          type="text"
+          value="0.00"
+          placeholder="0.00"
+          onfocus="handleFooterFocus(this)"
+          oninput="handleFooterInput(this.value)"
+          onblur="handleFooterBlur(this)"
+          onkeydown="if (event.key === 'Enter') { this.blur(); }"
+          class="w-24 text-right font-mono font-extrabold text-sm text-emerald-600 bg-transparent focus:bg-slate-50 focus:ring-1 focus:ring-blue-400 rounded px-1.5 py-0.5 border-none outline-none cursor-pointer"
+        />
+      </div>
     </div>
   </div>
 
@@ -580,6 +561,17 @@
       rhb_shell_8881: { Feb: {} }
     };
 
+    // Manual overrides for footer total cashback (keeps user entered value per card & month)
+    const manualFooterCashback = {
+      hsbc_5458: {},
+      uob_visa_2052: {},
+      affin_5760: {},
+      rhb_shell_8881: {}
+    };
+
+    // Card expanded state mapping
+    const expandedCards = {};
+
     // Temporary user input during active typing
     const activeInputs = {};
 
@@ -711,7 +703,7 @@
     }
 
     function toggleExpand(catId) {
-      expandedCardId = (expandedCardId === catId) ? null : catId;
+      expandedCards[catId] = !expandedCards[catId];
       renderCategories();
     }
 
@@ -740,6 +732,7 @@
         if (!spendsData[currentCardId][currentMonth]) spendsData[currentCardId][currentMonth] = {};
         spendsData[currentCardId][currentMonth][catId] = Math.round(evaluated * 100) / 100;
         updateKpisOnly();
+        updateFooterAmount();
         const activeCard = getActiveCard();
         const cat = activeCard.categories.find(c => c.id === catId);
         if (cat) {
@@ -778,7 +771,7 @@
       const calculated = Math.round(evaluateExpression(raw) * 100) / 100;
       spendsData[currentCardId][currentMonth][catId] = calculated;
 
-      // If user typed a calculation with operators (+, -, *, /) preserve the expression string
+      // If user typed a calculation with operators (+, -, *, /) preserve the expression string in background
       if (/[+\-*/]/.test(raw)) {
         spendFormulas[currentCardId][currentMonth][catId] = raw;
       } else {
@@ -791,6 +784,71 @@
       }
 
       updateKpisAndCategories();
+    }
+
+    // =========================================================================
+    // FOOTER CASHBACK CALCULATION & OVERRIDE LOGIC
+    // =========================================================================
+    function getActiveCardCalculatedTotalCashback() {
+      const activeCard = getActiveCard();
+      const currentSpendMap = (spendsData[currentCardId] && spendsData[currentCardId][currentMonth]) || {};
+      let sum = 0;
+      activeCard.categories.forEach(cat => {
+        const spend = currentSpendMap[cat.id] || 0;
+        const cb = calculateCategoryCashback(cat, spend);
+        sum += cb.earned;
+      });
+      return Math.round(sum * 100) / 100;
+    }
+
+    function updateFooterAmount() {
+      const footerInput = document.getElementById('footer-cashback-input');
+      if (!footerInput) return;
+      if (document.activeElement === footerInput) return;
+
+      const autoSum = getActiveCardCalculatedTotalCashback();
+      const cardOverrides = manualFooterCashback[currentCardId] || {};
+      const overrideVal = cardOverrides[currentMonth];
+      const finalVal = overrideVal !== undefined ? overrideVal : autoSum;
+
+      footerInput.value = finalVal.toFixed(2);
+    }
+
+    function handleFooterFocus(inputEl) {
+      setTimeout(() => {
+        try {
+          inputEl.select();
+        } catch (e) {}
+      }, 10);
+    }
+
+    function handleFooterInput(val) {
+      if (!manualFooterCashback[currentCardId]) manualFooterCashback[currentCardId] = {};
+      const trimmed = val.trim();
+      if (trimmed === '') {
+        delete manualFooterCashback[currentCardId][currentMonth];
+      } else {
+        const evaluated = evaluateExpression(trimmed);
+        if (!isNaN(evaluated) && evaluated >= 0) {
+          manualFooterCashback[currentCardId][currentMonth] = Math.round(evaluated * 100) / 100;
+        }
+      }
+      updateKpisOnly();
+    }
+
+    function handleFooterBlur(inputEl) {
+      const raw = inputEl.value.trim();
+      if (!manualFooterCashback[currentCardId]) manualFooterCashback[currentCardId] = {};
+      if (raw === '') {
+        delete manualFooterCashback[currentCardId][currentMonth];
+      } else {
+        const evaluated = evaluateExpression(raw);
+        if (!isNaN(evaluated) && evaluated >= 0) {
+          manualFooterCashback[currentCardId][currentMonth] = Math.round(evaluated * 100) / 100;
+        }
+      }
+      updateFooterAmount();
+      updateKpisOnly();
     }
 
     function calculateCategoryCashback(cat, spend) {
@@ -898,10 +956,15 @@
       // Update KPIs
       const elSpend = document.getElementById('kpi-total-spend');
       if (elSpend) elSpend.innerText = `RM ${totalSpend.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      const elCb = document.getElementById('kpi-total-cashback');
-      if (elCb) elCb.innerText = `RM ${totalCashback.toFixed(2)}`;
 
-      const returnRate = totalSpend > 0 ? ((totalCashback / totalSpend) * 100).toFixed(2) : '0.00';
+      const cardOverrides = manualFooterCashback[currentCardId] || {};
+      const overrideVal = cardOverrides[currentMonth];
+      const effectiveCashback = overrideVal !== undefined ? overrideVal : totalCashback;
+
+      const elCb = document.getElementById('kpi-total-cashback');
+      if (elCb) elCb.innerText = `RM ${effectiveCashback.toFixed(2)}`;
+
+      const returnRate = totalSpend > 0 ? ((effectiveCashback / totalSpend) * 100).toFixed(2) : '0.00';
       const elRate = document.getElementById('kpi-return-rate');
       if (elRate) elRate.innerText = `${returnRate}%`;
 
@@ -946,6 +1009,7 @@
       if (badgeEl) badgeEl.innerText = activeCard.categories.length;
 
       renderCategories();
+      updateFooterAmount();
       lucide.createIcons();
     }
 
@@ -961,8 +1025,7 @@
         container.innerHTML = activeCard.categories.map(cat => {
           const spend = currentSpendMap[cat.id] || 0;
           const cb = calculateCategoryCashback(cat, spend);
-          const isExpanded = expandedCardId === cat.id;
-          const capText = (cat.capRM !== undefined && cat.capRM > 0) ? `Cap: RM ${cat.capRM}` : 'No Cap';
+          const isExpanded = !!expandedCards[cat.id];
 
           const cardFormulas = (spendFormulas[currentCardId] && spendFormulas[currentCardId][currentMonth]) || {};
           const formulaStr = cardFormulas[cat.id];
@@ -973,33 +1036,33 @@
 
           return `
             <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden transition-all">
-              <!-- Primary Card Row: 3-column structured hierarchy -->
+              <!-- Primary Card Row -->
               <div
                 onclick="toggleExpand('${cat.id}')"
                 class="px-3.5 py-3 flex items-center justify-between gap-2 hover:bg-slate-50/70 active:bg-slate-100 cursor-pointer select-none"
               >
-                <!-- Left: Category Icon, Name & Rate pill -->
+                <!-- Left: Category Icon, Name & Info Trigger next to name -->
                 <div class="flex items-center gap-2.5 min-w-0 pr-1">
                   <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
                     <i data-lucide="${cat.icon || 'tag'}" class="w-4 h-4"></i>
                   </div>
-                  <div class="min-w-0">
-                    <div class="font-extrabold text-xs text-slate-900 truncate leading-tight flex items-center gap-1.5">
-                      <span>${cat.name}</span>
-                      <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 font-bold border border-blue-200 shrink-0">
-                        ${cat.ratePercent}%
-                      </span>
-                    </div>
-                    <div class="text-[10px] text-slate-400 font-mono mt-0.5 leading-tight">
-                      ${capText}
-                    </div>
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="font-extrabold text-xs text-slate-900 truncate leading-tight">
+                      ${cat.name}
+                    </span>
+                    <button
+                      onclick="event.stopPropagation(); openRuleModal('${cat.id}')"
+                      class="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer shrink-0"
+                      title="View category details"
+                    >
+                      <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                    </button>
                   </div>
                 </div>
 
-                <!-- Middle / Right: Monthly Spend Input & Earned Cashback -->
+                <!-- Right: Monthly Spend Input & Expand Chevron -->
                 <div class="flex items-center gap-2.5 shrink-0" onclick="event.stopPropagation()">
-                  <!-- Compact Formatted Spend Input -->
-                  <div class="w-24 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-2 py-1 flex items-center gap-1 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
+                  <div class="w-28 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-2 py-1 flex items-center gap-1 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
                     <span class="text-[10px] text-slate-400 font-mono font-medium">RM</span>
                     <input
                       type="text"
@@ -1014,66 +1077,34 @@
                     />
                   </div>
 
-                  <!-- Cashback Return Pill -->
-                  <div class="text-right font-mono min-w-[62px]">
-                    <div id="cat-cb-${cat.id}" class="text-xs font-extrabold ${cb.earned > 0 ? 'text-emerald-600' : 'text-slate-400'} leading-tight">
-                      +RM ${cb.earned.toFixed(2)}
-                    </div>
-                    <div class="text-[9px] text-slate-400 font-medium leading-tight mt-0.5">
-                      ${cb.isCapped ? '<span class="text-amber-600 font-bold">Capped</span>' : 'Final'}
-                    </div>
-                  </div>
-
                   <!-- Expand Arrow -->
-                  <div class="text-slate-400 shrink-0">
+                  <div class="text-slate-400 shrink-0 cursor-pointer" onclick="toggleExpand('${cat.id}')">
                     <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4"></i>
                   </div>
                 </div>
               </div>
 
-              <!-- Expandable Details Drawer (Stock / Dividend Pattern) -->
+              <!-- Expandable Details Drawer (Calculated Cashback) -->
               ${isExpanded ? `
-                <div class="bg-slate-50/90 px-3.5 py-3 border-t border-slate-100 space-y-2.5 fade-enter">
-                  <div class="flex items-center justify-between text-[11px]">
-                    <span class="font-bold text-slate-700">Category Rules & Criteria</span>
-                    <button
-                      onclick="openRuleModal('${cat.id}')"
-                      class="text-[10px] font-bold text-blue-600 hover:text-blue-700 cursor-pointer flex items-center gap-1"
-                    >
-                      <span>Full Criteria</span>
-                      <i data-lucide="arrow-up-right" class="w-3 h-3"></i>
-                    </button>
+                <div class="bg-slate-50/90 px-3.5 py-3 border-t border-slate-100 flex items-center justify-between gap-3 fade-enter">
+                  <div>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">
+                      Calculated Cashback
+                    </span>
+                    <div id="cat-cb-${cat.id}" class="text-sm font-mono font-extrabold ${cb.earned > 0 ? 'text-emerald-600' : 'text-slate-400'} leading-tight">
+                      RM ${cb.earned.toFixed(2)}
+                    </div>
+                    ${cb.isCapped ? '<span class="text-[9px] text-amber-600 font-bold block mt-0.5">Cap Reached</span>' : ''}
                   </div>
-
-                  <!-- Cap Progress Bar -->
-                  ${cat.capRM ? `
-                    <div class="space-y-1">
-                      <div class="flex justify-between text-[10px] text-slate-500 font-mono">
-                        <span>Cap Utilization (RM ${cat.capRM.toFixed(2)} max)</span>
-                        <span class="font-bold text-slate-700">${Math.min(100, Math.round((cb.earned / cat.capRM) * 100))}%</span>
-                      </div>
-                      <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                        <div
-                          class="h-full rounded-full ${cb.isCapped ? 'bg-amber-500' : 'bg-blue-600'}"
-                          style="width: ${Math.min(100, (cb.earned / cat.capRM) * 100)}%"
-                        ></div>
-                      </div>
-                    </div>
-                  ` : ''}
-
-                  <!-- Key Eligible Merchant Tags Preview -->
-                  <div class="space-y-1">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Eligible Highlights:</span>
-                    <div class="flex flex-wrap gap-1">
-                      ${cat.eligibleItems.slice(0, 4).map(item => `
-                        <span class="text-[10px] px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 font-medium">
-                          ${item}
-                        </span>
-                      `).join('')}
-                      ${cat.eligibleItems.length > 4 ? `
-                        <span class="text-[10px] px-1.5 py-0.5 text-slate-400 font-mono font-bold">+${cat.eligibleItems.length - 4} more</span>
-                      ` : ''}
-                    </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-mono font-extrabold px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      ${cat.ratePercent}% rate
+                    </span>
+                    ${(cat.capRM !== undefined && cat.capRM > 0) ? `
+                      <span class="text-[10px] font-mono text-slate-400">
+                        Max RM ${cat.capRM}
+                      </span>
+                    ` : ''}
                   </div>
                 </div>
               ` : ''}
@@ -1087,7 +1118,7 @@
         container.innerHTML = activeCard.categories.map(cat => {
           const spend = currentSpendMap[cat.id] || 0;
           const cb = calculateCategoryCashback(cat, spend);
-          const capText = (cat.capRM !== undefined && cat.capRM > 0) ? `Max RM ${cat.capRM}` : 'Unlimited';
+          const isExpanded = !!expandedCards[cat.id];
 
           // Display stored formula (e.g. "12 + 12") or formatted spend number
           const cardFormulas = (spendFormulas[currentCardId] && spendFormulas[currentCardId][currentMonth]) || {};
@@ -1098,51 +1129,31 @@
             : (spend > 0 ? (spend % 1 === 0 ? String(spend) : spend.toFixed(2)) : '');
 
           return `
-            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs space-y-3">
-              <!-- Top Row: Icon + Name + Badge + Info Trigger -->
-              <div class="flex items-center justify-between">
+            <div class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs transition-all space-y-2.5">
+              <!-- Primary Row: Category Name with ⓘ + Monthly Spend Input + Expand Chevron -->
+              <div class="flex items-center justify-between gap-2.5">
+                <!-- Left: Category Icon, Name & Info Trigger next to name (No cap text) -->
                 <div class="flex items-center gap-2.5 min-w-0">
                   <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                     <i data-lucide="${cat.icon || 'tag'}" class="w-4 h-4"></i>
                   </div>
-                  <div class="min-w-0">
-                    <div class="font-extrabold text-xs text-slate-900 truncate leading-tight">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="font-extrabold text-xs text-slate-900 truncate leading-tight">
                       ${cat.name}
-                    </div>
-                    <span class="text-[10px] font-mono text-slate-400">
-                      Cap: ${capText}
                     </span>
+                    <button
+                      onclick="event.stopPropagation(); openRuleModal('${cat.id}')"
+                      class="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer shrink-0"
+                      title="View category details"
+                    >
+                      <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                    </button>
                   </div>
                 </div>
 
-                <div class="flex items-center gap-1.5">
-                  <span class="text-[11px] font-mono font-extrabold px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    ${cat.ratePercent}%
-                  </span>
-                  <button
-                    onclick="openRuleModal('${cat.id}')"
-                    class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
-                    title="View eligible merchants"
-                  >
-                    <i data-lucide="info" class="w-3.5 h-3.5"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Bottom Row: Input + Live Cashback -->
-              <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-3">
-                <div class="grow">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
-                      Monthly Spend
-                    </span>
-                    ${formulaStr ? `
-                      <span class="text-[9px] font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200" title="Preserved formula: ${formulaStr}">
-                        fx: ${formulaStr}
-                      </span>
-                    ` : ''}
-                  </div>
-                  <div class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 flex items-center gap-1 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
+                <!-- Right: Replaces 0.2% (i) area with Monthly Spend (RM) Input Box -->
+                <div class="flex items-center gap-2 shrink-0" onclick="event.stopPropagation()">
+                  <div class="w-28 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1.5 flex items-center gap-1 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500">
                     <span class="text-[10px] text-slate-400 font-mono font-medium">RM</span>
                     <input
                       type="text"
@@ -1153,21 +1164,43 @@
                       onblur="handleSpendInputBlur('${cat.id}', this.value, this)"
                       onkeydown="if (event.key === 'Enter') { this.blur(); }"
                       title="${formulaStr ? 'Formula: ' + formulaStr + ' = RM ' + spend : 'Supports math formulas like 12+12'}"
-                      class="w-full bg-transparent text-left font-mono font-bold text-xs text-slate-900 focus:outline-none"
+                      class="w-full bg-transparent text-right font-mono font-bold text-xs text-slate-900 focus:outline-none"
                     />
                   </div>
-                </div>
-
-                <div class="text-right shrink-0">
-                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                    Statement Cashback
-                  </span>
-                  <div id="bento-cb-${cat.id}" class="font-mono text-sm font-extrabold ${cb.earned > 0 ? 'text-emerald-600' : 'text-slate-400'}">
-                    RM ${cb.earned.toFixed(2)}
-                  </div>
-                  ${cb.isCapped ? '<span class="text-[9px] text-amber-600 font-bold block">Cap Reached</span>' : ''}
+                  <button
+                    onclick="toggleExpand('${cat.id}')"
+                    class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 cursor-pointer"
+                    title="Toggle cashback details"
+                  >
+                    <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4"></i>
+                  </button>
                 </div>
               </div>
+
+              <!-- Expanded Hidden: Calculated Cashback (Renamed from Statement Cashback) -->
+              ${isExpanded ? `
+                <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-3 fade-enter">
+                  <div>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">
+                      Calculated Cashback
+                    </span>
+                    <div id="bento-cb-${cat.id}" class="font-mono text-sm font-extrabold ${cb.earned > 0 ? 'text-emerald-600' : 'text-slate-400'}">
+                      RM ${cb.earned.toFixed(2)}
+                    </div>
+                    ${cb.isCapped ? '<span class="text-[9px] text-amber-600 font-bold block mt-0.5">Cap Reached</span>' : ''}
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[10px] font-mono font-extrabold px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      ${cat.ratePercent}% rate
+                    </span>
+                    ${(cat.capRM !== undefined && cat.capRM > 0) ? `
+                      <span class="text-[10px] font-mono text-slate-400">
+                        Max RM ${cat.capRM}
+                      </span>
+                    ` : ''}
+                  </div>
+                </div>
+              ` : ''}
             </div>
           `;
         }).join('');

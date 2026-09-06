@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mobile Preview — Cash Flow Tab (Proposed Mobile UI Review)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Google+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-heading: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-body: 'Google Sans Text', 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-financial: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      font-family: var(--font-body);
+      background-color: #F1F5F9;
+      color: #0F172A;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    h1, h2, h3, h4, h5, h6, .font-heading {
+      font-family: var(--font-heading);
+      letter-spacing: -0.012em;
+    }
+    .font-mono,
+    .financial-num,
+    .font-financial,
+    .tabular-nums {
+      font-family: var(--font-financial);
+      font-variant-numeric: tabular-nums;
+    }
+    /* Smooth custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Animate transitions */
+    .fade-enter {
+      animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="p-3 sm:p-6 flex flex-col items-center min-h-screen bg-slate-200/80">
+
+  <!-- ========================================================================= -->
+  <!-- PREVIEW CONTROL PANEL & DESIGN REVIEW BANNER                              -->
+  <!-- ========================================================================= -->
+  <header class="w-full max-w-md mb-3 bg-white p-4 rounded-3xl border border-slate-300 shadow-sm space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+        <span class="text-xs font-bold text-slate-800 tracking-tight">Cash Flow Mobile UI Proposal</span>
+      </div>
+      <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">
+        Testing Review
+      </span>
+    </div>
+
+    <!-- Design Rationale & Principles -->
+    <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 text-[11px] text-slate-600 space-y-2 leading-relaxed">
+      <div class="font-bold text-slate-800 flex items-center justify-between">
+        <span>✨ Design Language Harmony:</span>
+        <span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold">100% Content Preserved</span>
+      </div>
+      <p class="text-slate-500">
+        Adapts the approved mobile design language from <strong>Card</strong>, <strong>Stock</strong>, and <strong>Dividend</strong> tabs for the <strong>Cash Flow</strong> tab. Replaces the 15-column horizontal table with phone-first cards, tap-to-expand 12-month grids, and high-visibility 2x2 KPI blocks.
+      </p>
+
+      <!-- Layout Variant Switcher -->
+      <div class="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
+        <span class="text-[11px] font-bold text-slate-700">Category Card Style:</span>
+        <div class="flex items-center gap-1 bg-slate-200/70 p-0.5 rounded-xl text-[10px] font-bold">
+          <button
+            id="btn-style-compact"
+            onclick="setCardStyle('compact')"
+            class="px-2.5 py-1 rounded-lg transition-all cursor-pointer text-slate-600 hover:text-slate-900"
+          >
+            Option A: Streamlined Row
+          </button>
+          <button
+            id="btn-style-bento"
+            onclick="setCardStyle('bento')"
+            class="px-2.5 py-1 rounded-lg transition-all cursor-pointer bg-white text-emerald-700 shadow-xs"
+          >
+            Option B: Bento Share (Selected)
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MOBILE DEVICE SCREEN CONTAINER (Max 440px viewport simulation)            -->
+  <!-- ========================================================================= -->
+  <div class="w-full max-w-md bg-slate-50 rounded-[36px] border-4 border-slate-800 shadow-2xl overflow-hidden flex flex-col relative transition-all min-h-[780px]">
+    
+    <!-- Phone Top Status Bar Simulation -->
+    <div class="bg-white pt-2.5 px-6 pb-1.5 flex items-center justify-between text-[11px] text-slate-800 font-semibold border-b border-slate-100 select-none">
+      <span>9:41</span>
+      <div class="w-20 h-4 bg-slate-900 rounded-full mx-auto"></div>
+      <div class="flex items-center gap-1.5 text-slate-600">
+        <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+        <i data-lucide="battery" class="w-4 h-4"></i>
+      </div>
+    </div>
+
+    <!-- MAIN SCROLLABLE APP BODY -->
+    <div class="flex-1 overflow-y-auto p-3.5 space-y-3.5">
+
+      <!-- ===================================================================== -->
+      <!-- 1. SUB-TAB SWITCHER & GLOBAL CONTROLS (Identical to App Top Bars)     -->
+      <!-- ===================================================================== -->
+      <section class="bg-white rounded-2xl p-3 border border-slate-200 shadow-xs space-y-3">
+        <!-- Sub-Tabs: Income Statement vs Passive Income + Action Button -->
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex-1 flex items-center p-1 bg-slate-100 rounded-xl">
+            <button
+              id="subtab-btn-cashflow"
+              onclick="switchSubTab('cashflow')"
+              class="flex-1 py-1.5 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-slate-900 text-white shadow-xs cursor-pointer"
+            >
+              <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+              <span>Income Statement</span>
+            </button>
+            <button
+              id="subtab-btn-passive"
+              onclick="switchSubTab('passive')"
+              class="flex-1 py-1.5 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer"
+            >
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              <span>Passive Income</span>
+            </button>
+          </div>
+
+          <!-- Add Stream / Account Quick Action -->
+          <button
+            id="top-action-btn"
+            onclick="openAddCategoryModal()"
+            class="flex items-center gap-1 px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition-all shadow-xs cursor-pointer shrink-0"
+          >
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span id="top-action-label" class="hidden sm:inline">Add Stream</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW A: INCOME STATEMENT (MONTHLY CASH FLOW)                          -->
+      <!-- ===================================================================== -->
+      <div id="view-cashflow" class="space-y-3.5 fade-enter">
+
+        <!-- 2. MODERN MULTI-YEAR TRAJECTORY CHART (Fintech Investment App Style) -->
+        <section class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-600"></i>
+              <h3 class="text-xs font-bold text-slate-900 tracking-tight">Multi-Year Trajectory</h3>
+              <span class="text-[10px] font-mono text-slate-400">2023 – 2026</span>
+            </div>
+          </div>
+
+          <!-- Interactive SVG Modern Chart -->
+          <div class="w-full pt-0.5" id="modern-chart-svg-container">
+            <!-- Rendered by renderModernChart() -->
+          </div>
+
+          <!-- Chart Legend at Bottom -->
+          <div class="flex items-center justify-center gap-4 pt-2 border-t border-slate-100 text-[10px] font-medium text-slate-500 select-none">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-xs bg-emerald-500 inline-block"></span> Inflow</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-xs bg-rose-500 inline-block"></span> Outflow</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-blue-600 inline-block rounded-full"></span> Surplus</span>
+          </div>
+        </section>
+
+        <!-- 3. ANNUAL OVERVIEW KPI CARD (With 2026 ▾ Dropdown Beside Heading) -->
+        <section class="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                Annual Net Savings
+              </span>
+              <div class="relative inline-flex items-center">
+                <select
+                  id="annual-savings-year-select"
+                  onchange="selectYear(parseInt(this.value, 10))"
+                  class="appearance-none bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold font-mono text-[10px] pl-1.5 pr-4 py-0.5 rounded-md transition-colors cursor-pointer focus:outline-none"
+                  title="Select Year"
+                >
+                  <option value="2023">2023</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+                </select>
+                <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 absolute right-1 pointer-events-none"></i>
+              </div>
+            </div>
+            <div class="text-sm font-extrabold text-blue-600 font-mono mt-0.5" id="kpi-annual-savings">
+              RM 49,685.04
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] font-bold text-slate-400 block">Annual Inflow / Savings Rate</span>
+            <span class="text-xs font-bold text-slate-700 font-mono" id="kpi-annual-rate">RM 161,340.00 · 30.8%</span>
+          </div>
+        </section>
+
+        <!-- 4. CASH FLOW 2x2 GRID (Annual Totals & Monthly Averages) -->
+        <section class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs space-y-3">
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Metric 1: Total Inflow (Annual) -->
+            <div class="space-y-0.5 border-l-2 pl-2.5 border-emerald-500">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Total Inflow (<span id="kpi-year-inflow-label">2026</span>)
+              </span>
+              <div class="text-sm font-extrabold font-mono text-emerald-600 block leading-tight" id="kpi-annual-inflow-val">
+                RM 161,340.00
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono block" id="kpi-inflow-avg">
+                Avg RM 13,445.00 / mo
+              </span>
+            </div>
+
+            <!-- Metric 2: Total Outflow (Annual) -->
+            <div class="space-y-0.5 border-l-2 pl-2.5 border-rose-500">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Total Outflow (<span id="kpi-year-outflow-label">2026</span>)
+              </span>
+              <div class="text-sm font-extrabold font-mono text-rose-600 block leading-tight" id="kpi-annual-outflow-val">
+                RM 111,654.96
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono block" id="kpi-outflow-avg">
+                Avg RM 9,304.58 / mo
+              </span>
+            </div>
+          </div>
+
+          <!-- Bottom Micro Status Bar: Net Cash Flow & Savings Rate -->
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+            <div id="kpi-net-status" class="flex items-center gap-1.5 font-medium text-emerald-700">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5 shrink-0 text-emerald-600"></i>
+              <span class="font-bold font-mono" id="kpi-net-cashflow">+RM 49,685.04</span>
+              <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 rounded font-semibold">Surplus</span>
+            </div>
+
+            <div class="text-slate-500 font-mono text-[10px] flex items-center gap-1">
+              <span>Savings Rate:</span>
+              <span id="kpi-savings-rate" class="font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                30.8%
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. INFLOW STREAMS (REVENUE) SECTION -->
+        <section class="space-y-2">
+          <div class="flex items-center justify-between px-1">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <h3 class="text-xs font-extrabold uppercase tracking-tight text-slate-800">Inflow Streams</h3>
+              <span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded font-bold border border-emerald-200" id="inflows-count-badge">3</span>
+            </div>
+            <div class="text-right font-mono">
+              <span class="text-[10px] text-slate-400 mr-1">Annual Total:</span>
+              <span class="text-xs font-bold text-emerald-600" id="inflows-subtotal">RM 161,340.00</span>
+            </div>
+          </div>
+
+          <div id="inflows-container" class="space-y-2">
+            <!-- Dynamic Category Cards (Rendered by JS) -->
+          </div>
+        </section>
+
+        <!-- 7. OUTFLOW STREAMS (EXPENSES) SECTION -->
+        <section class="space-y-2 pt-1">
+          <div class="flex items-center justify-between px-1">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+              <h3 class="text-xs font-extrabold uppercase tracking-tight text-slate-800">Outflow Streams</h3>
+              <span class="text-[10px] font-mono text-rose-700 bg-rose-50 px-1.5 py-0.2 rounded font-bold border border-rose-200" id="outflows-count-badge">12</span>
+            </div>
+            <div class="text-right font-mono">
+              <span class="text-[10px] text-slate-400 mr-1">Annual Total:</span>
+              <span class="text-xs font-bold text-rose-600" id="outflows-subtotal">RM 111,654.96</span>
+            </div>
+          </div>
+
+          <div id="outflows-container" class="space-y-2">
+            <!-- Dynamic Category Cards (Rendered by JS) -->
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- VIEW B: PASSIVE INCOME & YIELD ACCOUNTS                               -->
+      <!-- ===================================================================== -->
+      <div id="view-passive" class="space-y-3.5 fade-enter hidden">
+
+        <!-- FIRE TARGET MILESTONE CARD (Dark Theme luxury card matching desktop) -->
+        <section class="bg-slate-900 rounded-3xl p-4 text-white shadow-lg space-y-3 border border-slate-800 relative overflow-hidden">
+          <div class="flex items-start justify-between gap-2">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-1.5">
+                <i data-lucide="target" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">FIRE Milestone Target</span>
+              </div>
+              <div class="text-lg font-extrabold font-mono text-white pt-0.5 flex items-baseline gap-1.5">
+                <span>RM 1,420.00</span>
+                <span class="text-xs font-normal text-slate-400">/ RM 2,000.00 mo</span>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[11px] font-mono font-bold rounded-lg border border-emerald-500/30">
+              71.0%
+            </span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" style="width: 71.0%"></div>
+          </div>
+
+          <!-- Traffic Light Indicator & Annualized Yield -->
+          <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-500/40 shadow-[0_0_8px_rgba(16,185,129,0.7)]"></span>
+              <span class="font-bold text-emerald-400 text-[11px]">Your Money On the Right Track</span>
+            </div>
+            <span class="text-[10px] font-mono text-slate-400">Annualized: RM 17,040 / yr</span>
+          </div>
+        </section>
+
+        <!-- 2x2 PORTFOLIO YIELD METRICS GRID (Stock Portfolio Style) -->
+        <section class="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Passive Portfolio Overview</span>
+            <button
+              onclick="alert('Select Principal Accounts modal preview.')"
+              class="text-[10px] text-blue-600 font-bold flex items-center gap-1 hover:underline cursor-pointer"
+            >
+              <i data-lucide="sliders-horizontal" class="w-3 h-3"></i>
+              <span>Customize Inclusion</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-0.5">
+            <!-- Metric 1: Total Principal -->
+            <div class="space-y-0.5 border-l-2 pl-2.5 border-slate-300">
+              <span class="text-[10px] text-slate-400 font-medium block">Total Principal</span>
+              <span class="text-sm font-extrabold text-slate-900 font-mono block leading-tight">RM 485,000.00</span>
+            </div>
+
+            <!-- Metric 2: Est. Annual Passive Yield -->
+            <div class="space-y-0.5 border-l-2 pl-2.5 border-emerald-500">
+              <span class="text-[10px] text-slate-400 font-medium block">Est. Annual Yield</span>
+              <span class="text-sm font-extrabold text-emerald-600 font-mono block leading-tight">RM 17,040.00</span>
+            </div>
+
+            <!-- Metric 3: Monthly Passive Avg -->
+            <div class="space-y-0.5 border-l-2 pl-2.5 border-blue-500">
+              <span class="text-[10px] text-slate-400 font-medium block">Monthly Average</span>
+              <span class="text-sm font-extrabold text-blue-600 font-mono block leading-tight">RM 1,420.00</span>
+            </div>
+
+            <!-- Metric 4: Weighted Avg Return -->
+            <div class="space-y-0.5 border-l-2 pl-2.5 border-indigo-500">
+              <span class="text-[10px] text-slate-400 font-medium block">Weighted Rate</span>
+              <span class="text-sm font-extrabold text-indigo-600 font-mono block leading-tight">4.12% p.a.</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- PASSIVE ACCOUNTS LIST SECTION -->
+        <section class="space-y-2">
+          <div class="flex items-center justify-between px-1">
+            <span class="text-xs font-bold text-slate-800 tracking-tight">Yield Accounts & Digital Banks</span>
+            <span class="text-[10px] font-mono text-slate-500 font-semibold" id="passive-accounts-count">8 Accounts</span>
+          </div>
+
+          <div id="passive-accounts-container" class="space-y-2.5">
+            <!-- Dynamic Passive Account Cards (Rendered by JS) -->
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- STICKY BOTTOM NET SUMMARY BAR (Floating feedback on mobile)           -->
+    <!-- ===================================================================== -->
+    <footer class="bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between sticky bottom-0 z-30 shadow-md select-none">
+      <div>
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Net Cash Flow (<span id="footer-year-label">2026</span>)</span>
+        <div class="text-sm font-extrabold font-mono text-emerald-600" id="footer-net-val">
+          +RM 49,685.04
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          onclick="openAddCategoryModal()"
+          class="flex items-center gap-1 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+        >
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <span>Add Item</span>
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: ADD INFLOW / OUTFLOW (PREVIEW)                                      -->
+  <!-- ========================================================================= -->
+  <div id="add-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+    <div class="bg-white rounded-3xl border border-slate-200 max-w-sm w-full p-5 shadow-2xl space-y-4 fade-enter">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900">Add Cash Flow Stream</h3>
+        <button onclick="closeAddCategoryModal()" class="p-1 rounded-full text-slate-400 hover:text-slate-600 cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Inflow vs Outflow toggle -->
+      <div class="flex items-center p-1 bg-slate-100 rounded-xl gap-1">
+        <button
+          id="modal-type-inflow"
+          onclick="setModalType('income')"
+          class="flex-1 py-1.5 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-xs cursor-pointer"
+        >
+          <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
+          <span>Inflow Stream</span>
+        </button>
+        <button
+          id="modal-type-outflow"
+          onclick="setModalType('expense')"
+          class="flex-1 py-1.5 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer"
+        >
+          <span class="w-2 h-2 rounded-full bg-rose-300"></span>
+          <span>Outflow Stream</span>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label id="modal-label" class="block text-xs font-bold text-slate-700 mb-1">Inflow Stream Name</label>
+          <input
+            id="modal-input-name"
+            type="text"
+            placeholder="e.g. Side Hustle, Consulting, Rental"
+            class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 font-medium"
+          />
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+        <button
+          onclick="closeAddCategoryModal()"
+          class="px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          onclick="submitAddCategory()"
+          id="modal-submit-btn"
+          class="px-4 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs cursor-pointer"
+        >
+          Add Stream
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC & REALISTIC STATE SIMULATION                             -->
+  <!-- ========================================================================= -->
+  <script>
+    // Months List & Full Names
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const fullMonthNames = {
+      Jan: 'January',
+      Feb: 'February',
+      Mar: 'March',
+      Apr: 'April',
+      May: 'May',
+      Jun: 'June',
+      Jul: 'July',
+      Aug: 'August',
+      Sep: 'September',
+      Oct: 'October',
+      Nov: 'November',
+      Dec: 'December'
+    };
+    let selectedMonth = 'Feb';
+    let selectedYear = 2026;
+    let activeSubTab = 'cashflow'; // 'cashflow' | 'passive'
+    let cardStyle = 'bento'; // Option B (Bento Share) selected by default
+    let expandedCategoryId = null;
+    let expandedPassiveId = null;
+    let isChartOpen = false;
+    let modalStreamType = 'income';
+
+    // Incomes Data (Direct from defaultData.ts)
+    let incomes = [
+      {
+        id: 'inc1',
+        category: 'Salary Income',
+        monthlyAmount: { Jan: 9145, Feb: 9145, Mar: 9300, Apr: 9300, May: 9300, Jun: 9300, Jul: 9300, Aug: 9300, Sep: 9300, Oct: 9300, Nov: 9300, Dec: 9300 }
+      },
+      {
+        id: 'inc2',
+        category: 'Part Time Income',
+        monthlyAmount: { Jan: 2500, Feb: 2500, Mar: 3100, Apr: 2500, May: 2500, Jun: 2500, Jul: 2500, Aug: 2500, Sep: 2500, Oct: 2500, Nov: 2500, Dec: 2500 }
+      },
+      {
+        id: 'inc3',
+        category: 'Rental Gain',
+        monthlyAmount: { Jan: 1800, Feb: 1800, Mar: 1800, Apr: 1800, May: 1800, Jun: 1800, Jul: 1800, Aug: 1800, Sep: 1800, Oct: 1800, Nov: 1800, Dec: 1800 }
+      }
+    ];
+
+    // Expenses Data (Direct from defaultData.ts)
+    let expenses = [
+      { id: 'exp1', name: 'Long Term Bond Issued', monthlyAmount: { Jan: 1719.88, Feb: 1719.88, Mar: 1719.88, Apr: 1370.83, May: 1370.83, Jun: 720.83, Jul: 720.83, Aug: 720.83, Sep: 533.33, Oct: 533.33, Nov: 533.33, Dec: 533.33 } },
+      { id: 'exp2', name: 'Auto Debit Versa', monthlyAmount: { Jan: 3150, Feb: 3150, Mar: 3150, Apr: 3150, May: 3150, Jun: 3150, Jul: 3150, Aug: 3150, Sep: 3150, Oct: 3150, Nov: 3150, Dec: 3150 } },
+      { id: 'exp3', name: 'Mortgage', monthlyAmount: { Jan: 2000, Feb: 2000, Mar: 2000, Apr: 2000, May: 2000, Jun: 2000, Jul: 2000, Aug: 2000, Sep: 2000, Oct: 2000, Nov: 2000, Dec: 2000 } },
+      { id: 'exp4', name: 'Mum Allowance', monthlyAmount: { Jan: 500, Feb: 500, Mar: 500, Apr: 500, May: 500, Jun: 500, Jul: 500, Aug: 500, Sep: 500, Oct: 500, Nov: 500, Dec: 500 } },
+      { id: 'exp5', name: 'Education Debt (PTPTN)', monthlyAmount: { Jan: 200, Feb: 200, Mar: 200, Apr: 200, May: 200, Jun: 200, Jul: 200, Aug: 200, Sep: 200, Oct: 200, Nov: 200, Dec: 200 } },
+      { id: 'exp6', name: 'MBA Program (One-off)', monthlyAmount: { Jan: 0, Feb: 0, Mar: 0, Apr: 9500, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 } },
+      { id: 'exp7', name: 'Phone Bill', monthlyAmount: { Jan: 37.4, Feb: 37.4, Mar: 37.4, Apr: 37.4, May: 37.4, Jun: 37.4, Jul: 37.4, Aug: 37.4, Sep: 37.4, Oct: 37.4, Nov: 37.4, Dec: 37.4 } },
+      { id: 'exp8', name: 'Spotify Subscription', monthlyAmount: { Jan: 30.9, Feb: 30.9, Mar: 30.9, Apr: 30.9, May: 30.9, Jun: 30.9, Jul: 30.9, Aug: 30.9, Sep: 30.9, Oct: 30.9, Nov: 30.9, Dec: 30.9 } },
+      { id: 'exp9', name: 'UNICEF Donation', monthlyAmount: { Jan: 48, Feb: 48, Mar: 48, Apr: 48, May: 48, Jun: 48, Jul: 48, Aug: 48, Sep: 48, Oct: 48, Nov: 48, Dec: 48 } },
+      { id: 'exp10', name: 'iPhone Instalment', monthlyAmount: { Jan: 208.3, Feb: 208.3, Mar: 208.3, Apr: 208.3, May: 208.3, Jun: 208.3, Jul: 208.3, Aug: 208.3, Sep: 208.3, Oct: 208.3, Nov: 208.3, Dec: 208.3 } },
+      { id: 'exp11', name: 'iPad Instalment', monthlyAmount: { Jan: 28, Feb: 28, Mar: 28, Apr: 28, May: 28, Jun: 28, Jul: 28, Aug: 28, Sep: 28, Oct: 28, Nov: 28, Dec: 28 } },
+      { id: 'exp12', name: 'Utilities', monthlyAmount: { Jan: 0, Feb: 0, Mar: 200, Apr: 200, May: 200, Jun: 200, Jul: 200, Aug: 200, Sep: 200, Oct: 200, Nov: 200, Dec: 200 } }
+    ];
+
+    // Passive Accounts (Direct from defaultData.ts)
+    let passiveAccounts = [
+      { id: 'p_stock', name: 'Stock Portfolio (MY)', principal: 28210.50, rate: 30.08, category: 'Stock Principal', returns: { Jan: 3260, Feb: 75.40, Mar: 0, Apr: 400, May: 79.10, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 } },
+      { id: 'p_stock_us', name: 'Stock Portfolio (US)', principal: 2751.00, rate: 8.50, category: 'US Stock', returns: { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 } },
+      { id: 'p_asm1', name: 'ASM (Amanah Saham Malaysia)', principal: 58413.84, rate: 4.76, category: 'ASNB', returns: { Jan: 0, Feb: 0, Mar: 0, Apr: 2781.61, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 } },
+      { id: 'p_asm2', name: 'ASM 2 Wawasan', principal: 33461.88, rate: 4.75, category: 'ASNB', returns: { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 1589.44, Sep: 0, Oct: 0, Nov: 0, Dec: 0 } },
+      { id: 'p_asm3', name: 'ASM 3 1Malaysia', principal: 38202.49, rate: 4.75, category: 'ASNB', returns: { Jan: 0, Feb: 0, Mar: 0, Apr: 0, May: 0, Jun: 0, Jul: 0, Aug: 0, Sep: 1814.62, Oct: 0, Nov: 0, Dec: 0 } },
+      { id: 'p_digibank', name: 'Digital Banks (RYT+TNG+Boost+MAE)', principal: 30790.59, rate: 3.40, category: 'Digital Bank', returns: { Jan: 98.52, Feb: 111.85, Mar: 52.97, Apr: 48.20, May: 51.86, Jun: 79.78, Jul: 87.24, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 } },
+      { id: 'p_kdi', name: 'KDI Save (Kenanga Digital)', principal: 23801.45, rate: 3.99, category: 'Money Market', returns: { Jan: 0, Feb: 31.88, Mar: 78.52, Apr: 76.24, May: 79.03, Jun: 35.78, Jul: 0, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 } },
+      { id: 'p_versa', name: 'Versa Cash & Yield', principal: 35006.79, rate: 3.86, category: 'Money Market', returns: { Jan: 193.42, Feb: 157.74, Mar: 98.85, Apr: 97.62, May: 230.87, Jun: 122.78, Jul: 91.37, Aug: 0, Sep: 0, Oct: 0, Nov: 0, Dec: 0 } }
+    ];
+
+    // Formatters
+    function formatRM(num) {
+      const n = Number(num) || 0;
+      return 'RM ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Set Card Style (Option A vs Option B)
+    function setCardStyle(style) {
+      cardStyle = style;
+      const btnCompact = document.getElementById('btn-style-compact');
+      const btnBento = document.getElementById('btn-style-bento');
+      if (style === 'compact') {
+        btnCompact.className = 'px-2.5 py-1 rounded-lg transition-all cursor-pointer bg-white text-emerald-700 shadow-xs';
+        btnBento.className = 'px-2.5 py-1 rounded-lg transition-all cursor-pointer text-slate-600 hover:text-slate-900';
+      } else {
+        btnCompact.className = 'px-2.5 py-1 rounded-lg transition-all cursor-pointer text-slate-600 hover:text-slate-900';
+        btnBento.className = 'px-2.5 py-1 rounded-lg transition-all cursor-pointer bg-white text-emerald-700 shadow-xs';
+      }
+      renderCashflowCards();
+    }
+
+    // SubTab Switcher
+    function switchSubTab(tab) {
+      activeSubTab = tab;
+      const btnCash = document.getElementById('subtab-btn-cashflow');
+      const btnPass = document.getElementById('subtab-btn-passive');
+      const viewCash = document.getElementById('view-cashflow');
+      const viewPass = document.getElementById('view-passive');
+      const topActionLabel = document.getElementById('top-action-label');
+
+      if (tab === 'cashflow') {
+        btnCash.className = 'flex-1 py-1.5 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-slate-900 text-white shadow-xs cursor-pointer';
+        btnPass.className = 'flex-1 py-1.5 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        viewCash.classList.remove('hidden');
+        viewPass.classList.add('hidden');
+        topActionLabel.innerText = 'Add Stream';
+      } else {
+        btnCash.className = 'flex-1 py-1.5 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        btnPass.className = 'flex-1 py-1.5 px-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-slate-900 text-white shadow-xs cursor-pointer';
+        viewCash.classList.add('hidden');
+        viewPass.classList.remove('hidden');
+        topActionLabel.innerText = 'Add Account';
+      }
+      lucide.createIcons();
+    }
+
+    // Select Month
+    function selectMonth(m) {
+      selectedMonth = m;
+      const select = document.getElementById('month-select');
+      if (select && select.value !== m) {
+        select.value = m;
+      }
+      renderKPIs();
+      renderCashflowCards();
+    }
+
+    // Select Year
+    function selectYear(y) {
+      selectedYear = y;
+      const select = document.getElementById('annual-savings-year-select');
+      if (select && select.value !== String(y)) {
+        select.value = String(y);
+      }
+      const inflowYearLabel = document.getElementById('kpi-year-inflow-label');
+      if (inflowYearLabel) inflowYearLabel.innerText = y;
+      const outflowYearLabel = document.getElementById('kpi-year-outflow-label');
+      if (outflowYearLabel) outflowYearLabel.innerText = y;
+      const footerYear = document.getElementById('footer-year-label');
+      if (footerYear) footerYear.innerText = y;
+      renderKPIs();
+      renderCashflowCards();
+      renderModernChart();
+    }
+
+    // Toggle Category Expansion (12-month breakdown)
+    function toggleCategoryExpansion(id) {
+      expandedCategoryId = expandedCategoryId === id ? null : id;
+      renderCashflowCards();
+    }
+
+    // Toggle Passive Account Expansion
+    function togglePassiveExpansion(id) {
+      expandedPassiveId = expandedPassiveId === id ? null : id;
+      renderPassiveAccounts();
+    }
+
+    // Update monthly amount from the expanded 12-month grid
+    function handleUpdateCategoryMonth(type, id, m, val) {
+      const num = parseFloat(val) || 0;
+      if (type === 'income') {
+        const item = incomes.find(i => i.id === id);
+        if (item) item.monthlyAmount[m] = num;
+      } else {
+        const item = expenses.find(e => e.id === id);
+        if (item) item.monthlyAmount[m] = num;
+      }
+      renderKPIs();
+      renderCashflowCards();
+      renderModernChart();
+    }
+
+    // Render KPIs (Annual Totals & Monthly Averages for Selected Year)
+    function renderKPIs() {
+      const multiData = getMultiYearData();
+      const currentYearData = multiData.find(d => d.year === selectedYear) || multiData[multiData.length - 1];
+
+      const annualInflow = currentYearData.inflow;
+      const annualOutflow = currentYearData.outflow;
+      const annualNet = currentYearData.net;
+      const annualSavingsRate = currentYearData.rate;
+      const avgInflow = annualInflow / 12;
+      const avgOutflow = annualOutflow / 12;
+
+      // Update Annual Overview Pill Card Dropdown
+      const select = document.getElementById('annual-savings-year-select');
+      if (select && select.value !== String(selectedYear)) {
+        select.value = String(selectedYear);
+      }
+      document.getElementById('kpi-annual-savings').innerText = formatRM(annualNet);
+      document.getElementById('kpi-annual-rate').innerText = `${formatRM(annualInflow)} · ${annualSavingsRate.toFixed(1)}%`;
+
+      // Update 2x2 Grid Values
+      const inflowYearLabel = document.getElementById('kpi-year-inflow-label');
+      if (inflowYearLabel) inflowYearLabel.innerText = selectedYear;
+      const outflowYearLabel = document.getElementById('kpi-year-outflow-label');
+      if (outflowYearLabel) outflowYearLabel.innerText = selectedYear;
+
+      document.getElementById('kpi-annual-inflow-val').innerText = formatRM(annualInflow);
+      document.getElementById('kpi-inflow-avg').innerText = `Avg ${formatRM(avgInflow)} / mo`;
+
+      document.getElementById('kpi-annual-outflow-val').innerText = formatRM(annualOutflow);
+      document.getElementById('kpi-outflow-avg').innerText = `Avg ${formatRM(avgOutflow)} / mo`;
+
+      // Update Net Status
+      const netEl = document.getElementById('kpi-net-cashflow');
+      const statusBox = document.getElementById('kpi-net-status');
+      const rateEl = document.getElementById('kpi-savings-rate');
+
+      if (annualNet >= 0) {
+        netEl.innerText = `+${formatRM(annualNet)}`;
+        netEl.className = 'font-bold font-mono text-emerald-700';
+        statusBox.className = 'flex items-center gap-1.5 font-medium text-emerald-700';
+        statusBox.innerHTML = `
+          <i data-lucide="trending-up" class="w-3.5 h-3.5 shrink-0 text-emerald-600"></i>
+          <span class="font-bold font-mono">+${formatRM(annualNet)}</span>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 rounded font-semibold">Surplus</span>
+        `;
+      } else {
+        netEl.innerText = formatRM(annualNet);
+        netEl.className = 'font-bold font-mono text-rose-600';
+        statusBox.className = 'flex items-center gap-1.5 font-medium text-rose-600';
+        statusBox.innerHTML = `
+          <i data-lucide="trending-down" class="w-3.5 h-3.5 shrink-0 text-rose-600"></i>
+          <span class="font-bold font-mono">${formatRM(annualNet)}</span>
+          <span class="text-[10px] bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.2 rounded font-semibold">Deficit</span>
+        `;
+      }
+
+      if (rateEl) {
+        rateEl.innerText = `${annualSavingsRate.toFixed(1)}%`;
+      }
+
+      // Subtotals in section headers
+      const inflowsSubtotal = document.getElementById('inflows-subtotal');
+      if (inflowsSubtotal) inflowsSubtotal.innerText = formatRM(annualInflow);
+      const outflowsSubtotal = document.getElementById('outflows-subtotal');
+      if (outflowsSubtotal) outflowsSubtotal.innerText = formatRM(annualOutflow);
+      const inflowsBadge = document.getElementById('inflows-count-badge');
+      if (inflowsBadge) inflowsBadge.innerText = incomes.length;
+      const outflowsBadge = document.getElementById('outflows-count-badge');
+      if (outflowsBadge) outflowsBadge.innerText = expenses.length;
+
+      // Update Footer
+      const footerYear = document.getElementById('footer-year-label');
+      if (footerYear) footerYear.innerText = selectedYear;
+      const footerNet = document.getElementById('footer-net-val');
+      if (footerNet) {
+        footerNet.innerText = (annualNet >= 0 ? '+' : '') + formatRM(annualNet);
+        footerNet.className = annualNet >= 0 ? 'text-sm font-extrabold font-mono text-emerald-600' : 'text-sm font-extrabold font-mono text-rose-600';
+      }
+
+      lucide.createIcons();
+    }
+
+    // Render Cashflow Cards (Inflow & Outflow streams)
+    function renderCashflowCards() {
+      let annualInflow = 0;
+      let annualOutflow = 0;
+      months.forEach(m => {
+        incomes.forEach(i => annualInflow += (i.monthlyAmount[m] || 0));
+        expenses.forEach(e => annualOutflow += (e.monthlyAmount[m] || 0));
+      });
+
+      const inflowsContainer = document.getElementById('inflows-container');
+      const outflowsContainer = document.getElementById('outflows-container');
+
+      // 1. INFLOW CARDS
+      inflowsContainer.innerHTML = incomes.map(item => {
+        const annualSum = months.reduce((sum, m) => sum + (item.monthlyAmount[m] || 0), 0);
+        const monthlyAvg = annualSum / 12;
+        const isExpanded = expandedCategoryId === item.id;
+        const share = annualInflow > 0 ? (annualSum / annualInflow) * 100 : 0;
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden transition-all">
+            <div
+              onclick="toggleCategoryExpansion('${item.id}')"
+              class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 active:bg-slate-100 transition-colors cursor-pointer select-none"
+            >
+              <div class="space-y-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="font-bold text-xs text-slate-900">${item.category}</span>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+                  <span>Avg: ${formatRM(monthlyAvg)} / mo</span>
+                  <span>·</span>
+                  <span class="text-emerald-700 font-bold">${share.toFixed(1)}% of Inflow</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="font-mono font-extrabold text-sm text-emerald-600 block">${formatRM(annualSum)}</span>
+                <div class="flex items-center justify-end gap-1 text-[10px] text-slate-400 mt-0.5">
+                  <span>${isExpanded ? 'Hide' : '12 Mo'}</span>
+                  <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-3 h-3"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- 12-Month Tap-to-Expand Grid (Dividend Tracker pattern) -->
+            ${isExpanded ? render12MonthGrid('income', item.id, item.monthlyAmount) : ''}
+          </div>
+        `;
+      }).join('');
+
+      // 2. OUTFLOW CARDS
+      outflowsContainer.innerHTML = expenses.map(item => {
+        const annualSum = months.reduce((sum, m) => sum + (item.monthlyAmount[m] || 0), 0);
+        const monthlyAvg = annualSum / 12;
+        const isExpanded = expandedCategoryId === item.id;
+        const shareOfIncome = annualInflow > 0 ? (annualSum / annualInflow) * 100 : 0;
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden transition-all">
+            <div
+              onclick="toggleCategoryExpansion('${item.id}')"
+              class="p-3.5 flex items-center justify-between hover:bg-slate-50/70 active:bg-slate-100 transition-colors cursor-pointer select-none"
+            >
+              <div class="space-y-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                  <span class="font-bold text-xs text-slate-900">${item.name}</span>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+                  <span>Avg: ${formatRM(monthlyAvg)} / mo</span>
+                  ${annualSum > 0 ? `<span>·</span><span>${shareOfIncome.toFixed(1)}% of Income</span>` : ''}
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="font-mono font-extrabold text-sm ${annualSum > 0 ? 'text-slate-900' : 'text-slate-400'} block">${annualSum > 0 ? formatRM(annualSum) : '—'}</span>
+                <div class="flex items-center justify-end gap-1 text-[10px] text-slate-400 mt-0.5">
+                  <span>${isExpanded ? 'Hide' : '12 Mo'}</span>
+                  <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-3 h-3"></i>
+                </div>
+              </div>
+            </div>
+
+            ${isExpanded ? render12MonthGrid('expense', item.id, item.monthlyAmount) : ''}
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // Render 12-Month Breakdown Grid (Identical pattern to Dividend Tracker)
+    function render12MonthGrid(type, id, monthlyAmount) {
+      return `
+        <div class="bg-slate-50 p-3 border-t border-slate-100 space-y-2.5 fade-enter">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-slate-700 text-[11px]">12-Month Breakdown (RM)</span>
+            <span class="text-[10px] text-slate-400 font-medium">Direct numerical inputs</span>
+          </div>
+
+          <!-- 4x3 Micro Month Grid -->
+          <div class="grid grid-cols-4 gap-1.5">
+            ${months.map(m => {
+              const val = monthlyAmount[m] || 0;
+              return `
+                <div class="bg-white p-1.5 rounded-xl border border-slate-200 text-center hover:border-slate-300">
+                  <span class="text-[9px] text-slate-400 font-bold block uppercase">${m}</span>
+                  <input
+                    type="number"
+                    value="${val === 0 ? '' : val}"
+                    placeholder="-"
+                    onchange="handleUpdateCategoryMonth('${type}', '${id}', '${m}', this.value)"
+                    class="w-full text-center bg-transparent py-0.5 text-[11px] font-bold text-slate-800 font-mono focus:outline-none focus:bg-slate-50 rounded"
+                  />
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Render Passive Accounts
+    function renderPassiveAccounts() {
+      const container = document.getElementById('passive-accounts-container');
+      container.innerHTML = passiveAccounts.map(account => {
+        const annualSum = months.reduce((sum, m) => sum + (account.returns[m] || 0), 0);
+        const isExpanded = expandedPassiveId === account.id;
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden transition-all">
+            <div
+              onclick="togglePassiveExpansion('${account.id}')"
+              class="p-3.5 space-y-2.5 hover:bg-slate-50/70 transition-colors cursor-pointer select-none"
+            >
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <h4 class="text-xs font-bold text-slate-900">${account.name}</h4>
+                  <span class="text-[10px] font-medium text-slate-400">${account.category}</span>
+                </div>
+                <span class="text-[11px] font-extrabold text-emerald-600 font-mono bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100">
+                  ${account.rate.toFixed(2)}% p.a.
+                </span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
+                <div>
+                  <span class="text-[9px] text-slate-400 block uppercase font-bold">Principal</span>
+                  <span class="font-mono font-bold text-slate-900">${formatRM(account.principal)}</span>
+                </div>
+                <div>
+                  <span class="text-[9px] text-slate-400 block uppercase font-bold">Annual Dividends</span>
+                  <span class="font-mono font-bold text-emerald-600">${formatRM(annualSum)}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Expanded 12-Month Payouts Grid -->
+            ${isExpanded ? `
+              <div class="bg-slate-50 p-3 border-t border-slate-100 space-y-2 fade-enter">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-slate-700 text-[11px]">Monthly Dividends Received</span>
+                  <span class="text-[10px] text-slate-400">Total: ${formatRM(annualSum)}</span>
+                </div>
+                <div class="grid grid-cols-4 gap-1.5">
+                  ${months.map(m => {
+                    const ret = account.returns[m] || 0;
+                    return `
+                      <div class="bg-white p-1.5 rounded-xl border border-slate-200 text-center">
+                        <span class="text-[9px] text-slate-400 font-bold block">${m}</span>
+                        <span class="text-[11px] font-bold font-mono ${ret > 0 ? 'text-emerald-600' : 'text-slate-300'}">
+                          ${ret > 0 ? ret.toLocaleString('en-US') : '—'}
+                        </span>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('passive-accounts-count').innerText = `${passiveAccounts.length} Accounts`;
+      lucide.createIcons();
+    }
+
+    // Multi-Year Data (Sample historical years + dynamic 2026 calculation)
+    function getMultiYearData() {
+      let annualInflow2026 = 0;
+      let annualOutflow2026 = 0;
+      months.forEach(m => {
+        incomes.forEach(i => annualInflow2026 += (i.monthlyAmount[m] || 0));
+        expenses.forEach(e => annualOutflow2026 += (e.monthlyAmount[m] || 0));
+      });
+      const net2026 = annualInflow2026 - annualOutflow2026;
+      const rate2026 = annualInflow2026 > 0 ? (net2026 / annualInflow2026) * 100 : 0;
+
+      return [
+        { year: 2023, inflow: 85200, outflow: 52400, net: 32800, rate: 38.5 },
+        { year: 2024, inflow: 91400, outflow: 48900, net: 42500, rate: 46.5 },
+        { year: 2025, inflow: 95800, outflow: 51200, net: 44600, rate: 46.6 },
+        { year: 2026, inflow: annualInflow2026, outflow: annualOutflow2026, net: net2026, rate: rate2026 }
+      ];
+    }
+
+    // Modern Fintech Multi-Year Trajectory Chart
+    function renderModernChart() {
+      const container = document.getElementById('modern-chart-svg-container');
+      if (!container) return;
+
+      const data = getMultiYearData();
+      const current = data.find(d => d.year === selectedYear) || data[data.length - 1];
+
+      // SVG Layout
+      const svgWidth = 340;
+      const svgHeight = 152;
+      const maxVal = 180000;
+      const plotTop = 22;
+      const plotBottom = 124;
+      const plotHeight = plotBottom - plotTop;
+
+      const getY = (val) => plotBottom - (Math.max(0, val) / maxVal) * plotHeight;
+
+      const colX = [70, 140, 210, 280];
+      const barWidth = 13;
+
+      const linePoints = data.map((d, i) => {
+        const cx = colX[i];
+        const cy = getY(d.net);
+        return { x: cx, y: cy, net: d.net, year: d.year };
+      });
+
+      const linePathD = linePoints.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
+
+      let svgHtml = `
+        <svg viewBox="0 0 ${svgWidth} ${svgHeight}" class="w-full h-auto select-none overflow-visible">
+          <defs>
+            <linearGradient id="inflowGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#10B981" />
+              <stop offset="100%" stop-color="#059669" stop-opacity="0.85" />
+            </linearGradient>
+            <linearGradient id="outflowGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FB7185" />
+              <stop offset="100%" stop-color="#E11D48" stop-opacity="0.85" />
+            </linearGradient>
+            <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#2563EB" flood-opacity="0.3" />
+            </filter>
+          </defs>
+
+          <!-- Horizontal Reference Gridlines (Whisper-light matching Dividend Tracker) -->
+          <g stroke="#F1F5F9" stroke-width="1">
+            <line x1="38" y1="${getY(150000)}" x2="320" y2="${getY(150000)}" stroke-dasharray="3 3" />
+            <line x1="38" y1="${getY(100000)}" x2="320" y2="${getY(100000)}" stroke-dasharray="3 3" />
+            <line x1="38" y1="${getY(50000)}" x2="320" y2="${getY(50000)}" stroke-dasharray="3 3" />
+            <line x1="38" y1="${plotBottom}" x2="320" y2="${plotBottom}" stroke="#E2E8F0" />
+          </g>
+
+          <!-- Y-Axis Labels -->
+          <g font-size="8.5" font-family="monospace" fill="#94A3B8" text-anchor="end">
+            <text x="32" y="${getY(150000) + 3}">150k</text>
+            <text x="32" y="${getY(100000) + 3}">100k</text>
+            <text x="32" y="${getY(50000) + 3}">50k</text>
+            <text x="32" y="${plotBottom + 3}">0</text>
+          </g>
+
+          <!-- Columns (Bars & Touch Targets) -->
+      `;
+
+      data.forEach((item, i) => {
+        const cx = colX[i];
+        const isSelected = item.year === selectedYear;
+        const inH = (item.inflow / maxVal) * plotHeight;
+        const outH = (item.outflow / maxVal) * plotHeight;
+        const inY = plotBottom - inH;
+        const outY = plotBottom - outH;
+
+        svgHtml += `
+          <!-- Year Column ${item.year} Target -->
+          <g class="cursor-pointer" onclick="selectYear(${item.year})">
+            <!-- Background Pill Highlight when Selected -->
+            <rect
+              x="${cx - 28}"
+              y="6"
+              width="56"
+              height="140"
+              rx="12"
+              fill="${isSelected ? '#EFF6FF' : 'transparent'}"
+              stroke="${isSelected ? '#BFDBFE' : 'transparent'}"
+              stroke-width="1.2"
+              class="transition-all hover:fill-slate-50/80"
+            />
+
+            <!-- Inflow Bar -->
+            <rect
+              x="${cx - 15}"
+              y="${inY}"
+              width="${barWidth}"
+              height="${inH}"
+              rx="3.5"
+              fill="url(#inflowGrad)"
+              opacity="${isSelected ? '1' : '0.85'}"
+            />
+
+            <!-- Outflow Bar -->
+            <rect
+              x="${cx + 2}"
+              y="${outY}"
+              width="${barWidth}"
+              height="${outH}"
+              rx="3.5"
+              fill="url(#outflowGrad)"
+              opacity="${isSelected ? '1' : '0.85'}"
+            />
+
+            <!-- Year Label at Base -->
+            <text
+              x="${cx}"
+              y="140"
+              text-anchor="middle"
+              font-size="${isSelected ? '11' : '10'}"
+              font-family="monospace"
+              font-weight="${isSelected ? '800' : '600'}"
+              fill="${isSelected ? '#1D4ED8' : '#64748B'}"
+            >
+              ${item.year}
+            </text>
+
+            ${isSelected ? `
+              <circle cx="${cx}" cy="146" r="2" fill="#2563EB" />
+            ` : ''}
+          </g>
+        `;
+      });
+
+      // Net Surplus Trend Line
+      svgHtml += `
+          <path
+            d="${linePathD}"
+            fill="none"
+            stroke="#2563EB"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            filter="url(#softGlow)"
+          />
+      `;
+
+      linePoints.forEach(p => {
+        const isSelected = p.year === selectedYear;
+        svgHtml += `
+          <g class="cursor-pointer" onclick="selectYear(${p.year})">
+            <!-- Outer Ring if Selected -->
+            ${isSelected ? `<circle cx="${p.x}" cy="${p.y}" r="7" fill="#BFDBFE" opacity="0.6" />` : ''}
+            <!-- Node -->
+            <circle
+              cx="${p.x}"
+              cy="${p.y}"
+              r="${isSelected ? '4.5' : '3.5'}"
+              fill="#FFFFFF"
+              stroke="#2563EB"
+              stroke-width="${isSelected ? '2.5' : '2'}"
+            />
+            <!-- Net Surplus Tag Above Node -->
+            <text
+              x="${p.x}"
+              y="${p.y - 7}"
+              text-anchor="middle"
+              font-size="8.5"
+              font-family="monospace"
+              font-weight="${isSelected ? '800' : '700'}"
+              fill="${isSelected ? '#1D4ED8' : '#3B82F6'}"
+            >
+              +${(p.net / 1000).toFixed(1)}k
+            </text>
+          </g>
+        `;
+      });
+
+      svgHtml += `</svg>`;
+      container.innerHTML = svgHtml;
+    }
+
+    // Modal Helpers
+    function openAddCategoryModal() {
+      document.getElementById('add-modal').classList.remove('hidden');
+    }
+    function closeAddCategoryModal() {
+      document.getElementById('add-modal').classList.add('hidden');
+    }
+    function setModalType(type) {
+      modalStreamType = type;
+      const btnIn = document.getElementById('modal-type-inflow');
+      const btnOut = document.getElementById('modal-type-outflow');
+      const label = document.getElementById('modal-label');
+      const input = document.getElementById('modal-input-name');
+      const submit = document.getElementById('modal-submit-btn');
+
+      if (type === 'income') {
+        btnIn.className = 'flex-1 py-1.5 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-xs cursor-pointer';
+        btnOut.className = 'flex-1 py-1.5 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        label.innerText = 'Inflow Stream Name';
+        input.placeholder = 'e.g. Side Hustle, Consulting, Rental';
+        submit.className = 'px-4 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs cursor-pointer';
+        submit.innerText = 'Add Inflow Stream';
+      } else {
+        btnIn.className = 'flex-1 py-1.5 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        btnOut.className = 'flex-1 py-1.5 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 bg-rose-600 text-white shadow-xs cursor-pointer';
+        label.innerText = 'Outflow Stream Name';
+        input.placeholder = 'e.g. Car Loan, Insurance, Subscriptions';
+        submit.className = 'px-4 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-xs cursor-pointer';
+        submit.innerText = 'Add Outflow Stream';
+      }
+    }
+
+    function submitAddCategory() {
+      const input = document.getElementById('modal-input-name');
+      const name = input.value.trim();
+      if (!name) return;
+
+      const newId = 'custom_' + Date.now();
+      const emptyMonths = {};
+      months.forEach(m => emptyMonths[m] = 0);
+
+      if (modalStreamType === 'income') {
+        incomes.push({ id: newId, category: name, monthlyAmount: emptyMonths });
+      } else {
+        expenses.push({ id: newId, name: name, monthlyAmount: emptyMonths });
+      }
+      input.value = '';
+      closeAddCategoryModal();
+      renderKPIs();
+      renderCashflowCards();
+      renderModernChart();
+    }
+
+    // Initialize On Load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderKPIs();
+      renderCashflowCards();
+      renderPassiveAccounts();
+      renderModernChart();
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

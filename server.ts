@@ -412,6 +412,17 @@ Analyze the provided financial context and answer the user's prompt with precisi
     }
   });
 
+  // Serve public static files directly (previews, assets, etc.)
+  app.use(express.static(path.join(process.cwd(), 'public')));
+
+  app.get('/mobile-cashflow-ui-preview.html', (_req, res) => {
+    res.sendFile(path.join(process.cwd(), 'public', 'mobile-cashflow-ui-preview.html'));
+  });
+
+  app.get('/mobile-card-ui-preview.html', (_req, res) => {
+    res.sendFile(path.join(process.cwd(), 'public', 'mobile-card-ui-preview.html'));
+  });
+
   // Vite development middleware or production static serving
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

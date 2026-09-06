@@ -183,7 +183,16 @@ const sanitizeCreditCards = (cards: CreditCard[]): CreditCard[] => {
     if (c.id === 'rhb_shell_8881' || c.cardName.includes('RHB Shell')) {
       return { ...c, cardName: 'RHB (8881)', bank: 'RHB', accountNo: '8881' };
     }
-    return c;
+    let card = { ...c };
+    if (card.categories) {
+      card.categories = card.categories.map(cat => {
+        if (cat.conditions && cat.conditions.includes('3% direct rebate on e-wallet top-ups')) {
+          return { ...cat, conditions: '' };
+        }
+        return cat;
+      });
+    }
+    return card;
   });
 };
 

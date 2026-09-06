@@ -27,7 +27,8 @@ import {
   Ban,
   ListPlus,
   ExternalLink,
-  ChevronDown
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { YearSelector } from './YearSelector';
 import { FormattedNumberInput } from './FormattedNumberInput';
@@ -52,6 +53,20 @@ export const CreditCardCashback: React.FC = () => {
   const [extraYears, setExtraYears] = useState<number[]>([]);
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const fullMonthNames: Record<string, string> = {
+    Jan: 'January',
+    Feb: 'February',
+    Mar: 'March',
+    Apr: 'April',
+    May: 'May',
+    Jun: 'June',
+    Jul: 'July',
+    Aug: 'August',
+    Sep: 'September',
+    Oct: 'October',
+    Nov: 'November',
+    Dec: 'December'
+  };
 
   // All years
   const allYears = useMemo(() => {
@@ -120,6 +135,12 @@ export const CreditCardCashback: React.FC = () => {
   // Local formula inputs state for smooth typing
   const [inputFormulas, setInputFormulas] = useState<{ [catId: string]: string }>({});
   const [focusedCatId, setFocusedCatId] = useState<string | null>(null);
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+  const [footerInputText, setFooterInputText] = useState<string | null>(null);
+
+  const toggleExpand = (catId: string) => {
+    setExpandedCards(prev => ({ ...prev, [catId]: !prev[catId] }));
+  };
 
   const currentCard = creditCards.find(c => c.id === selectedCardId) || creditCards[0];
 
@@ -250,6 +271,16 @@ export const CreditCardCashback: React.FC = () => {
   const handleFinalTotalCashbackChange = (val: number) => {
     const rounded = Math.round(val * 100) / 100;
     saveCardSpend(selectedCardId, selectedYear, selectedMonth, categorySpends, spendFormulas, actualCashbackMap, rounded);
+  };
+
+  const handleFinalTotalCashbackBlur = (valStr: string) => {
+    const raw = valStr.trim();
+    if (raw === '' || isNaN(parseFloat(raw))) {
+      saveCardSpend(selectedCardId, selectedYear, selectedMonth, categorySpends, spendFormulas, actualCashbackMap, undefined);
+    } else {
+      const num = Math.round(parseFloat(raw) * 100) / 100;
+      saveCardSpend(selectedCardId, selectedYear, selectedMonth, categorySpends, spendFormulas, actualCashbackMap, num);
+    }
   };
 
   const handleCategoryCapChange = (catId: string, newCap: number) => {
@@ -466,49 +497,26 @@ export const CreditCardCashback: React.FC = () => {
     return <CardIcon className="w-3.5 h-3.5 text-slate-500" />;
   };
 
+  // Helper to remove redundant info from conditions that duplicates rate, cap, or optimal spend
+  const getDistinctConditions = (conditions?: string): string => {
+    if (!conditions) return '';
+    let cleaned = conditions;
+    // Remove clauses repeating rate & cashback e.g. "3% direct rebate on e-wallet top-ups."
+    cleaned = cleaned.replace(/\b\d+(\.\d+)?%\s*(direct\s*)?(rebate|cashback)(\s+on\s+[^.]+)?\.?/gi, '');
+    // Remove clauses repeating cap e.g. "Cap RM30/month", "(Cap RM50/mo)", "Cap RM15/mo.", "Capped at RM50/month combined."
+    cleaned = cleaned.replace(/\(?\b(Cap|Capped at)\s+RM\s*\d+(\.\d+)?\s*(\/\s*(mo|month|monthly))?[^.)]*\)?\.?/gi, '');
+    // Remove clauses repeating optimal spend e.g. "(Spend RM1,000 to maximize)", "Spend RM1,000 to maximize."
+    cleaned = cleaned.replace(/\(?\bSpend\s+RM\s*[\d,]+(\.\d+)?\s+to\s+maximize\)?\.?/gi, '');
+    // Remove redundant base rate phrase
+    cleaned = cleaned.replace(/\bBase\s+rate\s+with\s+(no\s+monthly\s+cap|unlimited\s+return)\.?/gi, '');
+    // Remove empty parentheses, redundant punctuation and whitespace
+    cleaned = cleaned.replace(/\(\s*\)/g, '').replace(/\s{2,}/g, ' ').trim();
+    cleaned = cleaned.replace(/^[.,;:\s\-]+|[.,;:\s\-]+$/g, '').trim();
+    return cleaned;
+  };
+
   return (
     <div id="credit-card-cashback-section" className="space-y-5 max-w-7xl mx-auto pb-12">
-      {/* Top Header & Year Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-gray-200 shadow-xs">
-        <div className="flex flex-wrap items-center gap-2">
-          <YearSelector
-            years={allYears}
-            selectedYear={selectedYear}
-            onSelectYear={val => typeof val === 'number' && setSelectedYear(val)}
-            showAllOption={false}
-            label="Year"
-            onAddYear={yr => {
-              setExtraYears(prev => [...prev, yr]);
-              setSelectedYear(yr);
-            }}
-            onDeleteYear={yr => {
-              setExtraYears(prev => prev.filter(y => y !== yr));
-              setSelectedYear(2026);
-            }}
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <a
-            href="/mobile-card-ui-preview.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl border border-blue-200 transition-all cursor-pointer"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-            <span>Preview Mobile Card UI</span>
-          </a>
-
-          <button
-            onClick={() => setShowAddCardModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add Card</span>
-          </button>
-        </div>
-      </div>
-
       {/* Mobile-Friendly Dropdowns for Year, Month & Active Card (Visible on small screens) */}
       <div className="md:hidden bg-white border border-gray-200 rounded-2xl p-3 shadow-xs space-y-2.5">
         <div className="grid grid-cols-2 gap-2">
@@ -521,7 +529,7 @@ export const CreditCardCashback: React.FC = () => {
               <select
                 value={selectedYear}
                 onChange={e => setSelectedYear(parseInt(e.target.value, 10))}
-                className="w-full appearance-none bg-gray-50 hover:bg-gray-100 text-gray-900 text-xs font-bold font-mono pl-2.5 pr-7 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
+                className="w-full appearance-none bg-gray-50 hover:bg-gray-100 text-gray-900 text-xs font-bold pl-2.5 pr-7 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer"
               >
                 {allYears.map(yr => (
                   <option key={yr} value={yr}>
@@ -550,7 +558,7 @@ export const CreditCardCashback: React.FC = () => {
                   );
                   return (
                     <option key={m} value={m}>
-                      {m} {selectedYear} {hasSpend ? '•' : ''}
+                      {fullMonthNames[m] || m} {hasSpend ? '•' : ''}
                     </option>
                   );
                 })}
@@ -644,256 +652,243 @@ export const CreditCardCashback: React.FC = () => {
         </div>
       </div>
 
-      {/* KPI Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
-            Total Spend ({selectedMonth} {selectedYear})
-          </span>
-          <div className="text-xl font-extrabold text-gray-900 font-mono mt-0.5">
-            RM {totalMonthlySpend.toFixed(2)}
-          </div>
-          <div className="mt-1.5 flex items-center justify-between gap-1 text-[11px]">
-            {currentCard?.minMonthlySpend && currentCard.minMonthlySpend > 0 ? (
-              totalMonthlySpend >= currentCard.minMonthlySpend ? (
-                <span className="text-emerald-600 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                  <span>Unlocked tier (Min RM {currentCard.minMonthlySpend.toFixed(2)})</span>
-                </span>
-              ) : (
-                <span className="text-amber-600 font-semibold flex items-center gap-1" title={`RM ${(currentCard.minMonthlySpend - totalMonthlySpend).toFixed(2)} needed to reach min spend of RM ${currentCard.minMonthlySpend.toFixed(2)}`}>
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                  <span>RM ${(currentCard.minMonthlySpend - totalMonthlySpend).toFixed(2)} to reach min spend (RM {currentCard.minMonthlySpend.toFixed(2)})</span>
-                </span>
-              )
-            ) : (
-              <span className="text-gray-500 font-medium flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>No minimum spend required</span>
-              </span>
-            )}
-
-            {/* Information Icon allows viewing & setting card minimum spend requirement without adding extra buttons */}
-            <button
-              type="button"
-              id="btn-card-min-spend-info"
-              onClick={() => {
-                if (currentCard) {
-                  setMinSpendInput(currentCard.minMonthlySpend ?? 0);
-                  setMinSpendNotes(currentCard.notes || '');
-                  setShowMinSpendModal(true);
-                }
-              }}
-              className="p-1 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-gray-100 transition-colors shrink-0 cursor-pointer"
-              title="Information & Configure Minimum Spend requirement"
-              aria-label="Minimum spend requirement details & settings"
-            >
-              <Info className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
-            Total Statement Cashback ({selectedMonth} {selectedYear})
-          </span>
-          <div className="text-xl font-extrabold text-emerald-600 font-mono mt-0.5">
-            RM {displayTotalCashback.toFixed(2)}
-          </div>
-          <span className="text-[11px] text-gray-500 mt-1 block">
-            Effective Return Rate:{' '}
-            <strong className="text-gray-900">
-              {totalMonthlySpend > 0
-                ? ((displayTotalCashback / totalMonthlySpend) * 100).toFixed(2)
-                : '0.00'}
-              %
-            </strong>
-          </span>
-        </div>
-
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs flex items-center justify-between">
+      {/* KPI Summary Cards (Image 1 Design) */}
+      <div className="space-y-2.5">
+        {/* Annual Overview KPI Card */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-3.5 shadow-xs flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
-              Annual Total Cashback ({selectedYear})
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-gray-400 block">
+              ANNUAL TOTAL CASHBACK ({selectedYear})
             </span>
-            <div className="text-xl font-extrabold text-blue-600 font-mono mt-0.5">
-              RM {annualStatsForYear.totalCashback.toFixed(2)}
+            <div className="text-sm sm:text-base font-extrabold text-blue-600 font-mono">
+              RM {annualStatsForYear.totalCashback.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
-            <span className="text-[10px] text-gray-500 mt-1 block">
-              Total Spend: RM {annualStatsForYear.totalSpend.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </div>
+          <div className="text-right">
+            <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 block">Year Total Spend</span>
+            <span className="text-xs sm:text-sm font-bold text-gray-800 font-mono">
+              RM {annualStatsForYear.totalSpend.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
-          <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl border border-blue-100">
-            <TrendingUp className="w-5 h-5" />
+        </div>
+
+        {/* Main Spend & Cashback Card */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-xs space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Metric 1: Monthly Total Spend */}
+            <div className="space-y-0.5 border-l-2 pl-2.5 border-emerald-500">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+                TOTAL SPEND ({selectedMonth.toUpperCase()})
+              </span>
+              <div className="text-sm sm:text-base font-extrabold font-mono text-gray-900 block leading-tight">
+                RM {totalMonthlySpend.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+            </div>
+
+            {/* Metric 2: Monthly Statement Cashback */}
+            <div className="space-y-0.5 border-l-2 pl-2.5 border-blue-500">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+                CASHBACK ({selectedMonth.toUpperCase()})
+              </span>
+              <div className="text-sm sm:text-base font-extrabold font-mono text-emerald-600 block leading-tight">
+                RM {displayTotalCashback.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Micro Status Bar (Tier Status + Return Rate) */}
+          <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[11px]">
+            <div className="flex items-center gap-1 font-medium text-emerald-600">
+              {currentCard?.minMonthlySpend && currentCard.minMonthlySpend > 0 ? (
+                totalMonthlySpend >= currentCard.minMonthlySpend ? (
+                  <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
+                    <span>Unlocked tier (Min RM {currentCard.minMonthlySpend.toFixed(2)})</span>
+                  </span>
+                ) : (
+                  <span className="text-amber-600 font-semibold flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-600" />
+                    <span>RM {(currentCard.minMonthlySpend - totalMonthlySpend).toFixed(2)} to reach min spend</span>
+                  </span>
+                )
+              ) : (
+                <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
+                  <span>Unlocked tier</span>
+                </span>
+              )}
+            </div>
+
+            <div className="text-gray-500 font-mono text-[10px] sm:text-[11px] flex items-center gap-1">
+              <span>Return:</span>
+              <span className="font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">
+                {totalMonthlySpend > 0
+                  ? ((displayTotalCashback / totalMonthlySpend) * 100).toFixed(2)
+                  : '0.00'}
+                %
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Category Spend & Eligible Items Table */}
+      {/* Transaction Categories (Option B Modern Bento Card Layout) */}
       {currentCard && (
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xs">
-          <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
-            <h2 className="font-bold text-gray-900 text-xs">
-              {currentCard.bank} ({currentCard.accountNo})
-            </h2>
-            <button
-              onClick={() => {
-                setNewCategoryData({
-                  name: '',
-                  ratePercent: 5.0,
-                  capRM: '',
-                  conditions: '',
-                  eligibleItems: [],
-                  excludedItems: [],
-                  ruleScope: 'forward',
-                });
-                setNewCatEligibleInput('');
-                setNewCatExcludedInput('');
-                setShowAddCategoryModal(true);
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-xs transition cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Category</span>
-            </button>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between pt-1 px-1">
+            <span className="text-xs font-bold text-gray-900 tracking-tight">
+              Transaction Categories
+            </span>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-gray-900">
-              <thead className="bg-gray-50 text-gray-600 text-[10px] font-bold uppercase tracking-wider border-b border-gray-200">
-                <tr>
-                  <th className="py-3 px-3 min-w-[170px]">Transaction Category</th>
-                  <th className="py-3 px-2 text-center w-16">Rate (%)</th>
-                  <th className="py-3 px-2 text-center w-28">Monthly Cap (RM)</th>
-                  <th className="py-3 px-3 min-w-[140px]">Monthly Spend (RM)</th>
-                  <th className="py-3 px-3 text-right w-28">Calculated</th>
-                  <th className="py-3 px-3 text-right w-36">Final Amount (RM)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 font-medium">
-                {effectiveCategories.map(cat => {
-                  const spend = categorySpends[cat.id] || 0;
-                  const isFocused = focusedCatId === cat.id;
-                  const formulaVal = isFocused
-                    ? (inputFormulas[cat.id] !== undefined
-                        ? inputFormulas[cat.id]
-                        : (spendFormulas[cat.id] || (spend > 0 ? (spend % 1 === 0 ? String(spend) : String(spend)) : '')))
-                    : (spend > 0 ? (spend % 1 === 0 ? String(spend) : spend.toFixed(2)) : '');
-                  const cb = calculateCashbackForCat(cat, spend);
-                  const rawActual = actualCashbackMap[cat.id] !== undefined ? actualCashbackMap[cat.id] : cb.earned;
-                  const actualVal = Math.round(rawActual * 100) / 100;
+          <div id="category-cards-container" className="space-y-2.5">
+            {effectiveCategories.map(cat => {
+              const spend = categorySpends[cat.id] || 0;
+              const isFocused = focusedCatId === cat.id;
+              const isExpanded = !!expandedCards[cat.id];
+              const formulaVal = isFocused
+                ? (inputFormulas[cat.id] !== undefined
+                    ? inputFormulas[cat.id]
+                    : (spendFormulas[cat.id] || (spend > 0 ? (spend % 1 === 0 ? String(spend) : String(spend)) : '')))
+                : (spend > 0 ? (spend % 1 === 0 ? String(spend) : spend.toFixed(2)) : '');
+              const cb = calculateCashbackForCat(cat, spend);
 
-                  return (
-                    <tr
-                      key={cat.id}
-                      className="hover:bg-gray-50/70 transition group"
-                    >
-                      <td className="py-2.5 px-3">
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 rounded-lg bg-gray-100 text-gray-600">
-                            {getCategoryIcon(cat.name)}
-                          </div>
-                          <div>
-                            <button
-                              onClick={() => handleOpenCategoryDetails(cat)}
-                              className="font-bold text-gray-900 hover:text-blue-600 transition text-left flex items-center gap-1 cursor-pointer"
-                              title="Click to view full eligible criteria & rules"
-                            >
-                              <span>{cat.name}</span>
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="py-2.5 px-2 text-center">
-                        <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold border border-blue-200 text-[11px] inline-block">
-                          {cat.ratePercent}%
+              return (
+                <div
+                  key={cat.id}
+                  className="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-xs transition-all space-y-2.5"
+                >
+                  {/* Primary Row: Category Name with ⓘ + Monthly Spend Input + Expand Chevron */}
+                  <div className="flex items-center justify-between gap-2.5">
+                    {/* Left: Category Icon, Name & Info Trigger next to name (No cap text) */}
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                        {getCategoryIcon(cat.name)}
+                      </div>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="font-extrabold text-xs text-gray-900 truncate leading-tight">
+                          {cat.name}
                         </span>
-                      </td>
-
-                      <td className="py-2.5 px-2 text-center">
-                        <span className="font-semibold text-gray-600 font-mono text-xs">
-                          {cat.capRM !== undefined && cat.capRM > 0 ? `RM ${cat.capRM}` : 'No Cap'}
-                        </span>
-                      </td>
-
-                      <td className="py-2.5 px-3">
-                        <div className="flex items-center gap-1">
-                          <span className="text-gray-400 font-mono text-[10px]">RM</span>
-                          <input
-                            type="text"
-                            value={formulaVal}
-                            placeholder="0.00"
-                            onFocus={() => handleSpendInputFocus(cat.id, spend)}
-                            onChange={e => handleSpendInputChange(cat.id, e.target.value)}
-                            onBlur={() => handleSpendInputBlur(cat.id)}
-                            onKeyDown={e => {
-                              if (e.key === 'Enter') {
-                                (e.target as HTMLInputElement).blur();
-                              }
-                            }}
-                            title={spendFormulas[cat.id] ? `Preserved formula: ${spendFormulas[cat.id]} (Calculated: RM ${spend})` : 'Supports math formulas like 12+12+12'}
-                            className="w-full bg-gray-50 border border-gray-200 px-2 py-1 rounded-lg text-gray-900 font-semibold focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 text-xs font-mono"
-                          />
-                        </div>
-                        {spendFormulas[cat.id] && !isFocused && (
-                          <div className="text-[10px] font-mono text-blue-600 font-medium mt-0.5 flex items-center gap-1">
-                            <span className="bg-blue-50 px-1 py-0.2 rounded border border-blue-100" title={`Preserved formula: ${spendFormulas[cat.id]}`}>
-                              fx: {spendFormulas[cat.id]}
-                            </span>
-                          </div>
-                        )}
-                      </td>
-
-                      <td className="py-2.5 px-3 text-right font-mono font-bold text-indigo-600">
-                        RM {cb.earned.toFixed(2)}
-                      </td>
-
-                      <td className="py-2.5 px-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <span className="text-gray-400 font-mono text-[10px]">RM</span>
-                          <FormattedNumberInput
-                            value={actualVal === 0 ? '' : actualVal}
-                            placeholder={cb.earned.toFixed(2)}
-                            showZeroAsBlank={true}
-                            onChange={v => {
-                              handleActualCashbackChange(cat.id, Math.round(v * 100) / 100);
-                            }}
-                            className="w-24 text-right px-1.5 py-1 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 font-bold focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600 text-xs font-mono"
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-              <tfoot className="bg-gray-50 font-bold border-t border-gray-200 text-gray-900">
-                <tr>
-                  <td colSpan={3} className="py-3 px-3 text-gray-600 uppercase text-[10px] tracking-wider">
-                    Total Statement Summary ({selectedMonth} {selectedYear})
-                  </td>
-                  <td className="py-3 px-3 font-mono text-gray-900 text-xs">
-                    RM {totalMonthlySpend.toFixed(2)}
-                  </td>
-                  <td className="py-3 px-3 text-right font-mono text-indigo-600 font-extrabold text-xs">
-                    RM {totalMonthlyCalculatedCashback.toFixed(2)}
-                  </td>
-                  <td className="py-3 px-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <span className="text-gray-400 font-mono text-[10px]">RM</span>
-                      <FormattedNumberInput
-                        value={currentSpendRecord?.finalTotalCashback !== undefined ? currentSpendRecord.finalTotalCashback : ''}
-                        placeholder={totalMonthlyFinalCashback.toFixed(2)}
-                        onChange={v => {
-                          handleFinalTotalCashbackChange(Math.round(v * 100) / 100);
-                        }}
-                        className="w-24 text-right px-2 py-1 bg-emerald-100 border border-emerald-300 rounded-lg text-emerald-800 font-extrabold focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 text-xs font-mono shadow-xs"
-                      />
+                        <button
+                          type="button"
+                          onClick={() => handleOpenCategoryDetails(cat)}
+                          className="text-gray-400 hover:text-gray-600 p-0.5 cursor-pointer shrink-0 transition-colors"
+                          title="View category details"
+                        >
+                          <Info className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+
+                    {/* Right: Replaces 0.2% (i) area with Monthly Spend (RM) Input Box */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="w-28 sm:w-32 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl px-2.5 py-1.5 flex items-center gap-1 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                        <span className="text-[10px] text-gray-400 font-mono font-medium">RM</span>
+                        <input
+                          type="text"
+                          value={formulaVal}
+                          placeholder="0.00"
+                          onFocus={() => handleSpendInputFocus(cat.id, spend)}
+                          onChange={e => handleSpendInputChange(cat.id, e.target.value)}
+                          onBlur={() => handleSpendInputBlur(cat.id)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                              (e.target as HTMLInputElement).blur();
+                            }
+                          }}
+                          title={spendFormulas[cat.id] ? `Formula: ${spendFormulas[cat.id]} = RM ${spend}` : 'Supports math formulas like 12+12'}
+                          className="w-full bg-transparent text-right font-mono font-bold text-xs text-gray-900 focus:outline-none"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(cat.id)}
+                        className="p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 cursor-pointer transition-colors"
+                        title="Toggle cashback details"
+                      >
+                        {isExpanded ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Expanded Hidden: Calculated Cashback (Renamed from Statement Cashback) */}
+                  {isExpanded && (
+                    <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between gap-3 animate-in fade-in duration-150">
+                      <div>
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">
+                          Calculated Cashback
+                        </span>
+                        <div className={`font-mono text-sm font-extrabold ${cb.earned > 0 ? 'text-emerald-600' : 'text-gray-400'}`}>
+                          RM {cb.earned.toFixed(2)}
+                        </div>
+                        {cb.capped && (
+                          <span className="text-[9px] text-amber-600 font-bold block mt-0.5">
+                            Cap Reached
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-mono font-extrabold px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {cat.ratePercent}% rate
+                        </span>
+                        {cat.capRM !== undefined && cat.capRM > 0 && (
+                          <span className="text-[10px] font-mono text-gray-400">
+                            Max RM {cat.capRM}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Footer Cashback Summary with Click-to-Edit Manual Override */}
+          <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-xs sticky bottom-3 z-20">
+            <div>
+              <span className="text-xs font-bold text-gray-800 tracking-tight">
+                Total Cashback
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="font-mono text-xs font-bold text-gray-400">RM</span>
+              <input
+                type="text"
+                value={
+                  footerInputText !== null
+                    ? footerInputText
+                    : (displayTotalCashback > 0
+                        ? (displayTotalCashback % 1 === 0 ? displayTotalCashback.toFixed(2) : displayTotalCashback.toFixed(2))
+                        : '0.00')
+                }
+                onFocus={() => {
+                  setFooterInputText(
+                    currentSpendRecord?.finalTotalCashback !== undefined
+                      ? String(currentSpendRecord.finalTotalCashback)
+                      : String(totalMonthlyCalculatedCashback.toFixed(2))
+                  );
+                }}
+                onChange={e => {
+                  setFooterInputText(e.target.value);
+                }}
+                onBlur={e => {
+                  handleFinalTotalCashbackBlur(e.target.value);
+                  setFooterInputText(null);
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    (e.target as HTMLInputElement).blur();
+                  }
+                }}
+                placeholder="0.00"
+                className="w-24 text-right font-mono font-extrabold text-sm text-emerald-600 bg-transparent hover:bg-gray-50 focus:bg-white focus:ring-1 focus:ring-blue-400 rounded px-1.5 py-0.5 border-none outline-none cursor-pointer"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -1165,165 +1160,164 @@ export const CreditCardCashback: React.FC = () => {
       )}
 
       {/* MODAL: ELIGIBLE ITEMS & CASHBACK CONDITIONS DETAIL MODAL */}
-      {showEligibleModal && activeCategoryDetail && (
-        <div className="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-xl w-full p-5 border border-gray-200 max-h-[90vh] overflow-y-auto space-y-4">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
-                  {getCategoryIcon(activeCategoryDetail.category.name)}
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
+      {showEligibleModal && activeCategoryDetail && (() => {
+        const distinctConditions = getDistinctConditions(activeCategoryDetail.category.conditions);
+
+        return (
+          <div className="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl max-w-xl w-full p-4 sm:p-6 border border-gray-200 max-h-[90vh] overflow-y-auto space-y-4 sm:space-y-5">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shrink-0">
+                    {getCategoryIcon(activeCategoryDetail.category.name)}
+                  </div>
+                  <div>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200">
                       {activeCategoryDetail.card.bank} ({activeCategoryDetail.card.accountNo})
                     </span>
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
-                      {activeCategoryDetail.category.ratePercent}% Cashback
-                    </span>
+                    {isEditingCategory ? (
+                      <input
+                        type="text"
+                        value={editedCategory?.name || ''}
+                        onChange={e => setEditedCategory(prev => prev ? { ...prev, name: e.target.value } : prev)}
+                        className="text-sm font-bold text-gray-900 mt-1 border border-gray-300 rounded px-1.5 py-0.5 w-full max-w-[240px]"
+                      />
+                    ) : (
+                      <h3 className="text-base font-bold text-gray-900 mt-0.5">
+                        {activeCategoryDetail.category.name}
+                      </h3>
+                    )}
                   </div>
-                  {isEditingCategory ? (
-                    <input
-                      type="text"
-                      value={editedCategory?.name || ''}
-                      onChange={e => setEditedCategory(prev => prev ? { ...prev, name: e.target.value } : prev)}
-                      className="text-sm font-bold text-gray-900 mt-0.5 border border-gray-300 rounded px-1.5 py-0.5 w-full max-w-[240px]"
-                    />
-                  ) : (
-                    <h3 className="text-sm font-bold text-gray-900 mt-0.5">
-                      {activeCategoryDetail.category.name}
-                    </h3>
-                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsEditingCategory(!isEditingCategory)}
+                    className={`p-2 rounded-xl border transition cursor-pointer flex items-center justify-center ${
+                      isEditingCategory
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200'
+                    }`}
+                    title="Edit rules"
+                    aria-label="Edit rules"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setShowEligibleModal(false)}
+                    className="p-1 text-gray-400 hover:text-gray-900 rounded-lg cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsEditingCategory(!isEditingCategory)}
-                  className={`px-2.5 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1 transition cursor-pointer ${
-                    isEditingCategory
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200'
-                  }`}
-                  title="Customize rules and eligible items"
-                >
-                  <Edit2 className="w-3 h-3" />
-                  <span>{isEditingCategory ? 'Editing' : 'Edit Rules'}</span>
-                </button>
-                <button
-                  onClick={() => setShowEligibleModal(false)}
-                  className="p-1 text-gray-400 hover:text-gray-900 rounded-lg cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Body */}
-            <div className="space-y-4">
-              {/* Category Rules & Caps summary */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs">
-                <div>
-                  <span className="text-gray-500 block text-[10px] font-medium">Rebate Rate</span>
-                  {isEditingCategory && editedCategory ? (
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={editedCategory.ratePercent}
-                      onChange={e => setEditedCategory({ ...editedCategory, ratePercent: parseFloat(e.target.value) || 0 })}
-                      className="w-20 px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold font-mono text-gray-900"
-                    />
-                  ) : (
-                    <span className="font-bold text-gray-900 text-sm">
-                      {activeCategoryDetail.category.ratePercent}%
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <span className="text-gray-500 block text-[10px] font-medium">Monthly Cap</span>
-                  {isEditingCategory && editedCategory ? (
-                    <input
-                      type="number"
-                      step="1"
-                      placeholder="No cap"
-                      value={editedCategory.capRM !== undefined ? editedCategory.capRM : ''}
-                      onChange={e => {
-                        const val = parseFloat(e.target.value);
-                        setEditedCategory({ ...editedCategory, capRM: !isNaN(val) && val > 0 ? val : undefined });
-                      }}
-                      className="w-20 px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold font-mono text-gray-900"
-                    />
-                  ) : (
-                    <span className="font-bold text-gray-900 text-sm">
+              {/* Modal Body */}
+              <div className="space-y-4">
+                {/* Category Rules & Caps summary (in 3 horizontal columns) */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 bg-gray-50/80 p-3 sm:p-3.5 rounded-xl border border-gray-200 text-xs">
+                  <div>
+                    <span className="text-gray-500 block text-[10px] font-medium mb-0.5">Rebate Rate</span>
+                    {isEditingCategory && editedCategory ? (
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={editedCategory.ratePercent}
+                        onChange={e => setEditedCategory({ ...editedCategory, ratePercent: parseFloat(e.target.value) || 0 })}
+                        className="w-full px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold font-mono text-gray-900"
+                      />
+                    ) : (
+                      <span className="font-bold text-gray-900 text-sm">
+                        {activeCategoryDetail.category.ratePercent}%
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-gray-500 block text-[10px] font-medium mb-0.5">Monthly Cap</span>
+                    {isEditingCategory && editedCategory ? (
+                      <input
+                        type="number"
+                        step="1"
+                        placeholder="No cap"
+                        value={editedCategory.capRM !== undefined ? editedCategory.capRM : ''}
+                        onChange={e => {
+                          const val = parseFloat(e.target.value);
+                          setEditedCategory({ ...editedCategory, capRM: !isNaN(val) && val > 0 ? val : undefined });
+                        }}
+                        className="w-full px-2 py-1 bg-white border border-gray-200 rounded text-xs font-bold font-mono text-gray-900"
+                      />
+                    ) : (
+                      <span className="font-bold text-gray-900 text-sm">
+                        {activeCategoryDetail.category.capRM
+                          ? `RM ${activeCategoryDetail.category.capRM.toFixed(2)}`
+                          : 'No Cap'}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-gray-500 block text-[10px] font-medium mb-0.5">Optimal Spend</span>
+                    <span className="font-bold text-blue-600 text-sm">
                       {activeCategoryDetail.category.capRM
-                        ? `RM ${activeCategoryDetail.category.capRM.toFixed(2)}`
-                        : 'No Cap'}
+                        ? `RM ${(activeCategoryDetail.category.capRM / (activeCategoryDetail.category.ratePercent / 100)).toLocaleString('en-MY', { maximumFractionDigits: 0 })}`
+                        : 'N/A'}
                     </span>
-                  )}
-                </div>
-                <div>
-                  <span className="text-gray-500 block text-[10px] font-medium">Optimal Spend</span>
-                  <span className="font-bold text-blue-600 text-sm">
-                    {activeCategoryDetail.category.capRM
-                      ? `RM ${(activeCategoryDetail.category.capRM / (activeCategoryDetail.category.ratePercent / 100)).toFixed(0)}`
-                      : 'N/A'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Forward Rule Scope Selection when Editing */}
-              {isEditingCategory && (
-                <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl space-y-1.5 text-xs">
-                  <span className="font-bold text-blue-700 block text-[11px]">Apply Rule Changes:</span>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <label className="flex items-center gap-1.5 cursor-pointer text-gray-800 font-medium">
-                      <input
-                        type="radio"
-                        name="ruleScope"
-                        checked={ruleScope === 'forward'}
-                        onChange={() => setRuleScope('forward')}
-                        className="text-blue-600 focus:ring-blue-500"
-                      />
-                      <span>From {selectedMonth} {selectedYear} onwards (flow to future months)</span>
-                    </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer text-gray-800 font-medium">
-                      <input
-                        type="radio"
-                        name="ruleScope"
-                        checked={ruleScope === 'all'}
-                        onChange={() => setRuleScope('all')}
-                        className="text-blue-600 focus:ring-blue-500"
-                      />
-                      <span>All months globally</span>
-                    </label>
                   </div>
                 </div>
-              )}
 
-              {/* Conditions & Eligibility Details */}
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-1 text-xs font-bold text-gray-900 uppercase tracking-wider">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Terms & Qualification Rules</span>
-                </div>
-                {isEditingCategory && editedCategory ? (
-                  <textarea
-                    value={editedCategory.conditions || ''}
-                    onChange={e =>
-                      setEditedCategory({ ...editedCategory, conditions: e.target.value })
-                    }
-                    rows={2}
-                    className="w-full text-xs p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                    placeholder="Enter qualifying rules, MCC codes..."
-                  />
-                ) : (
-                  <p className="text-xs text-gray-800 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-100 leading-relaxed">
-                    {activeCategoryDetail.category.conditions ||
-                      'Standard retail transactions eligible under bank campaign MCC classifications.'}
-                  </p>
+                {/* Forward Rule Scope Selection when Editing */}
+                {isEditingCategory && (
+                  <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl space-y-1.5 text-xs">
+                    <span className="font-bold text-blue-700 block text-[11px]">Apply Rule Changes:</span>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <label className="flex items-center gap-1.5 cursor-pointer text-gray-800 font-medium">
+                        <input
+                          type="radio"
+                          name="ruleScope"
+                          checked={ruleScope === 'forward'}
+                          onChange={() => setRuleScope('forward')}
+                          className="text-blue-600 focus:ring-blue-500"
+                        />
+                        <span>From {selectedMonth} {selectedYear} onwards (flow to future months)</span>
+                      </label>
+                      <label className="flex items-center gap-1.5 cursor-pointer text-gray-800 font-medium">
+                        <input
+                          type="radio"
+                          name="ruleScope"
+                          checked={ruleScope === 'all'}
+                          onChange={() => setRuleScope('all')}
+                          className="text-blue-600 focus:ring-blue-500"
+                        />
+                        <span>All months globally</span>
+                      </label>
+                    </div>
+                  </div>
                 )}
-              </div>
+
+                {/* Conditions & Eligibility Details - only shown if editing or if distinct non-duplicated rules exist */}
+                {(isEditingCategory || distinctConditions) && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1 text-xs font-bold text-gray-900 uppercase tracking-wider">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Terms & Qualification Rules</span>
+                    </div>
+                    {isEditingCategory && editedCategory ? (
+                      <textarea
+                        value={editedCategory.conditions || ''}
+                        onChange={e =>
+                          setEditedCategory({ ...editedCategory, conditions: e.target.value })
+                        }
+                        rows={2}
+                        className="w-full text-xs p-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                        placeholder="Enter qualifying rules, MCC codes..."
+                      />
+                    ) : (
+                      <p className="text-xs text-gray-800 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-100 leading-relaxed">
+                        {distinctConditions}
+                      </p>
+                    )}
+                  </div>
+                )}
 
               {/* Explicit Eligible Items / Merchants */}
               <div className="space-y-1.5">
@@ -1535,7 +1529,8 @@ export const CreditCardCashback: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      );
+    })()}
       {/* MODAL: ADD NEW CREDIT CARD */}
       {showAddCardModal && (
         <div className="fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4">

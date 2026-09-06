@@ -396,7 +396,7 @@ export const initialCreditCards: CreditCard[] = [
         ratePercent: 3.0,
         capRM: 30,
         eligibleItems: ["Touch 'n Go eWallet (TNG)", 'BigPay Reload', 'ShopeePay Reload', 'Boost eWallet', 'GrabPay Reload', 'Zapp / Setel Wallet'],
-        conditions: '3% direct rebate on e-wallet top-ups. Cap RM30/month (Spend RM1,000 to maximize).',
+        conditions: '',
         excludedItems: ['Direct merchant FPX']
       },
       {
@@ -405,7 +405,7 @@ export const initialCreditCards: CreditCard[] = [
         ratePercent: 3.0,
         capRM: 30,
         eligibleItems: ['Tenaga Nasional (TNB Auto-debit)', 'Indah Water Konsortium (IWK)', 'Unifi / TM Broadband', 'Maxis / Digi / Celcom Monthly Bills', 'Astro Satellite TV', 'Air Selangor'],
-        conditions: 'Recurring auto-debit billing setup with service providers. Cap RM30/month.',
+        conditions: 'Recurring auto-debit billing setup with service providers.',
         excludedItems: ['Counter bill payments at Pos Malaysia']
       },
       {
@@ -414,7 +414,7 @@ export const initialCreditCards: CreditCard[] = [
         ratePercent: 3.0,
         capRM: 30,
         eligibleItems: ['Shopee Malaysia', 'Lazada Malaysia', 'TikTok Shop', 'Taobao / Tmall', 'Amazon.sg / Amazon.com', 'Zalora', 'Uniqlo Online App', 'Decathlon Online'],
-        conditions: 'MCC 5311 / 5999 Online transactions in 3D Secure checkout. Cap RM30/mo.',
+        conditions: 'MCC 5311 / 5999 Online transactions in 3D Secure checkout.',
         excludedItems: ['Online betting & forex trading']
       },
       {
